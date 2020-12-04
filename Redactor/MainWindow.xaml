@@ -1,0 +1,28 @@
+﻿<Window x:Class="Redactor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Redactor"
+        xmlns:gridfield="clr-namespace:DrawField;assembly=DrawField"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <gridfield:FieldGUI x:Name="fieldgui" Grid.Column="0"/>
+        <StackPanel Grid.Column="1">
+            <Button Click="Load" Content="Load"/>
+            <Button Click="Save" Content="Save"/>
+            <Separator/>
+            <Button Click="switch_to_grass" Content="Grass"/>
+            <Button Click="switch_to_field" Content="Field"/>
+            <Button Click="switch_to_water" Content="Water"/>
+            <Button Click="switch_to_montains" Content="Montains"/>
+            <Button Click="switch_to_forest" Content="Forest"/>
+            <Button Click="switch_to_road" Content="Road"/>
+        </StackPanel>
+    </Grid>
+</Window>

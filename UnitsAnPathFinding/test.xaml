@@ -1,0 +1,39 @@
+﻿<Window x:Class="UnitsAnPathFinding.test"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnitsAnPathFinding"
+        mc:Ignorable="d"
+        Title="test" Height="450" Width="800">
+    <Grid>
+        
+        <Canvas >
+            <UserControl x:Name="uid" >
+                <Canvas>
+                    <Canvas.RenderTransform>
+                        <TranslateTransform x:Name="move" X="40" Y="100"/>
+                    </Canvas.RenderTransform>
+                    <Polygon Name="TestP" Points="125,0 0,125 125,125"
+                            Fill="LightBlue"
+                            Stroke="Black"
+                            Stretch="Fill"
+                            StrokeThickness="2" MouseDown="TestP_MouseDown"/>
+                </Canvas>
+            </UserControl>
+            <UserControl x:Name="uid1" >
+                <Canvas>
+                    <Canvas.RenderTransform>
+                        <TranslateTransform x:Name="move1" X="90" Y="100"/>
+                    </Canvas.RenderTransform>
+                    <Polygon Name="TestP1" Points="125,0 0,125 125,125"
+                            Fill="LightBlue"
+                            Stroke="Black"
+                            Stretch="Fill"
+                            StrokeThickness="2" MouseDown="TestP1_MouseDown"/>
+                    <Label Content="K" Margin="20,70,10,10"/>
+                </Canvas>
+            </UserControl>
+        </Canvas>
+    </Grid>
+</Window>

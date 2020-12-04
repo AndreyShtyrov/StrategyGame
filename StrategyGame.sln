@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StrategyGame", "StrategyGame\StrategyGame.csproj", "{3297700E-C4FF-4302-B31E-E5DF7B252C31}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DrawField", "Grid\DrawField.csproj", "{525E8B50-1CEA-44CF-854D-001BDE954195}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redactor", "Redactor\Redactor.csproj", "{D6F95FBE-76C3-4462-B044-FD0814E4EF3F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PathFinding", "UnitsAnPathFinding\PathFinding.csproj", "{73981553-442D-4CD6-B156-C06CB39DDE17}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InterfaceOfObjects", "InterfaceOfObjects\InterfaceOfObjects.csproj", "{F85FC0FB-D26F-4024-9FCC-0BA26384FA4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tokens", "TokenData\Tokens.csproj", "{533239EC-285C-4805-86AF-A6C2E77E03DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controller", "Controller\Controller.csproj", "{731A66A7-8C94-419A-9371-46A52B0ABF02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3297700E-C4FF-4302-B31E-E5DF7B252C31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3297700E-C4FF-4302-B31E-E5DF7B252C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3297700E-C4FF-4302-B31E-E5DF7B252C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3297700E-C4FF-4302-B31E-E5DF7B252C31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{525E8B50-1CEA-44CF-854D-001BDE954195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{525E8B50-1CEA-44CF-854D-001BDE954195}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{525E8B50-1CEA-44CF-854D-001BDE954195}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{525E8B50-1CEA-44CF-854D-001BDE954195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6F95FBE-76C3-4462-B044-FD0814E4EF3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6F95FBE-76C3-4462-B044-FD0814E4EF3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6F95FBE-76C3-4462-B044-FD0814E4EF3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6F95FBE-76C3-4462-B044-FD0814E4EF3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73981553-442D-4CD6-B156-C06CB39DDE17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73981553-442D-4CD6-B156-C06CB39DDE17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73981553-442D-4CD6-B156-C06CB39DDE17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73981553-442D-4CD6-B156-C06CB39DDE17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F85FC0FB-D26F-4024-9FCC-0BA26384FA4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F85FC0FB-D26F-4024-9FCC-0BA26384FA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F85FC0FB-D26F-4024-9FCC-0BA26384FA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F85FC0FB-D26F-4024-9FCC-0BA26384FA4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{533239EC-285C-4805-86AF-A6C2E77E03DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{533239EC-285C-4805-86AF-A6C2E77E03DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{533239EC-285C-4805-86AF-A6C2E77E03DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{533239EC-285C-4805-86AF-A6C2E77E03DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{731A66A7-8C94-419A-9371-46A52B0ABF02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{731A66A7-8C94-419A-9371-46A52B0ABF02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{731A66A7-8C94-419A-9371-46A52B0ABF02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{731A66A7-8C94-419A-9371-46A52B0ABF02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1838A23F-1D42-4048-91B6-AE83A71C753F}
+	EndGlobalSection
+EndGlobal

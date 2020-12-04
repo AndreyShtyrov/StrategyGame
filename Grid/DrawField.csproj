@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InterfaceOfObjects\InterfaceOfObjects.csproj" />
+    <ProjectReference Include="..\TokenData\Tokens.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="PathToken.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Building.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UnitGUI.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="PathToken.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Building.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UnitGUI.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

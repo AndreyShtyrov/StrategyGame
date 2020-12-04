@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Grid\DrawField.csproj" />
+    <ProjectReference Include="..\InterfaceOfObjects\InterfaceOfObjects.csproj" />
+    <ProjectReference Include="..\TokenData\Tokens.csproj" />
+    <ProjectReference Include="..\UnitsAnPathFinding\PathFinding.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Building\" />
+  </ItemGroup>
+
+</Project>
