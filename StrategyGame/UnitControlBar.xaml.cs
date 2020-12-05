@@ -29,21 +29,21 @@ namespace StrategyGame
         {
             if (e.PropertyName != "Selected")
                 return;
-            var unit = GameMode.Get().Selected;
+            var unit = GameModeServer.Get().Selected;
             if (unit != null)
             {
                 foreach (var ability in unit.Abilities)
                 {
                     Button button = new Button();
                     button.Content = ability.Name;
-                    button.Click += (object sender, RoutedEventArgs e) => GameMode.Get().SelectedUnitActivateAbility(ability);
+                    button.Click += (object sender, RoutedEventArgs e) => GameModeServer.Get().SelectedUnitActivateAbility(ability);
                     AbilityStack.Children.Add(button);
                 }
                 foreach ( var stand in unit.Stands)
                 {
                     Button button = new Button();
                     button.Content = stand.Name;
-                    button.Click += (object sender, RoutedEventArgs e) => GameMode.Get().SelectedUnitRaiseStand(stand);
+                    button.Click += (object sender, RoutedEventArgs e) => GameModeServer.Get().SelectedUnitRaiseStand(stand);
                     AbilityStack.Children.Add(button);
                 }
             }

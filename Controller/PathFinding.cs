@@ -10,7 +10,7 @@ namespace Controller
     {
 
         public PathToken[,] grids;
-        public List<ITokenData> _calculatedPath = new List<ITokenData>();
+        public List<PathToken> _calculatedPath = new List<PathToken>();
         private int width;
         private int height;
         private UnitPresset[,] units;
@@ -29,7 +29,7 @@ namespace Controller
 
         public void findArea(float walkDistance, (int X, int Y) fpos, bool isbonuc)
         {
-            _calculatedPath = new List<ITokenData>();
+            _calculatedPath = new List<PathToken>();
             List<PathToken> listPointToCheck = new List<PathToken>();
             listPointToCheck.Add(grids[fpos.X, fpos.Y]);
             List<PathToken> newlistPointToCheck = new List<PathToken>();
@@ -53,7 +53,7 @@ namespace Controller
             }
         }
 
-        public List<ITokenData> getWalkArea(float walkDistance, UnitPresset unit, UnitPresset[,] allunits, bool isbonuc = true)
+        public List<PathToken> getWalkArea(float walkDistance, UnitPresset unit, UnitPresset[,] allunits, bool isbonuc = true)
         {
             SelectedUnit = unit;
             var fpos = unit.fieldPosition;

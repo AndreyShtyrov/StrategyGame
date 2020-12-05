@@ -45,6 +45,9 @@ namespace Tokens
             throw new NotImplementedException();
         }
 
+        public UnitData(): base()
+        { }
+
         public UnitData((int X, int Y) fpos) : base(fpos)
         { }
     }

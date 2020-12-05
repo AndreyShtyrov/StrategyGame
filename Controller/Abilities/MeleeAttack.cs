@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -9,7 +10,11 @@ namespace Controller.Abilities
     {
         private UnitPresset unit;
         public virtual int damage => 2;
-        
+
+        [JsonConstructor]
+        public MeleeAttack()
+        { }
+
         public MeleeAttack(UnitPresset unit, List<UnitActionPoint> bindActionPoint)
         {
             this.unit = unit;
@@ -22,7 +27,7 @@ namespace Controller.Abilities
         {
             if (actionPoint.Active(unit.owner))
             {
-                var controller = GameMode.Get();
+                var controller = GameModeServer.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
                 controller.State = GameModeState.SelectEnemy;

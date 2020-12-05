@@ -33,7 +33,8 @@ namespace Controller
         public List<AbilityPresset> Abilities = new List<AbilityPresset>();
         public float maxSpeed = 2f;
         public float currentSpeed;
-        public Player owner;
+        public Player owner
+        { set; get; }
         public override (int X, int Y) fieldPosition
         {
             set
@@ -76,9 +77,12 @@ namespace Controller
 
         public event PropertyChangedEventHandler PropertyChanged;
         
+        public UnitPresset():base()
+        { }
+
         public UnitPresset((int X, int Y) fpos, Player owner) : base(fpos)
         {
-            var gameMode = GameMode.Get();
+            var gameMode = GameModeServer.Get();
             this.owner = owner;
             currentHp = 4;
 

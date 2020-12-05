@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows;
 using Controller;
 using InterfaceOfObjects;
+using Newtonsoft.Json;
 
 namespace Controller.Stands
 {
@@ -12,6 +13,10 @@ namespace Controller.Stands
         private readonly int Damage = 2;
         private readonly UnitPresset unit;
         public bool active = false;
+
+        [JsonConstructor]
+        public HalberdStand()
+        { }
 
         public HalberdStand(UnitPresset unit, List<UnitActionPoint> bindActionPoint)
         {
@@ -25,7 +30,7 @@ namespace Controller.Stands
         {
             if (!active)
                 return false;
-            var controller = GameMode.Get();
+            var controller = GameModeServer.Get();
             var pos = controller.TransformToCube(target.fieldPosition, unit.fieldPosition);
             if (Math.Abs(pos.X) + Math.Abs(pos.Y) + Math.Abs(pos.Z) == 2 
                 && unit != sender && unit != target)
@@ -54,7 +59,7 @@ namespace Controller.Stands
 
         public override void DownStand()
         {
-            GameMode.Get().State = GameModeState.AwaitSelect;
+            GameModeServer.Get().State = GameModeState.AwaitSelect;
             active = false;
             point.Return(unit.owner);
         }

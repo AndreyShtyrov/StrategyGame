@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,10 @@ namespace Controller.Abilities
     {
         private UnitPresset unit;
         public int damage = 2;
+
+        [JsonConstructor]
+        public Heal()
+        { }
 
         public Heal(UnitPresset unit, List<UnitActionPoint> bindActionPoint)
         {

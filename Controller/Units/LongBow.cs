@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Controller.Abilities;
+using Newtonsoft.Json;
 
 namespace Controller.Units
 {
@@ -10,6 +11,11 @@ namespace Controller.Units
 
         public override string Name => "DL";
         public override int MaxHp => 2;
+
+        [JsonConstructor]
+        public LongBow() : base()
+        { }
+
         public LongBow((int X, int Y) fpos, Player owner) : base(fpos, owner)
         {
             List<UnitActionPoint> movelistAction = new List<UnitActionPoint>();

@@ -34,7 +34,7 @@ namespace StrategyGame
             InitializeComponent();
             fieldgui.clearField();
             field = Field.load(savefile);
-            GameMode gameMode = GameMode.Get(field);
+            GameModeServer gameMode = GameModeServer.Get(field);
             var player1 = Player.getPlayer(0, 5, 5);
             var player2 = Player.getPlayer(1, 5, 5);
             var gameTable = GameTableController.Get(player1, fieldgui);

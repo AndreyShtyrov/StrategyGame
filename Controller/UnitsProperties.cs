@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using InterfaceOfObjects;
+using Newtonsoft.Json;
 
 namespace Controller
 {
@@ -37,6 +38,10 @@ namespace Controller
             ActionsIsSpend += unit.OnSpendActionsHandler;
         }
 
+        [JsonConstructor]
+        public ActionPoint()
+        { }
+
         public event SpendActions ActionsIsSpend;
 
         private ActionState _State = ActionState.Ready;
@@ -51,7 +56,7 @@ namespace Controller
                     unitAction.State = ActionState.InProcess;
             }
             _State = ActionState.InProcess;
-            var result = GameMode.Get().SpendResources(neededAttackPoints, neededMovePoints, owner);
+            var result = GameModeServer.Get().SpendResources(neededAttackPoints, neededMovePoints, owner);
             if (result)
                 _State = ActionState.InProcess;
             else
@@ -72,7 +77,7 @@ namespace Controller
                 unitAction.State = ActionState.Ready;
             }
             _State = ActionState.Ready;
-            GameMode.Get().ReturnResources(neededAttackPoints, neededMovePoints, owner);
+            GameModeServer.Get().ReturnResources(neededAttackPoints, neededMovePoints, owner);
             ActionsIsSpend?.Invoke();
         }
 
@@ -111,6 +116,9 @@ namespace Controller
         {
             Name = actionName;
         }
+        [JsonConstructor]
+        public UnitActionPoint()
+        { }
     }
 
     public enum ActionName

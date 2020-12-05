@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,10 @@ namespace Controller.Abilities
     {
         private UnitPresset unit;
         private readonly int damage = 1;
+
+        [JsonConstructor]
+        public LongBowAttack() : base()
+        { }
 
         public LongBowAttack(UnitPresset unit, List<UnitActionPoint> bindActionPoint)
         {
@@ -22,7 +27,7 @@ namespace Controller.Abilities
         {
             if (actionPoint.Active(unit.owner))
             {
-                var controller = GameMode.Get();
+                var controller = GameModeServer.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
                 controller.State = GameModeState.SelectEnemy;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Controller.Abilities;
 using Controller.Stands;
+using Newtonsoft.Json;
 
 namespace Controller.Units
 {
@@ -10,6 +11,11 @@ namespace Controller.Units
     {
         public override string Name => "A";
         public override int MaxHp => 4;
+
+        [JsonConstructor]
+        public Halberd() : base()
+        { }
+
         public Halberd((int X, int Y) fpos, Player owner):base(fpos, owner)
         {
             maxSpeed = 2;
