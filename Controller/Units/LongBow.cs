@@ -26,10 +26,17 @@ namespace Controller.Units
             attacklistAction.Add(AttackPoints[1]);
             MoveActionPoint = new ActionPoint(this, 0, 1, movelistAction);
 
-            Abilities.Add(new WeakMeleeAttack(this, attacklistAction));
-            Abilities.Add(new LongBowAttack(this, attacklistAction));
+            WeakMeleeAttack meleeAttack = new WeakMeleeAttack(this, attacklistAction);
+            LongBowAttack longBowAttack = new LongBowAttack(this, attacklistAction);
+            meleeAttack.idx = 0;
+            longBowAttack.idx = 1;
+            Abilities.Add(meleeAttack);
+            Abilities.Add(longBowAttack);
+
             movelistAction.AddRange(attacklistAction);
-            Abilities.Add(new Heal(this, movelistAction));
+            Heal heal = new Heal(this, movelistAction);
+            heal.idx = 2;
+            Abilities.Add(heal);
             currentHp = MaxHp;
 
         }

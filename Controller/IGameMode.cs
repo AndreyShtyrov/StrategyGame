@@ -7,14 +7,23 @@ using UnitsAnPathFinding;
 
 namespace Controller
 {
-    interface IGameMode: IController, INotifyPropertyChanged
+    public interface IGameMode: IController, INotifyPropertyChanged
     {
         public UnitPresset Selected
         { get; set; }
 
+        public int ActionIdx
+        { get; }
 
         public GameModeState State
         { get; set; }
+
+        public AbilityPresset selectedAbility
+        { get; set; }
+
+        public PathToken GetPathToken((int X, int Y) fpos);
+
+        public UnitPresset GetUnit((int X, int Y) fpos);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -34,15 +43,15 @@ namespace Controller
 
         public List<UnitPresset> getUnitsInBattle();
 
-        public void AttackUnit(UnitPresset target);
+        public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx);
 
         public List<PathToken> getWalkArea();
 
-        public void MoveUnit(PathToken pathToken);
+        public void Move(UnitPresset unit, PathToken pathToken);
 
         public void CreateBuilding(Building build);
 
-        public bool SelectUnit(UnitPresset token);
+        public bool SelectUnit(UnitPresset unit);
 
         public void SelectedUnitRaiseStand(StandPresset stand);
 

@@ -27,7 +27,7 @@ namespace Controller.Abilities
         {
             if (actionPoint.Active(unit.owner))
             {
-                var controller = GameModeServer.Get();
+                var controller = GameModeContainer.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
                 controller.State = GameModeState.SelectEnemy;

@@ -5,11 +5,15 @@ using Tokens;
 using InterfaceOfObjects;
 using System.ComponentModel;
 using UnitsAnPathFinding;
+using Controller.Abilities;
+using Controller.Actions;
+using Controller.Units;
 
 namespace Controller
 {
     class GameMode: IGameMode
     {
+        private static GameModeServer instance;
         public UnitPresset Selected
         {
             set
@@ -19,147 +23,194 @@ namespace Controller
             }
             get { return _Selected; }
         }
-
-        public GameModeState State { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        private UnitPresset target;
+        private List<IActions> Response = new List<IActions>();
         private List<UnitPresset> AddSelections = new List<UnitPresset>();
         private List<UnitPresset> AddTargets = new List<UnitPresset>();
-        private UnitPresset _Selected;
+        private int idx = 0;
+        private List<UnitPresset> PrevUnits;
+        private List<UnitPresset> ChangeUnits;
+        private List<(int index, List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
         private List<Building> buildings = new List<Building>();
+        private PathField pathField;
+        private GameModeState _State;
+        private List<UnitPresset> PossibleTargets = null;
+        private UnitPresset _Selected;
+        private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
+        private Player CurrentPlayer = Player.getPlayer(0);
+        private bool isHotSeat = true;
+        private int _ActionIdx = -1;
+        private AbilityPresset _selectedAbility;
 
-        private static GameMode instance;
+        public AbilityPresset selectedAbility
+        { 
+            get
+            {
+                return _selectedAbility;
+            }
+            set
+            {
+                _selectedAbility = value;
+                OnPropertyChanged("selectedAbility");
+            } 
+        }
+
+        public GameModeState State
+        {
+            set
+            {
+                _State = value;
+            }
+            get
+            {
+                return _State;
+            }
+        }
+
+        public int ActionIdx => _ActionIdx + 1;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        GameMode(Field field )
+        public GameMode(Field field)
         {
             this.field = field;
         }
 
-        public static GameModeServer Get(Field field = null)
-        {
-            if (instance == null)
-                instance = new GameMode(field);
-            return instance;
-        }
-
-        private void OnGameModeChangeState(GameModeState prevState)
-        {
-
-            switch ((State))
-            {
-                case GameModeState.AwaitSelect:
-                    {
-                        if (prevState == GameModeState.MoveMode)
-                        {
-                            pathField.Refresh();
-                            Selected.isSelected = false;
-                            Selected = null;
-                        }
-                        if (Selected != null)
-                        {
-                            Selected.isSelected = false;
-                            Selected = null;
-                        }
-                        if (selectedAbility != null)
-                        {
-                            selectedAbility.Return();
-                            selectedAbility = null;
-
-                            State = GameModeState.AwaitSelect;
-                        }
-                        if (PossibleTargets != null)
-                        {
-                            foreach (var unit in PossibleTargets)
-                            { unit.isTarget = false; }
-                            PossibleTargets = null;
-                        }
-                        break;
-                    }
-                case GameModeState.MoveMode:
-                    {
-                        if (Selected.MoveActionPoint.State == ActionState.Ended)
-                            break;
-                        break;
-                    }
-                case GameModeState.SelectEnemy:
-                    {
-                        if (Selected.MoveActionPoint.State == ActionState.InProcess)
-                            Selected.MoveActionPoint.Spend();
-                        if (prevState == GameModeState.MoveMode)
-                        {
-                            pathField.Refresh();
-                        }
-
-                        PossibleTargets = pathField.getListOfTargets(Selected,
-                            selectedAbility.DeafaultRange, GetUnits());
-                        foreach (var target in PossibleTargets)
-                        { target.isTarget = true; }
-                        break;
-                    }
-                case GameModeState.AwaitEnemyEnd:
-                    {
-                        break;
-                    }
-                default:
-                    break;
-            }
-        }
-
         public UnitPresset[,] GetUnits()
         {
-            throw new NotImplementedException();
+            UnitPresset[,] result = new UnitPresset[field.height, field.width];
+            foreach (var unit in units)
+            {
+                result[unit.fieldPosition.X, unit.fieldPosition.Y] = unit;
+            }
+            return result;
         }
 
         public void SwitchTrun()
         {
-            throw new NotImplementedException();
-        }
 
-        public UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
-        {
-            throw new NotImplementedException();
+            CurrentPlayer.getIncome();
+            if (CurrentPlayer.idx == 0)
+                CurrentPlayer = Player.getPlayer(1);
+            else
+                CurrentPlayer = Player.getPlayer(0);
+            foreach (var unit in units)
+            {
+                if (unit.owner == CurrentPlayer)
+                {
+                    unit.Refresh();
+                }
+            }
         }
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center)
         {
-            throw new NotImplementedException();
+            if (center.Y % 2 == 0)
+            {
+                int row = fpos.X - center.X;
+                int col = fpos.Y - center.Y;
+                int x = row - (int)(col + (col & 1)) / 2;
+                int z = col;
+                int y = -x - z;
+                return (x, y, z);
+            }
+            else
+            {
+                int row = fpos.X - center.X;
+                int col = fpos.Y - center.Y;
+                int x = row - (col - (col & 1)) / 2;
+                int z = col;
+                int y = -x - z;
+                return (x, y, z);
+            }
         }
 
         public (int X, int Y) TransformToAxial((int X, int Y, int Z) fpos, (int X, int Y) center)
         {
-            throw new NotImplementedException();
+            (int X, int Y) result;
+            if (center.Y % 2 == 0)
+            {
+                result.X = fpos.X + (fpos.Z + (fpos.Z & 1)) / 2;
+                result.Y = fpos.Z;
+            }
+            else
+            {
+                result.X = fpos.X + (fpos.Z - (fpos.Z & 1)) / 2;
+                result.Y = fpos.Z;
+            }
+            return (result.X + center.X, result.Y + center.Y);
+        }
+
+        private void OnPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        public UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
+        {
+            if (name == "Helbard")
+            {
+                Halberd unit = new Halberd(fpos, owner);
+                units.Add(unit);
+                return unit;
+            }
+            if (name == "LongBow")
+            {
+                LongBow unit = new LongBow(fpos, owner);
+                units.Add(unit);
+                return unit;
+            }
+            return null;
         }
 
         public bool SpendResources(int action, int move, Player owner)
         {
-            throw new NotImplementedException();
+
+            if (owner.AttackPoints - action >= 0 && owner.MovePoints - move >= 0)
+            {
+                owner.AttackPoints -= action;
+                owner.MovePoints -= move;
+                return true;
+            }
+            return false;
         }
 
         public void ReturnResources(int action, int move, Player owner)
         {
-            throw new NotImplementedException();
-        }
-
-        public List<UnitPresset> getUnitsInBattle()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AttackUnit(UnitPresset target)
-        {
-            throw new NotImplementedException();
+            owner.AttackPoints += action;
+            owner.MovePoints += move;
         }
 
         public List<PathToken> getWalkArea()
         {
+            pathField.Refresh();
+            return pathField.getWalkArea(Selected.currentSpeed, Selected, GetUnits());
+        }
+
+        public PathToken GetPathToken((int X, int Y) fpos)
+        {
+            var unit = GetUnit(fpos);
+            var pathTokens = pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
+            foreach (var token in pathTokens)
+            {
+                if (token.fieldPosition == fpos)
+                    return token;
+            }
+            return null;
+        }
+
+        public List<UnitPresset> getUnitsInBattle()
+        {
+            return UnitsInBattle;
+        }
+
+        public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
+        {
             throw new NotImplementedException();
         }
 
-        public void MoveUnit(PathToken pathToken)
+        public void Move(UnitPresset unit, PathToken pathToken)
         {
             throw new NotImplementedException();
         }
@@ -171,17 +222,20 @@ namespace Controller
 
         public bool SelectUnit(UnitPresset token)
         {
-            throw new NotImplementedException();
+            if (token.owner == CurrentPlayer)
+                return true;
+            else
+                return false;
         }
 
         public void SelectedUnitRaiseStand(StandPresset stand)
         {
-            throw new NotImplementedException();
+            stand.UpStand();
         }
 
         public void SelectedUnitActivateAbility(AbilityPresset ability)
         {
-            throw new NotImplementedException();
+            ability.PrepareToUse();
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -189,23 +243,24 @@ namespace Controller
             throw new NotImplementedException();
         }
 
-        public IUnitPresset getUnit((int X, int Y) fpos)
+        public UnitPresset GetUnit((int X, int Y) fpos)
         {
-            throw new NotImplementedException();
+            foreach (var unit in units)
+            {
+                if (unit.fieldPosition == fpos)
+                    return unit;
+            }
+            return null;
+        }
+
+        public void ProcessActions(List<IActions> actions)
+        {
+            foreach (var action in actions)
+            {
+                action.forward();
+            }
         }
     }
 
-    public enum RequstTypes 
-    {
-        WalkedArea = 0,
-        AttackUnit = 1,
-        MoveUnit = 2,
-        RaiseStand = 3,
-        ActiveAbility = 4,
-        CreateUnit = 5,
-        SuncUnits = 6,
-        SuncBuildings = 7,
-        SwitchTurn = 8,
-    }
 
 }

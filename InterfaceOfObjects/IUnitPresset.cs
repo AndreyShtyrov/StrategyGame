@@ -19,7 +19,7 @@ namespace InterfaceOfObjects
         { get; set; }
         public string getUnitName();
 
-        public (int X, int Y) fieldPosition
+        public new (int X, int Y) fieldPosition
         { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;

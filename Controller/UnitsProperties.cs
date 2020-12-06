@@ -56,7 +56,7 @@ namespace Controller
                     unitAction.State = ActionState.InProcess;
             }
             _State = ActionState.InProcess;
-            var result = GameModeServer.Get().SpendResources(neededAttackPoints, neededMovePoints, owner);
+            var result = GameModeContainer.Get().SpendResources(neededAttackPoints, neededMovePoints, owner);
             if (result)
                 _State = ActionState.InProcess;
             else
@@ -77,7 +77,7 @@ namespace Controller
                 unitAction.State = ActionState.Ready;
             }
             _State = ActionState.Ready;
-            GameModeServer.Get().ReturnResources(neededAttackPoints, neededMovePoints, owner);
+            GameModeContainer.Get().ReturnResources(neededAttackPoints, neededMovePoints, owner);
             ActionsIsSpend?.Invoke();
         }
 
@@ -134,6 +134,7 @@ namespace Controller
         AfterBattle = 2,
         RangeAttack = 3,
         AttackWithoutResponse = 4,
+        Heal = 5,
     }
 
     public delegate void SpendActions();

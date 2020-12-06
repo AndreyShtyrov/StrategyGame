@@ -106,7 +106,7 @@ namespace DrawField
             }
         }
 
-        public void addWalkedArea(List<ITokenData> list)
+        public void addWalkedArea(IEnumerable<ITokenData> list)
         {
             foreach (var item in list)
             {

@@ -10,6 +10,9 @@ namespace Controller
         public string Name;
         public AbilityType AbilityType;
 
+        public int idx
+        { get; set; }
+
         private UnitPresset unit;
 
         public ActionPoint actionPoint;

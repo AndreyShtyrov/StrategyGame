@@ -4,17 +4,17 @@ using System.Text;
 
 namespace Controller.Actions
 {
-    class PrepareToUse : IActions
+    public class UseAction: IActions
     {
         public (int X, int Y) Source
-        {get; set;}
+        { get; set; }
 
         public int SourceAbility
         { get; set; }
 
-        public int idx { get ; set ; }
+        public int idx { get; set; }
 
-        public PrepareToUse()
+        public UseAction()
         {
             idx = GameModeContainer.Get().ActionIdx;
         }
@@ -24,15 +24,7 @@ namespace Controller.Actions
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(Source);
             var ability = unit.GetAbility(SourceAbility);
-            if (ability ==null)
-            {
-                var stand = unit.GetStand(SourceAbility);
-                stand.UpStand();
-            }
-            else
-            {
-                ability.PrepareToUse();
-            }
+            ability.Use(unit);
         }
 
         public void reverse()

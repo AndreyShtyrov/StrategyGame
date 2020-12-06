@@ -82,7 +82,7 @@ namespace Controller
 
         public UnitPresset((int X, int Y) fpos, Player owner) : base(fpos)
         {
-            var gameMode = GameModeServer.Get();
+            var gameMode = GameModeContainer.Get();
             this.owner = owner;
             currentHp = 4;
 
@@ -144,6 +144,26 @@ namespace Controller
         public void RefreshForRetreat()
         {
             MoveActionPoint.Refresh();
+        }
+
+        public AbilityPresset GetAbility(int idx)
+        {
+            foreach (var ability in Abilities)
+            {
+                if (ability.idx == idx)
+                    return ability;
+            }
+            return null;
+        }
+
+        public StandPresset GetStand(int idx)
+        {
+            foreach (var stand in Stands)
+            {
+                if (stand.idx == idx)
+                    return stand;
+            }
+            return null;
         }
     }
 }

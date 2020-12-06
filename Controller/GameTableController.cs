@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Input;
 using UnitsAnPathFinding;
 using DrawField;
+using System.ComponentModel;
 
 namespace Controller
 {
@@ -11,7 +12,8 @@ namespace Controller
     {
         private static GameTableController instance;
         public FieldGUI FieldGUI;
-        public UnitPresset Selcted;
+        public UnitPresset Selected;
+        public AbilityPresset abilitySelected;
 
         public Player owner;
         private GameTableState _State = GameTableState.AwaitSelect;
@@ -35,12 +37,19 @@ namespace Controller
             {
                 case GameTableState.AwaitSelectAbility:
                     {
-                        var walkArea = GameMode.Get().getWalkArea();
+                        var walkArea = GameModeContainer.Get().getWalkArea();
                         FieldGUI.addWalkedArea(walkArea);
                         break;
                     }
                 case GameTableState.AwaitSelect:
                     {
+                        Selected = null;
+                        if (abilitySelected != null)
+                        {
+                            abilitySelected.Return();
+                            abilitySelected = null;
+                        }    
+                            
                         if (GameTableState.AwaitSelectAbility == prevState ||
                             GameTableState.AwaitApplyAbility == prevState)
                             FieldGUI.clearWalkedArea();
@@ -63,8 +72,8 @@ namespace Controller
                     {
                         if (sender is UnitPresset selectedUnit)
                         {
-
-                            if (GameMode.Get().SelectUnit(selectedUnit))
+                            Selected = selectedUnit;
+                            if (GameModeContainer.Get().SelectUnit(selectedUnit))
                                 State = GameTableState.AwaitSelectAbility;
                         }
                         break;
@@ -73,12 +82,11 @@ namespace Controller
                     {
                         if (sender is UnitPresset target)
                         {
-                            GameMode.Get().AttackUnit(target);
+                            GameModeContainer.Get().AttackUnit(Selected, target, abilitySelected.idx);
                             State = GameTableState.AwaitSelect;
                         }
                         else
                         {
-                            GameMode.Get().State = GameModeState.AwaitSelect;
                             State = GameTableState.AwaitSelect;
                         }
                         break;
@@ -90,15 +98,12 @@ namespace Controller
                         {
                             State = GameTableState.AwaitApplyAbility;
                             FieldGUI.clearWalkedArea();
-                            GameMode.Get().MoveUnit(pathToken);
+                            GameModeContainer.Get().Move(Selected, pathToken);
                             return;
                         }
                         else
                         {
-                            var gameMode = GameMode.Get();
-                            gameMode.State = GameModeState.AwaitSelect;
-                            State = GameTableState.AwaitSelect;
-                            
+                            State = GameTableState.AwaitSelect; 
                         }
                         break;
                     }
@@ -108,6 +113,14 @@ namespace Controller
                     }
             }
 
+        }
+
+        public void OnPropertyChage(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "selectedAbility")
+            {
+                abilitySelected = GameModeContainer.Get().selectedAbility;
+            }
         }
 
         private GameTableController(Player player, FieldGUI fieldGUI)
@@ -130,7 +143,7 @@ namespace Controller
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
-            FieldGUI.addUnit(GameMode.Get().CreateUnit(name, fpos, owner, typeUnit));
+            FieldGUI.addUnit(GameModeContainer.Get().CreateUnit(name, fpos, owner, typeUnit));
         }
     }
 

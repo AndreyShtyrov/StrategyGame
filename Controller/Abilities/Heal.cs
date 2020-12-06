@@ -18,6 +18,7 @@ namespace Controller.Abilities
         {
             this.unit = unit;
             actionPoint = new ActionPoint(unit, 0, 1, bindActionPoint);
+            AbilityType = AbilityType.Heal;
             Name = "Heal";
         }
 
@@ -48,5 +49,6 @@ namespace Controller.Abilities
         public override void Return() => actionPoint.Return(unit.owner);
 
         public override void BreakActiono() => actionPoint.Return(unit.owner);
+
     }
 }

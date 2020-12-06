@@ -7,7 +7,7 @@ namespace Controller
 {
     public class DataOfReqest
     {
-        public RequstTypes requst;
+
         public Player outCome;
         public UnitPresset Selected;
         public UnitPresset Target;

@@ -9,6 +9,9 @@ namespace Controller
     {
         public int damage = 2;
 
+        public int idx
+        { get; set; }
+
         public string Name = "Stand";
 
         public ActionPoint point;

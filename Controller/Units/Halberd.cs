@@ -29,12 +29,20 @@ namespace Controller.Units
             List<UnitActionPoint> attacklistAction2 = new List<UnitActionPoint>();
             attacklistAction2.Add(AttackPoints[1]);
             MoveActionPoint = new ActionPoint(this, 0, 1, movelistAction);
-            Stands.Add(new HalberdStand(this, attacklistAction1));
-            Abilities.Add(new MeleeAttack(this, attacklistAction2));
+
+            HalberdStand halberd = new HalberdStand(this, attacklistAction1);
+            halberd.idx = 1;
+            MeleeAttack melee = new MeleeAttack(this, attacklistAction2);
+            melee.idx = 0;
+            Abilities.Add(melee);
+            Stands.Add(halberd);
+
             var healList = new List<UnitActionPoint>(movelistAction);
             healList.AddRange(attacklistAction1);
             healList.AddRange(attacklistAction2);
-            Abilities.Add(new Heal(this, movelistAction));
+            Heal heal = new Heal(this, movelistAction);
+            heal.idx = 2;
+            Abilities.Add(heal);
         }
     }
 }

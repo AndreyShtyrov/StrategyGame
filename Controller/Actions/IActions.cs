@@ -4,7 +4,14 @@ using System.Text;
 
 namespace Controller.Actions
 {
-    class IActions
+    public interface IActions
     {
+        public int idx
+        { get; set; }
+
+        public void forward();
+
+        public void reverse();
+        
     }
 }
