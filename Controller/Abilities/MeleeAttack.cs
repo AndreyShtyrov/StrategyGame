@@ -30,7 +30,6 @@ namespace Controller.Abilities
                 var controller = GameModeContainer.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
-                controller.State = GameModeState.SelectEnemy;
                 GameTableController.Get().State = GameTableState.AwaitSelectTarget;
             }
             

@@ -397,6 +397,11 @@ namespace Controller
                         AttackUnit(unit, target, ability.idx);
                     }
                 }
+                if (sender is CreateUnitRequest creatRequest)
+                {
+                    CreateUnit(creatRequest.Name, creatRequest.fieldPosition, Player.getPlayer(creatRequest.Player));
+                    return "Yes Unit";
+                }
                 ApplyChangesRequest applyChangesRequest = new ApplyChangesRequest();
                 applyChangesRequest.Actions = Response;
                 return applyChangesRequest;

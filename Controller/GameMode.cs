@@ -8,6 +8,8 @@ using UnitsAnPathFinding;
 using Controller.Abilities;
 using Controller.Actions;
 using Controller.Units;
+using Controller.Requests;
+using System.Threading.Tasks;
 
 namespace Controller
 {
@@ -149,18 +151,25 @@ namespace Controller
 
         public UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
+            CreateUnitRequest createUnit = new CreateUnitRequest();
+            createUnit.Name = name;
+            createUnit.fieldPosition = fpos;
+            createUnit.Player = owner.idx;
             if (name == "Helbard")
             {
                 Halberd unit = new Halberd(fpos, owner);
                 units.Add(unit);
+                var tt = Client.sendRequest(createUnit);
                 return unit;
             }
             if (name == "LongBow")
             {
                 LongBow unit = new LongBow(fpos, owner);
                 units.Add(unit);
+                var tt = Client.sendRequest(createUnit);
                 return unit;
             }
+
             return null;
         }
 
@@ -253,6 +262,16 @@ namespace Controller
             return null;
         }
 
+
+        public object ProcessRequset(object sender)
+        {
+            if (sender is ApplyChangesRequest tsender)
+            {
+                ProcessActions(tsender.Actions);
+            }
+            return null;
+        }
+
         public void ProcessActions(List<IActions> actions)
         {
             foreach (var action in actions)
@@ -260,6 +279,7 @@ namespace Controller
                 action.forward();
             }
         }
+
     }
 
 

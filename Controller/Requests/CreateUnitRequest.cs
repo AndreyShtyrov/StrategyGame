@@ -11,5 +11,8 @@ namespace Controller.Requests
 
         public (int X, int Y) fieldPosition
         { get; set; }
+
+        public int Player
+        { get; set; }
     }
 }

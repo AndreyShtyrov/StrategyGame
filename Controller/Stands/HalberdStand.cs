@@ -30,7 +30,7 @@ namespace Controller.Stands
         {
             if (!active)
                 return false;
-            var controller = GameModeServer.Get();
+            var controller = GameModeContainer.Get();
             var pos = controller.TransformToCube(target.fieldPosition, unit.fieldPosition);
             if (Math.Abs(pos.X) + Math.Abs(pos.Y) + Math.Abs(pos.Z) == 2 
                 && unit != sender && unit != target)
@@ -59,7 +59,6 @@ namespace Controller.Stands
 
         public override void DownStand()
         {
-            GameModeServer.Get().State = GameModeState.AwaitSelect;
             active = false;
             point.Return(unit.owner);
         }

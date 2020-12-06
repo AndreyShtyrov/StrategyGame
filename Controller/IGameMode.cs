@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Text;
 using InterfaceOfObjects;
 using UnitsAnPathFinding;
+using Controller.Actions;
+using System.Threading.Tasks;
 
 namespace Controller
 {
@@ -56,6 +58,10 @@ namespace Controller
         public void SelectedUnitRaiseStand(StandPresset stand);
 
         public void SelectedUnitActivateAbility(AbilityPresset ability);
+
+        public object ProcessRequset(object sender);
+
+        public void ProcessActions(List<IActions> actions);
 
     }
 }
