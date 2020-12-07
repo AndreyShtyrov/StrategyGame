@@ -45,6 +45,9 @@ namespace Controller
                 {
                     TypeNameHandling = TypeNameHandling.Auto
                 });
+                resp.ContentType = "text/html";
+                resp.ContentEncoding = Encoding.UTF8;
+                resp.ContentLength64 = Encoding.UTF8.GetBytes("{}").LongLength;
 
                 byte[] data = Encoding.UTF8.GetBytes(responseString);
                 await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("{}"));
@@ -60,18 +63,19 @@ namespace Controller
 
     public class Client
     {
-        public static HttpClient client = new HttpClient();
-
         public static async Task<object> sendRequest(object sender)
         {
-            var response = await client.GetStreamAsync("http://localhost:8000/");
-            object content;
-            var serializer = new JsonSerializer();
-            using (var sr = new StreamReader(response))
-            using (var jsonTextReader = new JsonTextReader(sr))
-            {
-                content = serializer.Deserialize(jsonTextReader);
-            }
+            using var client = new HttpClient();
+
+            var result = await client.GetAsync("http://localhost:8000/");
+            var content = await client.GetStringAsync("http://localhost:8000/");
+            Console.WriteLine(content);
+            //var serializer = new JsonSerializer();
+            //using (var sr = new StreamReader(respon))
+            //using (var jsonTextReader = new JsonTextReader(sr))
+            //{
+            //    content = serializer.Deserialize(jsonTextReader);
+            //}
 
             return content;
         }
