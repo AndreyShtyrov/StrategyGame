@@ -160,6 +160,7 @@ namespace Controller
                 Halberd unit = new Halberd(fpos, owner);
                 units.Add(unit);
                 var tt = Client.sendRequest(createUnit);
+                tt.Wait();
                 return unit;
             }
             if (name == "LongBow")
@@ -167,6 +168,7 @@ namespace Controller
                 LongBow unit = new LongBow(fpos, owner);
                 units.Add(unit);
                 var tt = Client.sendRequest(createUnit);
+                tt.Wait();
                 return unit;
             }
 
