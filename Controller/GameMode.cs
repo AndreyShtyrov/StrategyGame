@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Controller
 {
-    class GameMode: IGameMode
+    public class GameMode: IGameMode
     {
         private static GameModeServer instance;
         public UnitPresset Selected
@@ -161,6 +161,8 @@ namespace Controller
                 units.Add(unit);
                 var tt = Client.sendRequest(createUnit);
                 tt.Wait();
+                //Task.WaitAny(tt, Task.Delay(2000));
+                
                 return unit;
             }
             if (name == "LongBow")
@@ -168,7 +170,7 @@ namespace Controller
                 LongBow unit = new LongBow(fpos, owner);
                 units.Add(unit);
                 var tt = Client.sendRequest(createUnit);
-                tt.Wait();
+                Task.WaitAny(tt, Task.Delay(2000));
                 return unit;
             }
 

@@ -34,10 +34,12 @@ namespace StrategyGame
             InitializeComponent();
             fieldgui.clearField();
             field = Field.load(savefile);
-            var gameMode = GameModeContainer.Get(false,field);
+            GameModeContainer.instance = new GameMode(field);
+            var gameMode = GameModeContainer.Get();
             var player1 = Player.getPlayer(0, 5, 5);
             var player2 = Player.getPlayer(1, 5, 5);
-            var gameTable = GameTableController.Get(player1, fieldgui);
+            GameTableController.InitGameTableControler(player1, fieldgui);
+            var gameTable = GameTableController.Get();
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
             fieldgui.drawGrid(field);
             player1.AttackPoints = 5;

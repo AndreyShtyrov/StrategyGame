@@ -129,11 +129,9 @@ namespace Controller
             owner = player;
         }
 
-        public static GameTableController Get(Player player, FieldGUI fieldGUI)
+        public static void InitGameTableControler(Player player, FieldGUI fieldGUI)
         {
-            if (instance == null)
-                instance = new GameTableController(player, fieldGUI);
-            return instance;
+            instance = new GameTableController(player, fieldGUI);
         }
 
         public static GameTableController Get()

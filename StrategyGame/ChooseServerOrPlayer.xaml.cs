@@ -23,6 +23,8 @@ namespace StrategyGame
     public partial class ChooseServerOrPlayer : Window
     {
 
+        Task task;
+
         readonly FileInfo savefile = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\stg.json");
         public ChooseServerOrPlayer()
         {
@@ -32,13 +34,19 @@ namespace StrategyGame
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var field = Field.load(savefile);
-            var contaner = GameModeContainer.Get( true,field);
+            GameModeContainer.instance = new GameModeServer(field);
+            var contaner = GameModeContainer.Get();
             HttpServer.listener = new HttpListener();
             HttpServer.listener.Prefixes.Add(HttpServer.url);
             HttpServer.listener.Start();
-            Task listTask = HttpServer.HadlerIncominfConnections();
-            listTask.GetAwaiter().GetResult();
-            HttpServer.listener.Close();
+            task = HttpServer.HandlerIncomingConnections();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            if ( HttpServer.listener != null)
+                HttpServer.listener.Close();
+            base.OnClosed(e);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
