@@ -29,8 +29,7 @@ namespace Controller
                 HttpListenerContext ctx = await listener.GetContextAsync();
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
-                //logMessage("Request");
-                //logMessage(req.HttpMethod);
+
                 var serializer = new JsonSerializer();
                 object content;
                 using (var sr = new StreamReader(ctx.Request.InputStream))
@@ -50,8 +49,7 @@ namespace Controller
                 resp.ContentLength64 = Encoding.UTF8.GetBytes("{}").LongLength;
 
                 byte[] data = Encoding.UTF8.GetBytes(responseString);
-                await resp.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("{}"));
-                resp.OutputStream.Close();
+                await resp.OutputStream.WriteAsync(data);
                 resp.Close();
                 
             }
@@ -63,24 +61,21 @@ namespace Controller
 
     public class Client
     {
-        public static async Task<object> sendRequest(object sender)
+        public static HttpClient client = new HttpClient();
+        public static Task currentConnection;
+        
+
+        public static void sendRequest(object sender)
         {
-            using var client = new HttpClient();
-
-            var result = await client.GetAsync("http://localhost:8000/");
-            var content = await client.GetStringAsync("http://localhost:8000/");
-            Console.WriteLine(content);
-            //var serializer = new JsonSerializer();
-            //using (var sr = new StreamReader(respon))
-            //using (var jsonTextReader = new JsonTextReader(sr))
-            //{
-            //    content = serializer.Deserialize(jsonTextReader);
-            //}
-
-            return content;
+            currentConnection = getRequest(sender);
         }
 
+        private static async Task getRequest(object sender)
+        {
+            var json = JsonConvert.SerializeObject(sender);
+            var data = new StringContent(json, Encoding.UTF8);
+            var content = await client.PostAsync("http://localhost:8000/",  data);
+            GameModeContainer.Get().ProcessRequset(content);
+        } 
     }
-
-
 }
