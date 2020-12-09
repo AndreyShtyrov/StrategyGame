@@ -23,7 +23,7 @@ namespace Controller
         public AbilityPresset selectedAbility
         { get; set; }
 
-        public PathToken GetPathToken((int X, int Y) fpos);
+        public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos);
 
         public UnitPresset GetUnit((int X, int Y) fpos);
 
@@ -47,7 +47,7 @@ namespace Controller
 
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx);
 
-        public List<PathToken> getWalkArea();
+        public List<PathToken> getWalkArea(UnitPresset unit);
 
         public void Move(UnitPresset unit, PathToken pathToken);
 

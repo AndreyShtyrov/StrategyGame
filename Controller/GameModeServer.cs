@@ -77,10 +77,9 @@ namespace Controller
             return field.getData(fpos);
         }
 
-        public PathToken GetPathToken((int X, int Y) fpos)
+        public PathToken GetPathToken(UnitPresset unit ,(int X, int Y) fpos)
         {
-            var unit = GetUnit(fpos);
-            var pathTokens = pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
+            var pathTokens = getWalkArea(unit);
             foreach (var token in pathTokens)
             {
                 if (token.fieldPosition == fpos)
@@ -319,20 +318,18 @@ namespace Controller
             UnitsInBattle.Clear();
         }
 
-        public List<PathToken> getWalkArea()
+        public List<PathToken> getWalkArea(UnitPresset unit)
         {
             pathField.Refresh();
-            return pathField.getWalkArea(Selected.currentSpeed, Selected, GetUnits());
+            return pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
         }
 
         public void Move(UnitPresset unit, PathToken pathToken)
         {
             if(unit.MoveActionPoint.Active(unit.owner) || unit.MoveActionPoint.State == ActionState.InProcess)
             {
-                var distance = pathToken.pathLeght;
                 MoveUnit moveUnit = new MoveUnit();
                 moveUnit.StartPosition = unit.fieldPosition;
-                unit.Move(pathToken.fieldPosition, distance);
                 moveUnit.EndPosition = pathToken.fieldPosition;
                 pathField.Refresh();
                 Response.Add(moveUnit);
@@ -371,40 +368,46 @@ namespace Controller
 
         public object ProcessRequset(object sender)
         {
+            Response.Clear();
             if (State == GameModeState.Standart)
             {
-                if (sender is MoveUnitRequest moveRequest)
+                if (sender is RequestContainer request)
                 {
-                    var unit = GetUnit(moveRequest.Selected);
-                    var pathToken = GetPathToken(moveRequest.Target);
-                    Move(unit, pathToken);
-                }
-                if (sender is UseAbilityRequest abilityRequest)
-                {
-                    ProcessActions(abilityRequest.Actions);
-                    var unit = GetUnit(abilityRequest.Selected);
-                    var ability = unit.GetAbility(abilityRequest.AbilityIdx);
-                    if (ability.AbilityType != AbilityType.Attack)
+                    if (request.Type == RequestType.MoveUnit)
                     {
-                        UseAction useAction = new UseAction();
-                        useAction.Source = unit.fieldPosition;
-                        useAction.SourceAbility = ability.idx;
-                        Response.Add(useAction);
+                        var unit = GetUnit(request.Selected);
+                        var pathToken = GetPathToken(unit, request.Target);
+                        Move(unit, pathToken);
                     }
-                    else
+                    if (request.Type == RequestType.UseAbility)
                     {
-                        var target = GetUnit(abilityRequest.Target);
-                        AttackUnit(unit, target, ability.idx);
+                        ProcessActions(request.Actions);
+                        var unit = GetUnit(request.Selected);
+                        var ability = unit.GetAbility(request.AbilityIdx);
+                        if (ability.AbilityType != AbilityType.Attack)
+                        {
+                            UseAction useAction = new UseAction();
+                            useAction.Source = unit.fieldPosition;
+                            useAction.SourceAbility = ability.idx;
+                            Response.Add(useAction);
+                        }
+                        else
+                        {
+                            var target = GetUnit(request.Target);
+                            AttackUnit(unit, target, ability.idx);
+                        }
                     }
+                    if (request.Type == RequestType.CreateUnit)
+                    {
+                        CreateUnit(request.Name, request.fieldPosition, Player.getPlayer(request.Player));
+                        return "Yes Unit";
+                    }
+                    RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
+                    applyChangesRequest.Actions = Response;
+                    ProcessActions(Response);
+                    return applyChangesRequest;
                 }
-                if (sender is CreateUnitRequest creatRequest)
-                {
-                    CreateUnit(creatRequest.Name, creatRequest.fieldPosition, Player.getPlayer(creatRequest.Player));
-                    return "Yes Unit";
-                }
-                ApplyChangesRequest applyChangesRequest = new ApplyChangesRequest();
-                applyChangesRequest.Actions = Response;
-                return applyChangesRequest;
+
             }
 
             return null;

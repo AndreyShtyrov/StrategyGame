@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.IO;
+using Controller.Requests;
 
 namespace Controller
 {
@@ -35,7 +36,7 @@ namespace Controller
                 using (var sr = new StreamReader(ctx.Request.InputStream))
                 using (var jsonTextReader = new JsonTextReader(sr))
                 {
-                    content = serializer.Deserialize(jsonTextReader);
+                    content = serializer.Deserialize<RequestContainer>(jsonTextReader);
                 }
 
 
@@ -44,13 +45,10 @@ namespace Controller
                 {
                     TypeNameHandling = TypeNameHandling.Auto
                 });
-                resp.ContentType = "text/html";
-                resp.ContentEncoding = Encoding.UTF8;
-                resp.ContentLength64 = Encoding.UTF8.GetBytes("{}").LongLength;
 
                 byte[] data = Encoding.UTF8.GetBytes(responseString);
                 await resp.OutputStream.WriteAsync(data);
-                resp.Close();
+                resp.OutputStream.Close();
                 
             }
         }
@@ -74,8 +72,16 @@ namespace Controller
         {
             var json = JsonConvert.SerializeObject(sender);
             var data = new StringContent(json, Encoding.UTF8);
-            var content = await client.PostAsync("http://localhost:8000/",  data);
-            GameModeContainer.Get().ProcessRequset(content);
+            var response = await client.PostAsync("http://localhost:8000/",  data);
+            var serializer = new JsonSerializer();
+            string content = response.Content.ReadAsStringAsync().Result;
+            var responseRequset = JsonConvert.DeserializeObject<RequestContainer>(content,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
+            
+            GameModeContainer.Get().ProcessRequset(responseRequset);
         } 
     }
 }

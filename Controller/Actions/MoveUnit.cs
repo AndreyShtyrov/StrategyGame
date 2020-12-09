@@ -23,8 +23,9 @@ namespace Controller.Actions
         {
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(StartPosition);
-            var distance = controller.GetPathToken(unit.fieldPosition).pathLeght;
+            var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
             unit.Move(EndPosition, distance);
+            unit.MoveActionPoint.Active(unit.owner);
         }
 
         public void reverse()
@@ -32,8 +33,9 @@ namespace Controller.Actions
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(EndPosition);
             unit.Move(StartPosition, 0);
-            var distance = controller.GetPathToken(EndPosition).pathLeght;
+            var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
             unit.Move(StartPosition, -distance);
+            unit.MoveActionPoint.Return(unit.owner);
         }
     }
 }

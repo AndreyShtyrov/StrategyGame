@@ -9,5 +9,17 @@ namespace Controller.Requests
     {
         public List<IActions> Actions
         { get; set; }
+
+
+        public string Name
+        { get; set; }
+
+        public (int X, int Y) fieldPosition
+        { get; set; }
+
+        public int Player
+        { get; set; }
+
+
     }
 }

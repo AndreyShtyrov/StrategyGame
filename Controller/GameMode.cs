@@ -152,7 +152,7 @@ namespace Controller
 
         public UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
-            CreateUnitRequest createUnit = new CreateUnitRequest();
+            RequestContainer createUnit = new RequestContainer(RequestType.CreateUnit);
             createUnit.Name = name;
             createUnit.fieldPosition = fpos;
             createUnit.Player = owner.idx;
@@ -193,16 +193,15 @@ namespace Controller
             owner.MovePoints += move;
         }
 
-        public List<PathToken> getWalkArea()
+        public List<PathToken> getWalkArea(UnitPresset unit)
         {
             pathField.Refresh();
-            return pathField.getWalkArea(Selected.currentSpeed, Selected, GetUnits());
+            return pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
         }
 
-        public PathToken GetPathToken((int X, int Y) fpos)
+        public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos)
         {
-            var unit = GetUnit(fpos);
-            var pathTokens = pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
+            var pathTokens = getWalkArea(unit);
             foreach (var token in pathTokens)
             {
                 if (token.fieldPosition == fpos)
@@ -223,7 +222,14 @@ namespace Controller
 
         public void Move(UnitPresset unit, PathToken pathToken)
         {
-            throw new NotImplementedException();
+            if (State == GameModeState.Standart)
+            {
+                State = GameModeState.AwaitResponse;
+                RequestContainer requestContainer = new RequestContainer(RequestType.MoveUnit);
+                requestContainer.Selected = unit.fieldPosition;
+                requestContainer.Target = pathToken.fieldPosition;
+                Client.sendRequest(requestContainer);
+            }
         }
 
         public void CreateBuilding(Building build)
@@ -266,10 +272,13 @@ namespace Controller
 
         public object ProcessRequset(object sender)
         {
-            if (sender is ApplyChangesRequest tsender)
+            if (sender is RequestContainer tsender)
             {
-                ProcessActions(tsender.Actions);
+                if (tsender.Type == RequestType.ApplyChanges)
+                    ProcessActions(tsender.Actions);
+                GameTableController.Get().State = GameTableState.AwaitSelect;
             }
+            State = GameModeState.Standart;
             return null;
         }
 
