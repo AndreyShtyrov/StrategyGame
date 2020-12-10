@@ -36,6 +36,7 @@ namespace StrategyGame
             field = Field.load(savefile);
             GameModeContainer.instance = new GameMode(field);
             var gameMode = GameModeContainer.Get();
+            gameMode.UnitsListChanged += OnUnitsListChange;
             var player1 = Player.getPlayer(0, 5, 5);
             var player2 = Player.getPlayer(1, 5, 5);
             GameTableController.Create(player1, fieldgui);
@@ -51,6 +52,7 @@ namespace StrategyGame
             gameTable.CreateUnit("Helbard", (7, 7), player2);
             gameTable.CreateUnit("LongBow", (5, 6), player1);
             gameTable.CreateUnit("LongBow", (7, 6), player2);
+
             gameTable.PropertyChanged += UnitPanel.OnSelectedHandler;
             PlayerWindow playerWindow1 = new PlayerWindow(0);
             PlayerWindow playerWindow2 = new PlayerWindow(1);
@@ -58,5 +60,11 @@ namespace StrategyGame
             TopPannel.Children.Add(playerWindow2);
             Turn.Click += (object sender, RoutedEventArgs e) => gameMode.SwitchTrun();
         }
+
+        private void OnUnitsListChange(UnitPresset unitPresset, bool isExist)
+        {
+            fieldgui.addUnit(unitPresset);
+        }
+
     }
 }

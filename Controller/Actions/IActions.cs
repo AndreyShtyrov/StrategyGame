@@ -12,6 +12,12 @@ namespace Controller.Actions
         public void forward();
 
         public void reverse();
-        
+
+    }
+
+    public enum ActionDirection
+    { 
+        Direct = 0,
+        Reverse = 1,
     }
 }

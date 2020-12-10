@@ -15,6 +15,9 @@ namespace Controller.Actions
         public (int X, int Y) Source
         { get; set; }
 
+        public ActionDirection Direction
+        { get; set; }
+
         public void forward()
         {
             var controller = GameModeContainer.Get();

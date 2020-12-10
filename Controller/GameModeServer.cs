@@ -85,6 +85,8 @@ namespace Controller
             return null;
         }
 
+        public event OnUnitsListChange UnitsListChanged;
+
         public UnitPresset[,] GetUnits()
         {
             UnitPresset[,] result = new UnitPresset[field.height, field.width];
@@ -110,23 +112,6 @@ namespace Controller
                     unit.Refresh();
                 }
             }
-        }
-
-        public UnitPresset CreateUnit( string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
-        {
-            if (name == "Helbard")
-            {
-                Halberd unit = new Halberd(fpos, owner);
-                units.Add(unit);
-                return unit;
-            }
-            if (name == "LongBow")
-            {
-                LongBow unit = new LongBow(fpos, owner);
-                units.Add(unit);
-                return unit;
-            }
-            return null;
         }
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center)
@@ -332,6 +317,15 @@ namespace Controller
             build.ChangeOwner += OnChangeOwner;
         }
 
+        public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
+        {
+            CreateUnit createUnit = new CreateUnit(name, fpos, owner.idx);
+            var listResponse = new List<IActions>();
+            listResponse.Add(createUnit);
+            Response = listResponse;
+            ProcessActions(Response);
+        }
+
         public object ProcessRequset(object sender)
         {
             Response.Clear();
@@ -367,8 +361,7 @@ namespace Controller
                     }
                     if (request.Type == RequestType.CreateUnit)
                     {
-                        CreateUnit(request.Name, request.fieldPosition, Player.getPlayer(request.Player));
-                        return "Yes Unit";
+                        CreateUnit(request.Name, request.Selected, Player.getPlayer(request.Player));
                     }
                     RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
                     applyChangesRequest.Actions = Response;
@@ -379,7 +372,7 @@ namespace Controller
 
             return null;
         }
-
+ 
         public void ProcessActions(List<IActions> actions)
         {
             foreach (var action in actions)
@@ -409,6 +402,19 @@ namespace Controller
                 unit.isTarget = false;
             }
         }
+
+        public void AddUnit(UnitPresset unitPresset)
+        {
+            units.Add(unitPresset);
+            UnitsListChanged?.Invoke(unitPresset, true);
+        }
+
+        public void DeleteUnit(UnitPresset unitPresset)
+        {
+            units.Remove(unitPresset);
+            UnitsListChanged?.Invoke(unitPresset, false);
+        }
+
     }
 
     public delegate void GameModeEventHandler(UnitPresset sender, UnitPresset target, GameModEventArgs e);

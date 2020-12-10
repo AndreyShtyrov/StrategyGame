@@ -12,6 +12,9 @@ namespace Controller.Actions
         public int SourceAbility
         { get; set; }
 
+        public ActionDirection Direction
+        { get; set; }
+
         public int idx { get ; set ; }
 
         public PrepareToUse()

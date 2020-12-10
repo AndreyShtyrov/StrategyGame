@@ -95,9 +95,13 @@ namespace Controller
                     {
                         if (sender is UnitPresset selectedUnit)
                         {
-                            Selected = selectedUnit;
                             if (GameModeContainer.Get().SelectUnit(selectedUnit))
+                            {
+                                Selected.isSelected = false;
+                                Selected = null;
+                                Selected = selectedUnit;
                                 State = GameTableState.AwaitSelectAbility;
+                            } 
                         }
                         break;
                     }
@@ -175,7 +179,7 @@ namespace Controller
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
-            FieldGUI.addUnit(GameModeContainer.Get().CreateUnit(name, fpos, owner, typeUnit));
+            GameModeContainer.Get().CreateUnit(name, fpos, owner, typeUnit);
         }
     }
 

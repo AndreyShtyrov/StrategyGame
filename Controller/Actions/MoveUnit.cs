@@ -14,6 +14,9 @@ namespace Controller.Actions
 
         public int idx { get; set; }
 
+        public ActionDirection Direction
+        { get; set; }
+
         public MoveUnit()
         {
             idx = GameModeContainer.Get().ActionIdx;

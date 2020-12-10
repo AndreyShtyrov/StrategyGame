@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
+using Controller;
 
 namespace Controller.Actions
 {
@@ -8,20 +10,40 @@ namespace Controller.Actions
     {
         public int idx { get; set; }
 
-        string Name
+        public string Name
         { get; set; }
 
-        (int X, int Y) fieldPosition
+        public (int X, int Y) fieldPosition
         { get; set; }
-            
+
+        public int PlayerIndex
+        { get; set; }
+
+        [JsonConstructor]
+        public CreateUnit()
+        {
+            idx = GameModeContainer.Get().ActionIdx;
+        }
+
+        public CreateUnit(string Name, (int X, int Y) fpos, int playerIndex)
+        {
+            this.Name = Name;
+            this.fieldPosition = fpos;
+            this.PlayerIndex = playerIndex;
+        }
+
         public void forward()
         {
-            throw new NotImplementedException();
+            var conntroller = GameModeContainer.Get();
+            var unit = UnitPresset.CreateUnit(Name, fieldPosition, Player.getPlayer(PlayerIndex));
+            conntroller.AddUnit(unit);
         }
 
         public void reverse()
         {
-            throw new NotImplementedException();
+            var conntroller = GameModeContainer.Get();
+            var unit = conntroller.GetUnit(fieldPosition);
+            conntroller.DeleteUnit(unit);
         }
     }
 }

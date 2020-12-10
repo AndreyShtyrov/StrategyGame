@@ -7,6 +7,7 @@ using Tokens;
 using Controller.Stands;
 using InterfaceOfObjects;
 using Controller.Abilities;
+using Controller.Units;
 
 
 namespace Controller
@@ -165,5 +166,21 @@ namespace Controller
             }
             return null;
         }
+
+        public static UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
+        {
+            if (name == "Helbard")
+            {
+                Halberd unit = new Halberd(fpos, owner);
+                return unit;
+            }
+            if (name == "LongBow")
+            {
+                LongBow unit = new LongBow(fpos, owner);
+                return unit;
+            }
+            return null;
+        }
+
     }
 }

@@ -29,7 +29,7 @@ namespace Controller
 
         public void SwitchTrun();
 
-        public UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None");
+        public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None");
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center);
 
@@ -59,5 +59,10 @@ namespace Controller
 
         public void RefreshBacklight();
 
+        public void AddUnit(UnitPresset unitPresset);
+
+        public void DeleteUnit(UnitPresset unitPresset);
+
+        public event OnUnitsListChange UnitsListChanged;
     }
 }

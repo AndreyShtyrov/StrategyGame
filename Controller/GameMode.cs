@@ -128,28 +128,7 @@ namespace Controller
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
-        {
-            RequestContainer createUnit = new RequestContainer(RequestType.CreateUnit);
-            createUnit.Name = name;
-            createUnit.fieldPosition = fpos;
-            createUnit.Player = owner.idx;
-            if (name == "Helbard")
-            {
-                Halberd unit = new Halberd(fpos, owner);
-                units.Add(unit);
-                Client.sendRequest(createUnit);          
-                return unit;
-            }
-            if (name == "LongBow")
-            {
-                LongBow unit = new LongBow(fpos, owner);
-                units.Add(unit);
-                Client.sendRequest(createUnit);
-                return unit;
-            }
-            return null;
-        }
+        public event OnUnitsListChange UnitsListChanged;
 
         public bool SpendResources(int action, int move, Player owner)
         {
@@ -294,7 +273,28 @@ namespace Controller
                 unit.isTarget = false;
             }
         }
+
+        public void AddUnit(UnitPresset unitPresset)
+        {
+            units.Add(unitPresset);
+            UnitsListChanged?.Invoke(unitPresset, true);
+        }
+
+        public void DeleteUnit(UnitPresset unitPresset)
+        {
+            units.Remove(unitPresset);
+            UnitsListChanged?.Invoke(unitPresset, false);
+        }
+
+        public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
+        {
+            RequestContainer requestContainer = new RequestContainer(RequestType.CreateUnit);
+            requestContainer.Name = name;
+            requestContainer.Player = owner.idx;
+            requestContainer.Selected = fpos;
+            Client.sendRequest(requestContainer);
+        }
     }
 
-
+    public delegate void OnUnitsListChange(UnitPresset unit, bool isExist);
 }
