@@ -27,7 +27,7 @@ namespace Controller.Abilities
         {
             if (actionPoint.Active(unit.owner))
             {
-                var controller = GameModeContainer.Get();
+                var controller = GameTableController.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
                 GameTableController.Get().State = GameTableState.AwaitSelectTarget;

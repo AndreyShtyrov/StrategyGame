@@ -8,22 +8,38 @@ using System.ComponentModel;
 
 namespace Controller
 {
-    public class GameTableController
+    public class GameTableController: INotifyPropertyChanged
     {
         private static GameTableController instance;
         public FieldGUI FieldGUI;
-        public UnitPresset Selected;
-        public AbilityPresset abilitySelected;
+        public UnitPresset _Selected;
+        public UnitPresset Selected
+        {
+            set
+            {
+                _Selected = value;
+                OnPropertyChanged("Selected");
+            }
+
+            get
+            {
+                return _Selected;
+            }
+        }
+        public AbilityPresset selectedAbility;
 
         public Player owner;
         private GameTableState _State = GameTableState.AwaitSelect;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public GameTableState State
         {
             set
             {
                 var prevState = _State;
                 _State = value;
-                OnStateChange(prevState);
+                OnStateChanged(prevState);
             }
             get
             {
@@ -31,8 +47,12 @@ namespace Controller
             }
         }
 
-        private void OnStateChange(GameTableState prevState)
+        private void OnStateChanged(GameTableState prevState)
         {
+            if (prevState == GameTableState.AwaitSelectTarget)
+            {
+                GameModeContainer.Get().RefreshBacklight();
+            }
             switch ((State))
             {
                 case GameTableState.AwaitSelectAbility:
@@ -44,10 +64,10 @@ namespace Controller
                 case GameTableState.AwaitSelect:
                     {
                         Selected = null;
-                        if (abilitySelected != null)
+                        if (selectedAbility != null)
                         {
-                            abilitySelected.Return();
-                            abilitySelected = null;
+                            selectedAbility.Return();
+                            selectedAbility = null;
                         }    
                             
                         if (GameTableState.AwaitSelectAbility == prevState ||
@@ -59,8 +79,11 @@ namespace Controller
                     {
                         if (GameTableState.AwaitSelectAbility == prevState)
                             FieldGUI.clearWalkedArea();
+                        var controller = GameModeContainer.Get();
+                        GameModeContainer.Get().BacklightTargets(Selected, selectedAbility);
                         break;
                     }
+                
             }
         }
 
@@ -82,8 +105,11 @@ namespace Controller
                     {
                         if (sender is UnitPresset target)
                         {
-                            GameModeContainer.Get().AttackUnit(Selected, target, abilitySelected.idx);
-                            State = GameTableState.AwaitSelect;
+                            if (target.isTarget)
+                            {
+                                GameModeContainer.Get().AttackUnit(Selected, target, selectedAbility.idx);
+                                State = GameTableState.AwaitSelect;
+                            }
                         }
                         else
                         {
@@ -115,12 +141,9 @@ namespace Controller
 
         }
 
-        public void OnPropertyChage(object sender, PropertyChangedEventArgs e)
+        public void OnPropertyChanged(string name)
         {
-            if (e.PropertyName == "selectedAbility")
-            {
-                abilitySelected = GameModeContainer.Get().selectedAbility;
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         private GameTableController(Player player, FieldGUI fieldGUI)
@@ -129,7 +152,7 @@ namespace Controller
             owner = player;
         }
 
-        public static void InitGameTableControler(Player player, FieldGUI fieldGUI)
+        public static void Create(Player player, FieldGUI fieldGUI)
         {
             instance = new GameTableController(player, fieldGUI);
         }
@@ -137,6 +160,17 @@ namespace Controller
         public static GameTableController Get()
         {
             return instance;
+        }
+
+        public void SelectedUnitRaiseStand(StandPresset stand)
+        {
+            stand.UpStand();
+        }
+
+        public void SelectedUnitActivateAbility(AbilityPresset ability)
+        {
+            ability.PrepareToUse();
+            State = GameTableState.AwaitSelectTarget;
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")

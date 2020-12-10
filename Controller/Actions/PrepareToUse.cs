@@ -32,6 +32,7 @@ namespace Controller.Actions
             else
             {
                 ability.PrepareToUse();
+                GameModeContainer.Get().BacklightTargets(unit, ability);
             }
         }
 

@@ -38,7 +38,7 @@ namespace StrategyGame
             var gameMode = GameModeContainer.Get();
             var player1 = Player.getPlayer(0, 5, 5);
             var player2 = Player.getPlayer(1, 5, 5);
-            GameTableController.InitGameTableControler(player1, fieldgui);
+            GameTableController.Create(player1, fieldgui);
             var gameTable = GameTableController.Get();
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
             fieldgui.drawGrid(field);
@@ -51,7 +51,7 @@ namespace StrategyGame
             gameTable.CreateUnit("Helbard", (7, 7), player2);
             gameTable.CreateUnit("LongBow", (5, 6), player1);
             gameTable.CreateUnit("LongBow", (7, 6), player2);
-            gameMode.PropertyChanged += UnitPanel.OnSelectedHandler;
+            gameTable.PropertyChanged += UnitPanel.OnSelectedHandler;
             PlayerWindow playerWindow1 = new PlayerWindow(0);
             PlayerWindow playerWindow2 = new PlayerWindow(1);
             TopPannel.Children.Add(playerWindow1);

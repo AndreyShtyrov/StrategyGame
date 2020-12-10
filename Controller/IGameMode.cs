@@ -11,8 +11,6 @@ namespace Controller
 {
     public interface IGameMode: IController, INotifyPropertyChanged
     {
-        public UnitPresset Selected
-        { get; set; }
 
         public int ActionIdx
         { get; }
@@ -20,8 +18,6 @@ namespace Controller
         public GameModeState State
         { get; set; }
 
-        public AbilityPresset selectedAbility
-        { get; set; }
 
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos);
 
@@ -55,15 +51,13 @@ namespace Controller
 
         public bool SelectUnit(UnitPresset unit);
 
-        public void SelectedUnitRaiseStand(StandPresset stand);
-
-        public void SelectedUnitActivateAbility(AbilityPresset ability);
-
         public object ProcessRequset(object sender);
 
         public void ProcessActions(List<IActions> actions);
 
-        
+        public void BacklightTargets(UnitPresset unit, AbilityPresset ability);
+
+        public void RefreshBacklight();
 
     }
 }

@@ -16,15 +16,6 @@ namespace Controller
     public class GameMode: IGameMode
     {
         private static GameModeServer instance;
-        public UnitPresset Selected
-        {
-            set
-            {
-                _Selected = value;
-                OnPropertyChanged("Selected");
-            }
-            get { return _Selected; }
-        }
         private List<IActions> Response = new List<IActions>();
         private List<UnitPresset> AddSelections = new List<UnitPresset>();
         private List<UnitPresset> AddTargets = new List<UnitPresset>();
@@ -43,20 +34,7 @@ namespace Controller
         private Player CurrentPlayer = Player.getPlayer(0);
         private bool isHotSeat = true;
         private int _ActionIdx = -1;
-        private AbilityPresset _selectedAbility;
 
-        public AbilityPresset selectedAbility
-        { 
-            get
-            {
-                return _selectedAbility;
-            }
-            set
-            {
-                _selectedAbility = value;
-                OnPropertyChanged("selectedAbility");
-            } 
-        }
 
         public GameModeState State
         {
@@ -160,8 +138,7 @@ namespace Controller
             {
                 Halberd unit = new Halberd(fpos, owner);
                 units.Add(unit);
-                Client.sendRequest(createUnit);
-                //Task.WaitAny(tt, Task.Delay(2000));            
+                Client.sendRequest(createUnit);          
                 return unit;
             }
             if (name == "LongBow")
@@ -171,7 +148,6 @@ namespace Controller
                 Client.sendRequest(createUnit);
                 return unit;
             }
-
             return null;
         }
 
@@ -217,7 +193,19 @@ namespace Controller
 
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
-            throw new NotImplementedException();
+            if (State == GameModeState.Standart)
+            {
+                State = GameModeState.AwaitResponse;
+                RequestContainer requestContainer = new RequestContainer(RequestType.UseAbility);
+                requestContainer.Selected = unit.fieldPosition;
+                requestContainer.Target = target.fieldPosition;
+                PrepareToUse action = new PrepareToUse();
+                action.Source = unit.fieldPosition;
+                action.SourceAbility = GameTableController.Get().selectedAbility.idx;
+                requestContainer.Actions = new List<IActions>();
+                requestContainer.Actions.Add(action);
+                Client.sendRequest(requestContainer);
+            }
         }
 
         public void Move(UnitPresset unit, PathToken pathToken)
@@ -290,6 +278,22 @@ namespace Controller
             }
         }
 
+        public void BacklightTargets(UnitPresset unit, AbilityPresset ability)
+        {
+            var targets = pathField.getListOfTargets(unit, ability.DeafaultRange, GetUnits());
+            foreach (var target in targets)
+            {
+                target.isTarget = true;
+            }
+        }
+
+        public void RefreshBacklight()
+        {
+            foreach (var unit in units)
+            {
+                unit.isTarget = false;
+            }
+        }
     }
 
 

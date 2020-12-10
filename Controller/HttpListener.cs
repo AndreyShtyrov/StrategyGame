@@ -34,9 +34,13 @@ namespace Controller
                 var serializer = new JsonSerializer();
                 object content;
                 using (var sr = new StreamReader(ctx.Request.InputStream))
-                using (var jsonTextReader = new JsonTextReader(sr))
                 {
-                    content = serializer.Deserialize<RequestContainer>(jsonTextReader);
+                    var jsonString = sr.ReadToEnd();
+                    content = JsonConvert.DeserializeObject<RequestContainer>(jsonString,
+                    new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Auto
+                    });
                 }
 
 
@@ -70,7 +74,11 @@ namespace Controller
 
         private static async Task getRequest(object sender)
         {
-            var json = JsonConvert.SerializeObject(sender);
+            var json = JsonConvert.SerializeObject(sender,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
             var data = new StringContent(json, Encoding.UTF8);
             var response = await client.PostAsync("http://localhost:8000/",  data);
             var serializer = new JsonSerializer();

@@ -8,7 +8,7 @@ namespace Controller.Abilities
     public class LongBowAttack: AbilityPresset
     {
         private UnitPresset unit;
-        private readonly int damage = 1;
+        public readonly int damage = 1;
 
         [JsonConstructor]
         public LongBowAttack() : base()
@@ -27,7 +27,7 @@ namespace Controller.Abilities
         {
             if (actionPoint.Active(unit.owner))
             {
-                var controller = GameModeContainer.Get();
+                var controller = GameTableController.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
                 GameTableController.Get().State = GameTableState.AwaitSelectTarget;

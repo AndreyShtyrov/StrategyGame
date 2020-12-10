@@ -12,7 +12,7 @@
     <ProjectReference Include="..\TokenData\Tokens.csproj" />
     <ProjectReference Include="..\UnitsAnPathFinding\PathFinding.csproj" />
   </ItemGroup>
-
+ 
   <ItemGroup>
     <Folder Include="Building\" />
   </ItemGroup>

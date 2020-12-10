@@ -19,20 +19,11 @@ namespace Controller
     public partial class GameModeServer : IGameMode
     {
         private static GameModeServer instance;
-        public UnitPresset Selected
-        {   set
-            { 
-                _Selected = value;
-                OnPropertyChanged("Selected");
-            }
-            get { return _Selected; }
-        }
         private List<IActions> Response = new List<IActions>(); 
         private List<UnitPresset> AddSelections = new List<UnitPresset>();
         private List<UnitPresset> AddTargets = new List<UnitPresset>();
         private int idx = 0;
-        private List<UnitPresset> PrevUnits;
-        private List<UnitPresset> ChangeUnits;
+        private List<UnitPresset> ChangeUnits = new List<UnitPresset>();
         private List<(int index,List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
@@ -40,15 +31,11 @@ namespace Controller
         private PathField pathField;
         private GameModeState _State;
         private List<UnitPresset> PossibleTargets = null;
-        private UnitPresset _Selected;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
         private Player CurrentPlayer = Player.getPlayer(0);
         private bool isHotSeat = true;
         private int _ActionIdx = -1;
 
-
-        public AbilityPresset selectedAbility
-        { get; set; }
          
         public GameModeState State
         {
@@ -91,16 +78,6 @@ namespace Controller
         public UnitPresset GetUnit((int X, int Y) fpos)
         {
             foreach (var unit in units)
-            {
-                if (unit.fieldPosition == fpos)
-                    return unit;
-            }
-            return null;
-        }
-
-        public UnitPresset getPrevUnit((int X, int Y) fpos)
-        {
-            foreach (var unit in PrevUnits)
             {
                 if (unit.fieldPosition == fpos)
                     return unit;
@@ -223,11 +200,10 @@ namespace Controller
             UnitsInBattle.Clear();
             var Attack = unit.GetAbility(AbilityIdx);
             DealDamage dealDamage = new DealDamage();
-            ChangeUnits.Add(Selected);
+            ChangeUnits.Add(unit);
             if (Attack.AbilityType == AbilityType.RangeAttack)
             {
                 ChangeUnits.Add(target);
-                selectedAbility = null;
                 dealDamage.Source = unit.fieldPosition;
                 dealDamage.Destination = target.fieldPosition;
                 dealDamage.idx = AbilityIdx;
@@ -235,7 +211,7 @@ namespace Controller
                 Attack.Use(target);
                 return;
             }
-            Response.Add(dealDamage);
+            
 
             AbilityPresset response = null;
             foreach (var ability in target.Abilities)
@@ -250,7 +226,7 @@ namespace Controller
             {
                 foreach (var stand in lunit.Stands)
                 {
-                    if (stand.CouldToReact(Selected, target))
+                    if (stand.CouldToReact(unit, target))
                     {
                         listStands.Add(stand);
                         UnitsInBattle.Add(lunit);
@@ -267,10 +243,10 @@ namespace Controller
                     dealDamage.Destination = target.fieldPosition;
                     dealDamage.idx = stand.idx;
                     Response.Add(dealDamage);
-                    stand.Use(Selected, target);
+                    stand.Use(unit, target);
                 }
             }
-            if (Selected.currentHp > 0)
+            if (unit.currentHp > 0)
             {
                 dealDamage.Source = unit.fieldPosition;
                 dealDamage.Destination = target.fieldPosition;
@@ -289,7 +265,7 @@ namespace Controller
                     dealDamage.Destination = target.fieldPosition;
                     dealDamage.idx = stand.idx;
                     Response.Add(dealDamage);
-                    stand.Use(Selected, target);
+                    stand.Use(unit, target);
                 }
                     
             }
@@ -302,7 +278,8 @@ namespace Controller
                     dealDamage.Destination = unit.fieldPosition;
                     dealDamage.idx = response.idx;
                     Response.Add(dealDamage);
-                    response.Use(Selected);
+                    response.Use(unit);
+                    response.actionPoint.Return(target.owner);
                 }
                     
             }
@@ -314,7 +291,6 @@ namespace Controller
 
                 }
             }
-            selectedAbility = null;
             UnitsInBattle.Clear();
         }
 
@@ -356,16 +332,6 @@ namespace Controller
             build.ChangeOwner += OnChangeOwner;
         }
 
-        public void SelectedUnitRaiseStand(StandPresset stand)
-        {
-            stand.UpStand();
-        }
-
-        public void SelectedUnitActivateAbility(AbilityPresset ability)
-        {
-            ability.PrepareToUse();
-        }
-
         public object ProcessRequset(object sender)
         {
             Response.Clear();
@@ -373,15 +339,17 @@ namespace Controller
             {
                 if (sender is RequestContainer request)
                 {
+                    if (request.Actions != null)
+                        ProcessActions(request.Actions);
                     if (request.Type == RequestType.MoveUnit)
                     {
                         var unit = GetUnit(request.Selected);
                         var pathToken = GetPathToken(unit, request.Target);
                         Move(unit, pathToken);
+                        ProcessActions(Response);
                     }
                     if (request.Type == RequestType.UseAbility)
                     {
-                        ProcessActions(request.Actions);
                         var unit = GetUnit(request.Selected);
                         var ability = unit.GetAbility(request.AbilityIdx);
                         if (ability.AbilityType != AbilityType.Attack)
@@ -404,7 +372,6 @@ namespace Controller
                     }
                     RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
                     applyChangesRequest.Actions = Response;
-                    ProcessActions(Response);
                     return applyChangesRequest;
                 }
 
@@ -424,6 +391,23 @@ namespace Controller
         public bool SelectUnit(UnitPresset unit)
         {
             throw new NotImplementedException();
+        }
+
+        public void BacklightTargets(UnitPresset unit, AbilityPresset ability)
+        {
+            var targets = pathField.getListOfTargets(unit, ability.DeafaultRange, GetUnits());
+            foreach (var target in targets)
+            {
+                target.isTarget = true;
+            }
+        }
+
+        public void RefreshBacklight()
+        {
+            foreach ( var unit in units)
+            {
+                unit.isTarget = false;
+            }
         }
     }
 

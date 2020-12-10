@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Controller.Actions
 {
-    public class UseAction: IActions
+    class ResponseAttack
     {
         public (int X, int Y) Source
         { get; set; }
@@ -14,7 +14,7 @@ namespace Controller.Actions
 
         public int idx { get; set; }
 
-        public UseAction()
+        public ResponseAttack()
         {
             idx = GameModeContainer.Get().ActionIdx;
         }
@@ -22,10 +22,10 @@ namespace Controller.Actions
         public void forward()
         {
             var controller = GameModeContainer.Get();
-            var unit = controller.GetUnit(Source);
-            var ability = unit.GetAbility(SourceAbility);
-            ability.Use(unit);
-            GameModeContainer.Get().RefreshBacklight();
+            var attackUnit = controller.GetUnit(Source);
+            var targetUnit = controller.GetUnit(Source);
+            var ability = attackUnit.GetAbility(0);
+            
         }
 
         public void reverse()
