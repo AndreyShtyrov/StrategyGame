@@ -21,6 +21,10 @@
         <gridfield:FieldGUI  x:Name="fieldgui" Grid.Row="1"  Grid.Column="1"/>
         <local:UnitControlBar x:Name="UnitPanel" Grid.Row="2" Grid.Column="1"/>
         <StackPanel x:Name="TopPannel" Grid.Row="0" Grid.Column="0" Orientation="Horizontal"/>
+        <StackPanel Orientation="Vertical" Grid.Column="2">
+            <Button Content="StartClient1" Click="Button_Click" />
+            <Button Content="StartClient2" Click="Button_Click_1"/>
+        </StackPanel>
         <Button x:Name="Turn" Grid.Row="2"  Grid.Column="2" Content="EndTurn" />
     </Grid>
 </Window>

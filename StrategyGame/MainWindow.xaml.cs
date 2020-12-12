@@ -32,26 +32,33 @@ namespace StrategyGame
         public MainWindow()
         {
             InitializeComponent();
+
+        }
+
+        private void StartClient(int ClientIdx)
+        {
             fieldgui.clearField();
+            var player1 = Player.getPlayer(0, 5, 5);
+            var player2 = Player.getPlayer(1, 5, 5);
+            if (ClientIdx == 0)
+            {
+                GameTableController.Create(player1, fieldgui);
+            }
+            else
+            {
+                GameTableController.Create(player2, fieldgui);
+            }
+            var gameTable = GameTableController.Get();
             field = Field.load(savefile);
             GameModeContainer.instance = new GameMode(field);
             var gameMode = GameModeContainer.Get();
             gameMode.UnitsListChanged += OnUnitsListChange;
-            var player1 = Player.getPlayer(0, 5, 5);
-            var player2 = Player.getPlayer(1, 5, 5);
-            GameTableController.Create(player1, fieldgui);
-            var gameTable = GameTableController.Get();
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
             fieldgui.drawGrid(field);
             player1.AttackPoints = 5;
             player1.MovePoints = 5;
             player2.MovePoints = 5;
             player2.AttackPoints = 5;
-            gameTable.CreateUnit("Helbard", (4, 4), player1);
-            gameTable.CreateUnit("Helbard", (6, 6), player2);
-            gameTable.CreateUnit("Helbard", (7, 7), player2);
-            gameTable.CreateUnit("LongBow", (5, 6), player1);
-            gameTable.CreateUnit("LongBow", (7, 6), player2);
 
             gameTable.PropertyChanged += UnitPanel.OnSelectedHandler;
             PlayerWindow playerWindow1 = new PlayerWindow(0);
@@ -59,6 +66,7 @@ namespace StrategyGame
             TopPannel.Children.Add(playerWindow1);
             TopPannel.Children.Add(playerWindow2);
             Turn.Click += (object sender, RoutedEventArgs e) => gameMode.SwitchTrun();
+            //gameMode.GetNewGameStates();
         }
 
         private void OnUnitsListChange(UnitPresset unitPresset, bool isExist)
@@ -66,5 +74,14 @@ namespace StrategyGame
             fieldgui.addUnit(unitPresset);
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            StartClient(0);
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            StartClient(1);
+        }
     }
 }

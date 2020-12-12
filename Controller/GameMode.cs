@@ -15,27 +15,20 @@ namespace Controller
 {
     public class GameMode: IGameMode
     {
-        private static GameModeServer instance;
         private List<IActions> Response = new List<IActions>();
-        private List<UnitPresset> AddSelections = new List<UnitPresset>();
-        private List<UnitPresset> AddTargets = new List<UnitPresset>();
-        private int idx = 0;
-        private List<UnitPresset> PrevUnits;
-        private List<UnitPresset> ChangeUnits;
         private List<(int index, List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
         private List<Building> buildings = new List<Building>();
         private PathField pathField;
         private GameModeState _State;
-        private List<UnitPresset> PossibleTargets = null;
-        private UnitPresset _Selected;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
         private Player CurrentPlayer = Player.getPlayer(0);
-        private bool isHotSeat = true;
-        private int _ActionIdx = -1;
+        private ActionManager actionManager;
+        private RequestManager requestManager;
 
-
+        public RequestSender RequestSender
+        { get; }
         public GameModeState State
         {
             set
@@ -47,15 +40,20 @@ namespace Controller
                 return _State;
             }
         }
-
-        public int ActionIdx => _ActionIdx + 1;
-
+        public int ActionIdx => actionManager.NextActionIdx;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public GameMode(Field field)
         {
             this.field = field;
             pathField = new PathField(field);
+            actionManager = new ActionManager();
+            requestManager = new RequestManager(this);
+            this.RequestSender = new RequestSender();
+            this.RequestSender.SenderType = SenderType.Client;
+            this.RequestSender.Player = GameTableController.Get().owner.idx;
+            if (this.RequestSender.Player != CurrentPlayer.idx)
+                State = GameModeState.AwaitResponse;
         }
 
         public UnitPresset[,] GetUnits()
@@ -251,10 +249,14 @@ namespace Controller
 
         public void ProcessActions(List<IActions> actions)
         {
-            foreach (var action in actions)
-            {
-                action.forward();
-            }
+            actionManager.ApplyActions(actions);
+        }
+
+        public async Task<object> GetNewGameStates()
+        {
+            RequestContainer requestContainer = new RequestContainer(RequestType.GetNewStates);
+            requestContainer.CurrentActionIndex = actionManager.CurrentActionIdx;
+            return await Client.sendRequestAsync(requestContainer);
         }
 
         public void BacklightTargets(UnitPresset unit, AbilityPresset ability)

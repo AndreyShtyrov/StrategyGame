@@ -33,18 +33,25 @@ namespace StrategyGame
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-                var field = Field.load(savefile);
-                GameModeContainer.instance = new GameModeServer(field);
-                var contaner = GameModeContainer.Get();
-                HttpServer.listener = new HttpListener();
-                HttpServer.listener.Prefixes.Add(HttpServer.url);
-                HttpServer.listener.Start();
-                task = HttpServer.HandlerIncomingConnections();
+            var field = Field.load(savefile);
+            GameModeContainer.instance = new GameModeServer(field);
+            var contaner = GameModeContainer.Get();
+            HttpServer.listener = new HttpListener();
+            HttpServer.listener.Prefixes.Add(HttpServer.url);
+            HttpServer.listener.Start();
+            task = HttpServer.HandlerIncomingConnections();
+            var player1 = Player.getPlayer(0, 5, 5);
+            var player2 = Player.getPlayer(1, 5, 5);
+            GameModeContainer.Get().CreateUnit("Helbard", (4, 4), player1);
+            GameModeContainer.Get().CreateUnit("Helbard", (6, 6), player2);
+            GameModeContainer.Get().CreateUnit("Helbard", (7, 7), player2);
+            GameModeContainer.Get().CreateUnit("LongBow", (5, 6), player1);
+            GameModeContainer.Get().CreateUnit("LongBow", (7, 6), player2);
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            if ( HttpServer.listener != null)
+            if (HttpServer.listener != null)
                 HttpServer.listener.Close();
             base.OnClosed(e);
         }

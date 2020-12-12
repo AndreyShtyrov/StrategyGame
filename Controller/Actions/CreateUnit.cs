@@ -27,6 +27,7 @@ namespace Controller.Actions
 
         public CreateUnit(string Name, (int X, int Y) fpos, int playerIndex)
         {
+            idx = GameModeContainer.Get().ActionIdx;
             this.Name = Name;
             this.fieldPosition = fpos;
             this.PlayerIndex = playerIndex;

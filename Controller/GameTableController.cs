@@ -97,7 +97,8 @@ namespace Controller
                         {
                             if (GameModeContainer.Get().SelectUnit(selectedUnit))
                             {
-                                Selected.isSelected = false;
+                                if (Selected != null)
+                                    Selected.isSelected = false;
                                 Selected = null;
                                 Selected = selectedUnit;
                                 State = GameTableState.AwaitSelectAbility;

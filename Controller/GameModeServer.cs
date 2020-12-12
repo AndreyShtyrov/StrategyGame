@@ -18,25 +18,21 @@ namespace Controller
 {
     public partial class GameModeServer : IGameMode
     {
-        private static GameModeServer instance;
-        private List<IActions> Response = new List<IActions>(); 
-        private List<UnitPresset> AddSelections = new List<UnitPresset>();
-        private List<UnitPresset> AddTargets = new List<UnitPresset>();
-        private int idx = 0;
+        private List<IActions> Response = new List<IActions>();
+        private List<RequestContainer> DelaiedRequests = new List<RequestContainer>();
         private List<UnitPresset> ChangeUnits = new List<UnitPresset>();
         private List<(int index,List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
         private List<Building> buildings = new List<Building>();
         private PathField pathField;
+        private ActionManager actionManager;
         private GameModeState _State;
-        private List<UnitPresset> PossibleTargets = null;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
         private Player CurrentPlayer = Player.getPlayer(0);
-        private bool isHotSeat = true;
-        private int _ActionIdx = -1;
+        private int _ActionIdx = 0;
+        private RequestManager requestManager;
 
-         
         public GameModeState State
         {
             set
@@ -48,8 +44,9 @@ namespace Controller
                 return _State;
             }
         }
-
-        public int ActionIdx => _ActionIdx+1;
+        public RequestSender RequestSender
+        { get; }
+        public int ActionIdx => actionManager.NextActionIdx;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -57,6 +54,11 @@ namespace Controller
         {
             this.field = field;
             pathField = new PathField(field);
+            actionManager = new ActionManager();
+            requestManager = new RequestManager(this);
+            this.RequestSender = new RequestSender();
+            this.RequestSender.SenderType = SenderType.Server;
+            this.RequestSender.Player =-1;
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -151,6 +153,12 @@ namespace Controller
             }
             return (result.X + center.X, result.Y + center.Y);
         }
+
+        //public async Task<UnitPresset> AwaitSelectTarget(UnitPresset unit, AbilityPresset ability, List<UnitPresset> targets)
+        //{
+        //    State = GameModeState.AwaitResponse;
+
+        //}
 
         public bool SpendResources(int action, int move, Player owner)
         {
@@ -329,6 +337,16 @@ namespace Controller
         public object ProcessRequset(object sender)
         {
             Response.Clear();
+            if (sender is RequestContainer getNewStates)
+            {
+                if (getNewStates.Type == RequestType.GetNewStates)
+                {
+                    var response = actionManager.GetMissedActions(getNewStates.CurrentActionIndex);
+                    RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
+                    applyChangesRequest.Actions = response;
+                    return applyChangesRequest;
+                }
+            }
             if (State == GameModeState.Standart)
             {
                 if (sender is RequestContainer request)
@@ -369,16 +387,12 @@ namespace Controller
                 }
 
             }
-
             return null;
         }
  
         public void ProcessActions(List<IActions> actions)
         {
-            foreach (var action in actions)
-            {
-                action.forward();
-            }
+            actionManager.ApplyActions(actions);
         }
 
         public bool SelectUnit(UnitPresset unit)
@@ -415,6 +429,11 @@ namespace Controller
             UnitsListChanged?.Invoke(unitPresset, false);
         }
 
+        public Task<object> GetNewGameStates()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 
     public delegate void GameModeEventHandler(UnitPresset sender, UnitPresset target, GameModEventArgs e);
@@ -423,7 +442,10 @@ namespace Controller
     {
         Standart = 0,
         AwaitResponse = 1,
+        
     }
+
+    public delegate RequestContainer GetDelaiedResponse(RequestContainer requestContainer);
 
     public class GameModEventArgs
     {

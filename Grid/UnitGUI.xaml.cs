@@ -12,6 +12,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using InterfaceOfObjects;
+using System.Net.Mime.MediaTypeNames.Application;
 
 namespace DrawField
 {

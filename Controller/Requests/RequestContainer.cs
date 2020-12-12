@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Controller.Actions;
+using Newtonsoft.Json;
 
 namespace Controller.Requests
 {
@@ -10,10 +11,15 @@ namespace Controller.Requests
         public string Name
         { get; set; }
 
+        public RequestSender RequestSender;
+
         public RequestType Type
         { get; set; }
 
         public (int X, int Y) fieldPosition
+        { get; set; }
+
+        public int CurrentActionIndex
         { get; set; }
 
         public int Player
@@ -34,10 +40,16 @@ namespace Controller.Requests
         public int AbilityIdx
         { get; set; }
 
+        [JsonConstructor]
+        public RequestContainer()
+        { }
+
         public RequestContainer(RequestType requestType)
         {
             Type = requestType;
+            this.RequestSender = GameModeContainer.Get().RequestSender;
         }
+
     }
 
     public enum RequestType 
@@ -47,6 +59,7 @@ namespace Controller.Requests
         UseAbility = 2,
         SelectTargest = 3,
         ApplyChanges = 4,
+        GetNewStates = 5,
     }
 
 }

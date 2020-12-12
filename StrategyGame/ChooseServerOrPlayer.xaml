@@ -14,6 +14,7 @@
         <StackPanel Orientation="Horizontal">
             <Button Content="Server" Click="Button_Click"/>
             <Button Content="Client" Click="Button_Click_1"/>
+            
         </StackPanel>
     </Grid>
 </Window>

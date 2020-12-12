@@ -53,7 +53,7 @@ namespace Controller
                 byte[] data = Encoding.UTF8.GetBytes(responseString);
                 await resp.OutputStream.WriteAsync(data);
                 resp.OutputStream.Close();
-                
+
             }
         }
 
@@ -65,11 +65,35 @@ namespace Controller
     {
         public static HttpClient client = new HttpClient();
         public static Task currentConnection;
-        
+
 
         public static void sendRequest(object sender)
         {
             currentConnection = getRequest(sender);
+        }
+
+        public static async Task<object> sendRequestAsync(object sender)
+        {
+            return await getRequestAsync(sender);
+        }
+
+        private static async Task<object> getRequestAsync(object sender)
+        {
+            var json = JsonConvert.SerializeObject(sender,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
+            var data = new StringContent(json, Encoding.UTF8);
+            var response = await client.PostAsync("http://localhost:8000/", data);
+            var serializer = new JsonSerializer();
+            string content = response.Content.ReadAsStringAsync().Result;
+            var responseRequset = JsonConvert.DeserializeObject<RequestContainer>(content,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
+            return responseRequset;
         }
 
         private static async Task getRequest(object sender)
@@ -80,7 +104,7 @@ namespace Controller
                     TypeNameHandling = TypeNameHandling.Auto
                 });
             var data = new StringContent(json, Encoding.UTF8);
-            var response = await client.PostAsync("http://localhost:8000/",  data);
+            var response = await client.PostAsync("http://localhost:8000/", data);
             var serializer = new JsonSerializer();
             string content = response.Content.ReadAsStringAsync().Result;
             var responseRequset = JsonConvert.DeserializeObject<RequestContainer>(content,
@@ -88,8 +112,8 @@ namespace Controller
                 {
                     TypeNameHandling = TypeNameHandling.Auto
                 });
-            
+
             GameModeContainer.Get().ProcessRequset(responseRequset);
-        } 
+        }
     }
 }

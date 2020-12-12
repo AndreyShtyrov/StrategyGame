@@ -135,6 +135,7 @@ namespace Controller
         RangeAttack = 3,
         AttackWithoutResponse = 4,
         Heal = 5,
+        SelectAndAttack = 6,
     }
 
     public delegate void SpendActions();

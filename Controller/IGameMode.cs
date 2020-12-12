@@ -6,6 +6,7 @@ using InterfaceOfObjects;
 using UnitsAnPathFinding;
 using Controller.Actions;
 using System.Threading.Tasks;
+using Controller.Requests;
 
 namespace Controller
 {
@@ -18,6 +19,8 @@ namespace Controller
         public GameModeState State
         { get; set; }
 
+        public RequestSender RequestSender
+        { get; }
 
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos);
 
@@ -62,6 +65,8 @@ namespace Controller
         public void AddUnit(UnitPresset unitPresset);
 
         public void DeleteUnit(UnitPresset unitPresset);
+
+        public Task<object> GetNewGameStates();
 
         public event OnUnitsListChange UnitsListChanged;
     }
