@@ -55,7 +55,6 @@ namespace Controller
             this.field = field;
             pathField = new PathField(field);
             actionManager = new ActionManager();
-            requestManager = new RequestManager(this);
             this.RequestSender = new RequestSender();
             this.RequestSender.SenderType = SenderType.Server;
             this.RequestSender.Player =-1;
@@ -432,6 +431,11 @@ namespace Controller
         public Task<object> GetNewGameStates()
         {
             throw new NotImplementedException();
+        }
+
+        public void AddRequestManager(RequestManager Timer)
+        {
+            this.requestManager = Timer;
         }
 
     }

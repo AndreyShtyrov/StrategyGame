@@ -69,5 +69,8 @@ namespace Controller
         public Task<object> GetNewGameStates();
 
         public event OnUnitsListChange UnitsListChanged;
+
+        public void AddRequestManager(RequestManager Timer);
+
     }
 }

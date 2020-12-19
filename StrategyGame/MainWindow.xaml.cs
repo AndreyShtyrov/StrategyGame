@@ -17,6 +17,7 @@ using DrawField;
 using Tokens;
 using UnitsAnPathFinding;
 using Controller;
+using Controller.Requests;
 
 namespace StrategyGame
 {
@@ -66,7 +67,9 @@ namespace StrategyGame
             TopPannel.Children.Add(playerWindow1);
             TopPannel.Children.Add(playerWindow2);
             Turn.Click += (object sender, RoutedEventArgs e) => gameMode.SwitchTrun();
-            //gameMode.GetNewGameStates();
+            RequestManager timer = new RequestManager();
+            GameModeContainer.Get().AddRequestManager(timer);
+            gameMode.GetNewGameStates();
         }
 
         private void OnUnitsListChange(UnitPresset unitPresset, bool isExist)

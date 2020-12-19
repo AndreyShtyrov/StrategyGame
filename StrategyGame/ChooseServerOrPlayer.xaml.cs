@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Controller;
+using Controller.Requests;
 using Tokens;
 
 namespace StrategyGame
@@ -47,6 +48,8 @@ namespace StrategyGame
             GameModeContainer.Get().CreateUnit("Helbard", (7, 7), player2);
             GameModeContainer.Get().CreateUnit("LongBow", (5, 6), player1);
             GameModeContainer.Get().CreateUnit("LongBow", (7, 6), player2);
+            RequestManager timer = new RequestManager();
+            GameModeContainer.Get().AddRequestManager(timer);
         }
 
         protected override void OnClosed(EventArgs e)

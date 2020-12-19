@@ -12,49 +12,33 @@ namespace Controller.Requests
 {
     public class RequestManager
     {
-        readonly Timer timer = new Timer();
-        private bool InRequest = false;
         private Task<object> Request;
-        public RequestManager(IGameMode gameMode)
+        DispatcherTimer timer;
+        public RequestManager()
         {
-            timer.Interval = 2000;
-            timer.Enabled = true;
+            var gameMode = GameModeContainer.Get();
+            timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
             if (!(gameMode is GameModeServer))
             {
-                timer.Elapsed += (o, e) =>
+                timer.Tick += (o, e) =>
                 {
                     var controller = GameModeContainer.Get();
                     if (controller.State == GameModeState.AwaitResponse)
                     {
                         timer.Stop();
-                        Request = controller.GetNewGameStates();
-                        Request.Wait();
-                        var response = Request.Result;
-                        Application.Current.Dispatcher(() => controller.ProcessRequset(response));
+                        Request
+                        .ContinueWith(response =>
+                        {
+                            controller.ProcessRequset(response);
+                        },
+                        TaskScheduler.FromCurrentSynchronizationContext()).Wait();
                         timer.Start();
                     }
                 };
             }
+            //timer.Start();
         }
-        public bool IsNeedNewRequest()
-        {
-            if (!InRequest)
-            {
-                InRequest = true;
-                return true;
-            }
-            else
-            {
-                InRequest = false;
-                return false;
-            }
-            
-        }
-        public void  CloseReuqest()
-        {
-            InRequest = false;
-        }
-        
     }
 
     public class RequestSender

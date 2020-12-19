@@ -48,7 +48,6 @@ namespace Controller
             this.field = field;
             pathField = new PathField(field);
             actionManager = new ActionManager();
-            requestManager = new RequestManager(this);
             this.RequestSender = new RequestSender();
             this.RequestSender.SenderType = SenderType.Client;
             this.RequestSender.Player = GameTableController.Get().owner.idx;
@@ -274,6 +273,11 @@ namespace Controller
             {
                 unit.isTarget = false;
             }
+        }
+
+        public void AddRequestManager(RequestManager Timer)
+        {
+            this.requestManager = Timer;
         }
 
         public void AddUnit(UnitPresset unitPresset)
