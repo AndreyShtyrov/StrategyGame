@@ -191,16 +191,16 @@ namespace Controller
         {
             UnitsInBattle.Clear();
             var Attack = unit.GetAbility(AbilityIdx);
-            DealDamage dealDamage = new DealDamage();
+            DealDamage dealDamage;
             ChangeUnits.Add(unit);
             if (Attack.AbilityType == AbilityType.RangeAttack)
             {
                 ChangeUnits.Add(target);
-                dealDamage.Source = unit.fieldPosition;
-                dealDamage.Destination = target.fieldPosition;
-                dealDamage.idx = AbilityIdx;
+                dealDamage = new DealDamage(
+                    unit.fieldPosition,
+                    target.fieldPosition,
+                    AbilityIdx);
                 Response.Add(dealDamage);
-                Attack.Use(target);
                 return;
             }
             
@@ -208,9 +208,13 @@ namespace Controller
             AbilityPresset response = null;
             foreach (var ability in target.Abilities)
             {
-                if (ability.Name == "Melee")
+                if (ability.AbilityType == AbilityType.Attack)
                 {
-                    response = ability;
+                    var abilityIndx = target.GetAbilityIndex(ability);
+                    dealDamage = new DealDamage(
+                        target.fieldPosition,
+                        unit.fieldPosition,
+                        abilityIndx);
                 }
             }
             List<StandPresset> listStands = new List<StandPresset>();
@@ -230,19 +234,19 @@ namespace Controller
             {
                 if (stand.AbilityType == AbilityType.PreemptiveAttack)
                 {
-                    dealDamage = new DealDamage();
-                    dealDamage.Source = unit.fieldPosition;
-                    dealDamage.Destination = target.fieldPosition;
-                    dealDamage.idx = stand.idx;
+                    dealDamage = new DealDamage(unit.fieldPosition,
+                        target.fieldPosition,
+                        stand.idx);
                     Response.Add(dealDamage);
                     stand.Use(unit, target);
                 }
             }
             if (unit.currentHp > 0)
             {
-                dealDamage.Source = unit.fieldPosition;
-                dealDamage.Destination = target.fieldPosition;
-                dealDamage.idx = AbilityIdx;
+                dealDamage = new DealDamage(
+                    unit.fieldPosition,
+                    target.fieldPosition,
+                    AbilityIdx);
                 Response.Add(dealDamage);
                 Attack.Use(target);
             }
@@ -252,10 +256,10 @@ namespace Controller
             {
                 if (stand.AbilityType == AbilityType.Attack)
                 {
-                    dealDamage = new DealDamage();
-                    dealDamage.Source = unit.fieldPosition;
-                    dealDamage.Destination = target.fieldPosition;
-                    dealDamage.idx = stand.idx;
+                    dealDamage = new DealDamage(
+                        unit.fieldPosition,
+                        target.fieldPosition,
+                        stand.idx);
                     Response.Add(dealDamage);
                     stand.Use(unit, target);
                 }
@@ -265,10 +269,11 @@ namespace Controller
             {
                 if (response != null)
                 {
-                    dealDamage = new DealDamage();
-                    dealDamage.Source = target.fieldPosition;
-                    dealDamage.Destination = unit.fieldPosition;
-                    dealDamage.idx = response.idx;
+                    
+                    dealDamage = new DealDamage(
+                         target.fieldPosition,
+                         unit.fieldPosition,
+                         response.idx);
                     Response.Add(dealDamage);
                     response.Use(unit);
                     response.actionPoint.Return(target.owner);
@@ -280,7 +285,7 @@ namespace Controller
             {
                 if (lunit.currentHp < 0)
                 {
-
+                    
                 }
             }
             UnitsInBattle.Clear();
@@ -363,17 +368,18 @@ namespace Controller
                     {
                         var unit = GetUnit(request.Selected);
                         var ability = unit.GetAbility(request.AbilityIdx);
-                        if (ability.AbilityType != AbilityType.Attack)
+                        if (ability.AbilityType == AbilityType.Attack ||
+                            ability.AbilityType == AbilityType.RangeAttack)
+                        {
+                            var target = GetUnit(request.Target);
+                            AttackUnit(unit, target, ability.idx);
+                        }
+                        else
                         {
                             UseAction useAction = new UseAction();
                             useAction.Source = unit.fieldPosition;
                             useAction.SourceAbility = ability.idx;
                             Response.Add(useAction);
-                        }
-                        else
-                        {
-                            var target = GetUnit(request.Target);
-                            AttackUnit(unit, target, ability.idx);
                         }
                     }
                     if (request.Type == RequestType.CreateUnit)
@@ -384,7 +390,6 @@ namespace Controller
                     applyChangesRequest.Actions = Response;
                     return applyChangesRequest;
                 }
-
             }
             return null;
         }
@@ -428,7 +433,7 @@ namespace Controller
             UnitsListChanged?.Invoke(unitPresset, false);
         }
 
-        public Task<object> GetNewGameStates()
+        public Task GetNewGameStates()
         {
             throw new NotImplementedException();
         }

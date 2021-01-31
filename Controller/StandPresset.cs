@@ -7,7 +7,8 @@ namespace Controller
 {
     public abstract class  StandPresset
     {
-        public int damage = 2;
+        public abstract int Damage
+        { get; }
 
         public int idx
         { get; set; }

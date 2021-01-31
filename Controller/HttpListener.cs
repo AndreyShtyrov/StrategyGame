@@ -67,9 +67,9 @@ namespace Controller
         public static Task currentConnection;
 
 
-        public static void sendRequest(object sender)
+        public static Task sendRequest(object sender)
         {
-            currentConnection = getRequest(sender);
+            return currentConnection = getRequest(sender);
         }
 
         public static async Task<object> sendRequestAsync(object sender)

@@ -167,6 +167,27 @@ namespace Controller
             return null;
         }
 
+        public int GetAbilityIndex(object action)
+        {
+            if (action is AbilityPresset )
+            {
+                for (int i=0; i< Abilities.Count; i++)
+                {
+                    if (Abilities[i] == action)
+                        return i;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Stands.Count; i++)
+                {
+                    if (Stands[i] == action)
+                        return i;
+                }
+            }
+            return -1;
+        }
+
         public static UnitPresset CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
             if (name == "Helbard")

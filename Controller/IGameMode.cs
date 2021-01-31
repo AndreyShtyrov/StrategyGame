@@ -66,7 +66,7 @@ namespace Controller
 
         public void DeleteUnit(UnitPresset unitPresset);
 
-        public Task<object> GetNewGameStates();
+        public Task GetNewGameStates();
 
         public event OnUnitsListChange UnitsListChanged;
 

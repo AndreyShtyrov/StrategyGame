@@ -9,7 +9,7 @@ namespace Controller.Actions
         public int idx 
         { get; set; }
 
-        public int ActionsPoint
+        public int AbilityIndx
         { get; set; }
 
         public (int X, int Y) Source
@@ -22,15 +22,15 @@ namespace Controller.Actions
         {
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(Source);
-            var ability = unit.GetAbility(ActionsPoint);
+            var ability = unit.GetAbility(AbilityIndx);
             if (ability == null)
             {
-                var stand = unit.GetStand(ActionsPoint);
+                var stand = unit.GetStand(AbilityIndx);
                 stand.point.Spend();
             }
             else
             {
-                ability = unit.GetAbility(ActionsPoint);
+                ability = unit.GetAbility(AbilityIndx);
                 ability.actionPoint.Spend();
             }
         }
@@ -39,15 +39,15 @@ namespace Controller.Actions
         {
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(Source);
-            var ability = unit.GetAbility(ActionsPoint);
+            var ability = unit.GetAbility(AbilityIndx);
             if (ability == null)
             {
-                var stand = unit.GetStand(ActionsPoint);
+                var stand = unit.GetStand(AbilityIndx);
                 stand.point.Return(unit.owner);
             }
             else
             {
-                ability = unit.GetAbility(ActionsPoint);
+                ability = unit.GetAbility(AbilityIndx);
                 ability.actionPoint.Return(unit.owner);
             }
         }

@@ -21,9 +21,7 @@ namespace Controller.Actions
 
         [JsonConstructor]
         public CreateUnit()
-        {
-            idx = GameModeContainer.Get().ActionIdx;
-        }
+        { }
 
         public CreateUnit(string Name, (int X, int Y) fpos, int playerIndex)
         {

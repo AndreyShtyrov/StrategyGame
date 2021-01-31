@@ -30,7 +30,9 @@ namespace Controller.Abilities
                 var controller = GameTableController.Get();
                 CurrentRange = DeafaultRange;
                 controller.selectedAbility = this;
-                GameTableController.Get().State = GameTableState.AwaitSelectTarget;
+                var gameTableController = GameTableController.Get();
+                if (gameTableController != null)
+                    GameTableController.Get().State = GameTableState.AwaitSelectTarget;
             }
         }
 

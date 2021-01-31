@@ -10,7 +10,7 @@ namespace Controller.Stands
 {
     public class HalberdStand : StandPresset
     {
-        private readonly int Damage = 2;
+        public override int Damage => 2;
         private readonly UnitPresset unit;
         public bool active = false;
 

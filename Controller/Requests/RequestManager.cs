@@ -27,17 +27,14 @@ namespace Controller.Requests
                     if (controller.State == GameModeState.AwaitResponse)
                     {
                         timer.Stop();
-                        Request
-                        .ContinueWith(response =>
-                        {
-                            controller.ProcessRequset(response);
-                        },
-                        TaskScheduler.FromCurrentSynchronizationContext()).Wait();
-                        timer.Start();
+                        controller.GetNewGameStates().ContinueWith(t =>
+                        { 
+                            timer.Start(); 
+                        }, TaskScheduler.FromCurrentSynchronizationContext());
                     }
                 };
             }
-            //timer.Start();
+            timer.Start();
         }
     }
 

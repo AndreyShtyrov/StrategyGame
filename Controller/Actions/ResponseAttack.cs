@@ -28,7 +28,7 @@ namespace Controller.Actions
             var attackUnit = controller.GetUnit(Source);
             var targetUnit = controller.GetUnit(Source);
             var ability = attackUnit.GetAbility(0);
-            
+            //var damage;
         }
 
         public void reverse()

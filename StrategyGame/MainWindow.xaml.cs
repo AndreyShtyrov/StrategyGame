@@ -69,7 +69,7 @@ namespace StrategyGame
             Turn.Click += (object sender, RoutedEventArgs e) => gameMode.SwitchTrun();
             RequestManager timer = new RequestManager();
             GameModeContainer.Get().AddRequestManager(timer);
-            gameMode.GetNewGameStates();
+            //gameMode.GetNewGameStates();
         }
 
         private void OnUnitsListChange(UnitPresset unitPresset, bool isExist)

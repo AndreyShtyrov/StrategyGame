@@ -80,7 +80,10 @@ namespace Controller
                         if (GameTableState.AwaitSelectAbility == prevState)
                             FieldGUI.clearWalkedArea();
                         var controller = GameModeContainer.Get();
-                        GameModeContainer.Get().BacklightTargets(Selected, selectedAbility);
+                        if (Selected == null || selectedAbility == null)
+                            State = GameTableState.AwaitSelect;
+                        else
+                            GameModeContainer.Get().BacklightTargets(Selected, selectedAbility);
                         break;
                     }
                 

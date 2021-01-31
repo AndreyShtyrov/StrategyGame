@@ -175,6 +175,7 @@ namespace Controller
                 RequestContainer requestContainer = new RequestContainer(RequestType.UseAbility);
                 requestContainer.Selected = unit.fieldPosition;
                 requestContainer.Target = target.fieldPosition;
+                requestContainer.AbilityIdx = AbilityIdx;
                 PrepareToUse action = new PrepareToUse();
                 action.Source = unit.fieldPosition;
                 action.SourceAbility = GameTableController.Get().selectedAbility.idx;
@@ -251,11 +252,11 @@ namespace Controller
             actionManager.ApplyActions(actions);
         }
 
-        public async Task<object> GetNewGameStates()
+        public Task GetNewGameStates()
         {
             RequestContainer requestContainer = new RequestContainer(RequestType.GetNewStates);
             requestContainer.CurrentActionIndex = actionManager.CurrentActionIdx;
-            return await Client.sendRequestAsync(requestContainer);
+            return Client.sendRequest(requestContainer);
         }
 
         public void BacklightTargets(UnitPresset unit, AbilityPresset ability)
