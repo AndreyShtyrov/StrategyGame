@@ -193,12 +193,14 @@ namespace Controller
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
             Response = new List<IActions>();
-            ProcessMeleBattle(unit, target, AbilityIdx);
+            ProcessMeleeBattle(unit, target, AbilityIdx);
+            ProcessActions(Response);
             if (GameTableController.Get() != null)
-                GameTableController.Get().State = GameTableState.AwaitSelectAbility;
+                GameTableController.Get().State = GameTableState.AwaitSelect;
+            
         }
 
-        private void ProcessMeleBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
+        private void ProcessMeleeBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
             UnitsInBattle.Clear();
             UnitsInBattle.Add(unit);
@@ -215,8 +217,6 @@ namespace Controller
                     AbilityIdx);
                 Response.Add(dealDamage);
                 ProcessActions(Response);
-                if (GameTableController.Get() != null)
-                    GameTableController.Get().State = GameTableState.AwaitSelect;
                 return;
             }
 
@@ -231,7 +231,7 @@ namespace Controller
                     target.fieldPosition,
                     AbilityIdx);
                 Response.Add(dealDamage);
-                ProcessActions(new List<IActions> { dealDamage });
+                //ProcessActions(new List<IActions> { dealDamage });
             }
 
             standActions = CheckInAreaAbilities(unit, target, BattleStage.MainAttack);
@@ -245,6 +245,7 @@ namespace Controller
                      unit.fieldPosition,
                      1);
                 Response.Add(dealDamage);
+                //ProcessActions(new List<IActions> { dealDamage });
             }
 
             standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
@@ -263,14 +264,16 @@ namespace Controller
         private List<IActions> CheckInAreaAbilities(UnitPresset unit, UnitPresset target, BattleStage stage)
         {
             List<IActions> result = new List<IActions>();
-            List<StandPresset> listStands = new List<StandPresset>();
+            List<(UnitPresset unit, StandPresset stand)> listStands 
+                = new List<(UnitPresset unit, StandPresset stand)>();
+
             foreach (var lunit in units)
             {
                 foreach (var stand in lunit.Stands)
                 {
                     if (stand.CouldToReact(unit, target, stage))
                     {
-                        listStands.Add(stand);
+                        listStands.Add((lunit, stand));
                         UnitsInBattle.Add(lunit);
                     }
                 }
@@ -278,10 +281,9 @@ namespace Controller
             foreach (var stand in listStands)
             {
                 result.Add(
-                    new DealDamage(
-                        unit.fieldPosition,
+                    new DealDamage(stand.unit.fieldPosition,
                         target.fieldPosition,
-                        stand.idx));
+                        stand.stand.idx));
             }
             return result;
         }
