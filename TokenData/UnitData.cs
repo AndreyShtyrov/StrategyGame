@@ -11,7 +11,7 @@ namespace Tokens
     {
         public virtual string Name => "K";
         public virtual int MaxHp => 4;
-        public int currentHp
+        public virtual int currentHp
         { get; set; }
 
         public override string fieldtype => nameof(UnitData);

@@ -36,6 +36,12 @@ namespace StrategyGame
 
         }
 
+        public override void EndInit()
+        {
+            base.EndInit();
+            StartClient(0);
+        }
+
         private void StartClient(int ClientIdx)
         {
             fieldgui.clearField();
@@ -51,9 +57,11 @@ namespace StrategyGame
             }
             var gameTable = GameTableController.Get();
             field = Field.load(savefile);
-            GameModeContainer.instance = new GameMode(field);
-            var gameMode = GameModeContainer.Get();
-            gameMode.UnitsListChanged += OnUnitsListChange;
+
+            GameModeContainer.instance = new GameModeServer(field);
+            GameModeContainer.Get().UnitsListChanged += OnUnitsListChange;
+
+            
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
             fieldgui.drawGrid(field);
             player1.AttackPoints = 5;
@@ -66,9 +74,14 @@ namespace StrategyGame
             PlayerWindow playerWindow2 = new PlayerWindow(1);
             TopPannel.Children.Add(playerWindow1);
             TopPannel.Children.Add(playerWindow2);
-            Turn.Click += (object sender, RoutedEventArgs e) => gameMode.SwitchTrun();
+            Turn.Click += (object sender, RoutedEventArgs e) => GameModeContainer.Get().SwitchTrun();
             RequestManager timer = new RequestManager();
             GameModeContainer.Get().AddRequestManager(timer);
+            GameModeContainer.Get().CreateUnit("Helbard", (4, 4), player1);
+            GameModeContainer.Get().CreateUnit("Helbard", (6, 6), player2);
+            GameModeContainer.Get().CreateUnit("Helbard", (7, 7), player2);
+            GameModeContainer.Get().CreateUnit("LongBow", (5, 6), player1);
+            GameModeContainer.Get().CreateUnit("LongBow", (7, 6), player2);
             //gameMode.GetNewGameStates();
         }
 
@@ -79,12 +92,12 @@ namespace StrategyGame
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            StartClient(0);
+            //StartClient(0);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            StartClient(1);
+            //StartClient(1);
         }
     }
 }

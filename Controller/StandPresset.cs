@@ -19,7 +19,7 @@ namespace Controller
 
         public AbilityType AbilityType;
 
-        public abstract bool CouldToReact(UnitPresset sender, UnitPresset target);
+        public abstract bool CouldToReact(UnitPresset sender, UnitPresset target, BattleStage stage);
 
         public abstract void Use(UnitPresset sender, UnitPresset target);
 

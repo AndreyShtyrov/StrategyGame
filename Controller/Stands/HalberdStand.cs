@@ -26,16 +26,29 @@ namespace Controller.Stands
             Name = "Halberd";
         }
 
-        public override bool CouldToReact(UnitPresset sender, UnitPresset target)
+        private bool CheckCorrectTargetsCondition(UnitPresset sender, UnitPresset target)
         {
-            if (!active)
-                return false;
             var controller = GameModeContainer.Get();
             var pos = controller.TransformToCube(target.fieldPosition, unit.fieldPosition);
-            if (Math.Abs(pos.X) + Math.Abs(pos.Y) + Math.Abs(pos.Z) == 2 
+            if (Math.Abs(pos.X) + Math.Abs(pos.Y) + Math.Abs(pos.Z) == 2
                 && unit != sender && unit != target)
             {
                 return true;
+            }
+            return false;
+        }
+
+        public override bool CouldToReact(UnitPresset sender, UnitPresset target, BattleStage stage)
+        {
+            if (!active)
+                return false;
+            if (stage == BattleStage.MainAttack && unit.owner == sender.owner)
+            {
+                return CheckCorrectTargetsCondition(sender, target);
+            }
+            if (stage == BattleStage.MainAttack && unit.owner == target.owner)
+            {
+                return CheckCorrectTargetsCondition(sender, target);
             }
             return false;
         }

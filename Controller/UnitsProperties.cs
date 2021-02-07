@@ -48,25 +48,16 @@ namespace Controller
 
         public bool Active(Player owner)
         {
-            foreach (var unitAction in bindUnitActions)
-            {
-                if (unitAction.State != ActionState.Ready)
-                    return false;
-                else
-                    unitAction.State = ActionState.InProcess;
-            }
-            _State = ActionState.InProcess;
-            var result = GameModeContainer.Get().SpendResources(neededAttackPoints, neededMovePoints, owner);
+            var result = GameModeContainer.Get().
+                IsEnoughResources(neededAttackPoints, neededMovePoints, owner);
             if (result)
-                _State = ActionState.InProcess;
-            else
-            {
                 foreach (var unitAction in bindUnitActions)
                 {
-                    unitAction.Refresh();
+                    if (unitAction.State != ActionState.Ready)
+                        return false;
+                    else
+                        unitAction.State = ActionState.InProcess;
                 }
-            }
-            ActionsIsSpend?.Invoke();
             return result;
         }
         
@@ -140,4 +131,12 @@ namespace Controller
 
     public delegate void SpendActions();
 
+
+    public enum BattleStage
+    {
+        Preemptive = 0,
+        MainAttack = 1,
+        ResponseAttack = 2,
+        FinalStage = 3,
+    }
 }

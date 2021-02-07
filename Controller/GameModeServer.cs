@@ -21,7 +21,7 @@ namespace Controller
         private List<IActions> Response = new List<IActions>();
         private List<RequestContainer> DelaiedRequests = new List<RequestContainer>();
         private List<UnitPresset> ChangeUnits = new List<UnitPresset>();
-        private List<(int index,List<UnitPresset> Units, List<Building> buildings)> PrevState;
+        private List<(int index, List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
         private List<Building> buildings = new List<Building>();
@@ -50,14 +50,14 @@ namespace Controller
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public GameModeServer(Field field)
+        public GameModeServer(Field field, int reqestSender = -1)
         {
             this.field = field;
             pathField = new PathField(field);
             actionManager = new ActionManager();
             this.RequestSender = new RequestSender();
             this.RequestSender.SenderType = SenderType.Server;
-            this.RequestSender.Player =-1;
+            this.RequestSender.Player = reqestSender;
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -65,9 +65,9 @@ namespace Controller
             return field.getData(fpos);
         }
 
-        public PathToken GetPathToken(UnitPresset unit ,(int X, int Y) fpos)
+        public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos)
         {
-            var pathTokens = getWalkArea(unit);
+            var pathTokens = GetWalkArea(unit);
             foreach (var token in pathTokens)
             {
                 if (token.fieldPosition == fpos)
@@ -100,7 +100,7 @@ namespace Controller
 
         public void SwitchTrun()
         {
-            
+
             CurrentPlayer.getIncome();
             if (CurrentPlayer.idx == 0)
                 CurrentPlayer = Player.getPlayer(1);
@@ -140,7 +140,7 @@ namespace Controller
         public (int X, int Y) TransformToAxial((int X, int Y, int Z) fpos, (int X, int Y) center)
         {
             (int X, int Y) result;
-            if ( center.Y % 2 == 0)
+            if (center.Y % 2 == 0)
             {
                 result.X = fpos.X + (fpos.Z + (fpos.Z & 1)) / 2;
                 result.Y = fpos.Z;
@@ -156,19 +156,22 @@ namespace Controller
         //public async Task<UnitPresset> AwaitSelectTarget(UnitPresset unit, AbilityPresset ability, List<UnitPresset> targets)
         //{
         //    State = GameModeState.AwaitResponse;
-
         //}
 
-        public bool SpendResources(int action, int move, Player owner)
+        public bool IsEnoughResources(int action, int move, Player owner)
         {
-            
+
             if (owner.AttackPoints - action >= 0 && owner.MovePoints - move >= 0)
             {
-                owner.AttackPoints -= action;
-                owner.MovePoints -= move;
                 return true;
             }
             return false;
+        }
+
+        public void SpendResources(int action, int move, Player owner)
+        {
+            owner.AttackPoints -= action;
+            owner.MovePoints -= move;
         }
 
         public void ReturnResources(int action, int move, Player owner)
@@ -189,58 +192,38 @@ namespace Controller
 
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
+            Response = new List<IActions>();
+            ProcessMeleBattle(unit, target, AbilityIdx);
+            if (GameTableController.Get() != null)
+                GameTableController.Get().State = GameTableState.AwaitSelectAbility;
+        }
+
+        private void ProcessMeleBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
+        {
             UnitsInBattle.Clear();
+            UnitsInBattle.Add(unit);
+            UnitsInBattle.Add(target);
+            
             var Attack = unit.GetAbility(AbilityIdx);
             DealDamage dealDamage;
-            ChangeUnits.Add(unit);
+            
             if (Attack.AbilityType == AbilityType.RangeAttack)
             {
-                ChangeUnits.Add(target);
                 dealDamage = new DealDamage(
                     unit.fieldPosition,
                     target.fieldPosition,
                     AbilityIdx);
                 Response.Add(dealDamage);
+                ProcessActions(Response);
+                if (GameTableController.Get() != null)
+                    GameTableController.Get().State = GameTableState.AwaitSelect;
                 return;
             }
-            
 
-            AbilityPresset response = null;
-            foreach (var ability in target.Abilities)
-            {
-                if (ability.AbilityType == AbilityType.Attack)
-                {
-                    var abilityIndx = target.GetAbilityIndex(ability);
-                    dealDamage = new DealDamage(
-                        target.fieldPosition,
-                        unit.fieldPosition,
-                        abilityIndx);
-                }
-            }
-            List<StandPresset> listStands = new List<StandPresset>();
-            foreach (var lunit in units)
-            {
-                foreach (var stand in lunit.Stands)
-                {
-                    if (stand.CouldToReact(unit, target))
-                    {
-                        listStands.Add(stand);
-                        UnitsInBattle.Add(lunit);
-                        ChangeUnits.Add(lunit);
-                    }
-                }
-            }
-            foreach (var stand in listStands)
-            {
-                if (stand.AbilityType == AbilityType.PreemptiveAttack)
-                {
-                    dealDamage = new DealDamage(unit.fieldPosition,
-                        target.fieldPosition,
-                        stand.idx);
-                    Response.Add(dealDamage);
-                    stand.Use(unit, target);
-                }
-            }
+            var standActions = CheckInAreaAbilities(unit, target, BattleStage.Preemptive);
+            ProcessActions(standActions);
+            Response.AddRange(standActions);
+
             if (unit.currentHp > 0)
             {
                 dealDamage = new DealDamage(
@@ -248,65 +231,88 @@ namespace Controller
                     target.fieldPosition,
                     AbilityIdx);
                 Response.Add(dealDamage);
-                Attack.Use(target);
+                ProcessActions(new List<IActions> { dealDamage });
             }
-                
-            ChangeUnits.Add(target);
-            foreach (var stand in listStands)
+
+            standActions = CheckInAreaAbilities(unit, target, BattleStage.MainAttack);
+            ProcessActions(standActions);
+            Response.AddRange(standActions);
+            
+            if (target.currentHp > 0)
             {
-                if (stand.AbilityType == AbilityType.Attack)
-                {
-                    dealDamage = new DealDamage(
-                        unit.fieldPosition,
-                        target.fieldPosition,
-                        stand.idx);
-                    Response.Add(dealDamage);
-                    stand.Use(unit, target);
-                }
-                    
+                dealDamage = new DealDamage(
+                     target.fieldPosition,
+                     unit.fieldPosition,
+                     1);
+                Response.Add(dealDamage);
             }
-            if( target.currentHp > 0)
-            {
-                if (response != null)
-                {
-                    
-                    dealDamage = new DealDamage(
-                         target.fieldPosition,
-                         unit.fieldPosition,
-                         response.idx);
-                    Response.Add(dealDamage);
-                    response.Use(unit);
-                    response.actionPoint.Return(target.owner);
-                }
-                    
-            }
+
+            standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
+            ProcessActions(standActions);
+            Response.AddRange(standActions);
 
             foreach (var lunit in units)
             {
                 if (lunit.currentHp < 0)
                 {
-                    
+
                 }
             }
-            UnitsInBattle.Clear();
         }
 
-        public List<PathToken> getWalkArea(UnitPresset unit)
+        private List<IActions> CheckInAreaAbilities(UnitPresset unit, UnitPresset target, BattleStage stage)
+        {
+            List<IActions> result = new List<IActions>();
+            List<StandPresset> listStands = new List<StandPresset>();
+            foreach (var lunit in units)
+            {
+                foreach (var stand in lunit.Stands)
+                {
+                    if (stand.CouldToReact(unit, target, stage))
+                    {
+                        listStands.Add(stand);
+                        UnitsInBattle.Add(lunit);
+                    }
+                }
+            }
+            foreach (var stand in listStands)
+            {
+                result.Add(
+                    new DealDamage(
+                        unit.fieldPosition,
+                        target.fieldPosition,
+                        stand.idx));
+            }
+            return result;
+        }
+
+        public List<PathToken> GetWalkArea(UnitPresset unit)
         {
             pathField.Refresh();
+            if (unit.MoveActionPoint.State == ActionState.Ended)
+                return new List<PathToken>();
             return pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
         }
 
         public void Move(UnitPresset unit, PathToken pathToken)
         {
-            if(unit.MoveActionPoint.Active(unit.owner) || unit.MoveActionPoint.State == ActionState.InProcess)
+            Response = new List<IActions>();
+            if (unit.MoveActionPoint.Active(unit.owner) ||
+                unit.MoveActionPoint.State == ActionState.InProcess)
             {
                 MoveUnit moveUnit = new MoveUnit();
                 moveUnit.StartPosition = unit.fieldPosition;
                 moveUnit.EndPosition = pathToken.fieldPosition;
                 pathField.Refresh();
+                SpendActionPoints spendActionPoints = new SpendActionPoints();
+                spendActionPoints.AbilityIndx = 0;
+                spendActionPoints.Source = pathToken.fieldPosition;
+                ProcessActions(new List<IActions>() { moveUnit, spendActionPoints });
                 Response.Add(moveUnit);
+                Response.Add(spendActionPoints);
             }
+            if (GameTableController.Get() != null)
+                GameTableController.Get().State = GameTableState.AwaitSelect;
         }
 
         private void OnChangeOwner(Building sender, Player prevOwner)
@@ -331,6 +337,7 @@ namespace Controller
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
+            Response = new List<IActions>();
             CreateUnit createUnit = new CreateUnit(name, fpos, owner.idx);
             var listResponse = new List<IActions>();
             listResponse.Add(createUnit);
@@ -362,7 +369,6 @@ namespace Controller
                         var unit = GetUnit(request.Selected);
                         var pathToken = GetPathToken(unit, request.Target);
                         Move(unit, pathToken);
-                        ProcessActions(Response);
                     }
                     if (request.Type == RequestType.UseAbility)
                     {
@@ -393,15 +399,18 @@ namespace Controller
             }
             return null;
         }
- 
+
         public void ProcessActions(List<IActions> actions)
         {
             actionManager.ApplyActions(actions);
         }
 
-        public bool SelectUnit(UnitPresset unit)
+        public bool SelectUnit(UnitPresset token)
         {
-            throw new NotImplementedException();
+            if (token.owner == CurrentPlayer)
+                return true;
+            else
+                return false;
         }
 
         public void BacklightTargets(UnitPresset unit, AbilityPresset ability)
@@ -415,7 +424,7 @@ namespace Controller
 
         public void RefreshBacklight()
         {
-            foreach ( var unit in units)
+            foreach (var unit in units)
             {
                 unit.isTarget = false;
             }
@@ -451,7 +460,7 @@ namespace Controller
     {
         Standart = 0,
         AwaitResponse = 1,
-        
+
     }
 
     public delegate RequestContainer GetDelaiedResponse(RequestContainer requestContainer);

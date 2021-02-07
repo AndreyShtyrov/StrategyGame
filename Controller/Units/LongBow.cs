@@ -28,14 +28,14 @@ namespace Controller.Units
 
             WeakMeleeAttack meleeAttack = new WeakMeleeAttack(this, attacklistAction);
             LongBowAttack longBowAttack = new LongBowAttack(this, attacklistAction);
-            meleeAttack.idx = 0;
-            longBowAttack.idx = 1;
+            meleeAttack.idx = 1;
+            longBowAttack.idx = 2;
             Abilities.Add(meleeAttack);
             Abilities.Add(longBowAttack);
 
             movelistAction.AddRange(attacklistAction);
             Heal heal = new Heal(this, movelistAction);
-            heal.idx = 2;
+            heal.idx = 3;
             Abilities.Add(heal);
             currentHp = MaxHp;
 

@@ -22,6 +22,8 @@ namespace Controller.Actions
         {
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(Source);
+            if (AbilityIndx == 0)
+            { unit.MoveActionPoint.Spend(); return; }
             var ability = unit.GetAbility(AbilityIndx);
             if (ability == null)
             {

@@ -36,14 +36,20 @@ namespace StrategyGame
                 {
                     Button button = new Button();
                     button.Content = ability.Name;
-                    button.Click += (object sender, RoutedEventArgs e) => GameTableController.Get().SelectedUnitActivateAbility(ability);
+                    button.Click += 
+                        (object sender, RoutedEventArgs e) 
+                        => GameTableController.Get().
+                        SelectedUnitActivateAbility(ability);
                     AbilityStack.Children.Add(button);
                 }
                 foreach ( var stand in unit.Stands)
                 {
                     Button button = new Button();
                     button.Content = stand.Name;
-                    button.Click += (object sender, RoutedEventArgs e) => GameTableController.Get().SelectedUnitRaiseStand(stand);
+                    button.Click += 
+                        (object sender, RoutedEventArgs e) 
+                        => GameTableController.Get().
+                        SelectedUnitRaiseStand(stand);
                     AbilityStack.Children.Add(button);
                 }
             }

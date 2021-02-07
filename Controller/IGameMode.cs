@@ -38,7 +38,7 @@ namespace Controller
 
         public (int X, int Y) TransformToAxial((int X, int Y, int Z) fpos, (int X, int Y) center);
 
-        public bool SpendResources(int action, int move, Player owner);
+        public bool IsEnoughResources(int action, int move, Player owner);
 
         public void ReturnResources(int action, int move, Player owner);
 
@@ -46,7 +46,7 @@ namespace Controller
 
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx);
 
-        public List<PathToken> getWalkArea(UnitPresset unit);
+        public List<PathToken> GetWalkArea(UnitPresset unit);
 
         public void Move(UnitPresset unit, PathToken pathToken);
 

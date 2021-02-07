@@ -15,19 +15,19 @@ namespace Controller
     public class UnitPresset: UnitData, IUnitPresset, INotifyPropertyChanged
     {
         
-        public int currentHp
+        public override int currentHp
         {
             set
             {
-                if (_currentHp > 0 && value < 0)
-                { _currentHp = 0; }
+                if (base.currentHp > 0 && value < 0)
+                { base.currentHp = 0; }
                 else
-                { _currentHp = value; }
+                { base.currentHp = value; }
                 OnPropertyChange("currentHp");
             }
             get
             {
-                return _currentHp;
+                return base.currentHp;
             }
         }
         public List<StandPresset> Stands = new List<StandPresset>();
@@ -40,12 +40,12 @@ namespace Controller
         {
             set
             {
-                _fieldPosition = value;
+                base.fieldPosition = value;
                 OnPropertyChange("fieldPosition");
             }
             get
             {
-                return _fieldPosition;
+                return base.fieldPosition;
             }
         }
         public bool isTarget
@@ -64,11 +64,11 @@ namespace Controller
         {
             get
             {
-                return _isSelected;
+                return base.isSelected;
             }
             set
             {
-                _isSelected = value;
+                base.isSelected = value;
                 OnPropertyChange("isSelected");
             }
         }
@@ -102,16 +102,6 @@ namespace Controller
             fieldPosition = fpos;
             currentSpeed -= distance;
         }
-        
-
-        private void OnPropertyChange(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-        private bool _isSelected = false;
-        private bool _isTarget;
-        private int _currentHp;
-        private (int X, int Y) _fieldPosition;
 
         public void OnSpendActionsHandler()
         {
@@ -203,5 +193,10 @@ namespace Controller
             return null;
         }
 
+        private void OnPropertyChange(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        private bool _isTarget;
     }
 }

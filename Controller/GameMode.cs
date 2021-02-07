@@ -127,16 +127,19 @@ namespace Controller
 
         public event OnUnitsListChange UnitsListChanged;
 
-        public bool SpendResources(int action, int move, Player owner)
+        public bool IsEnoughResources(int action, int move, Player owner)
         {
-
             if (owner.AttackPoints - action >= 0 && owner.MovePoints - move >= 0)
             {
-                owner.AttackPoints -= action;
-                owner.MovePoints -= move;
                 return true;
             }
             return false;
+        }
+
+        public void SpendResources(int action, int move, Player owner)
+        {
+            owner.AttackPoints -= action;
+            owner.MovePoints -= move;
         }
 
         public void ReturnResources(int action, int move, Player owner)
@@ -145,7 +148,7 @@ namespace Controller
             owner.MovePoints += move;
         }
 
-        public List<PathToken> getWalkArea(UnitPresset unit)
+        public List<PathToken> GetWalkArea(UnitPresset unit)
         {
             pathField.Refresh();
             return pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
@@ -153,7 +156,7 @@ namespace Controller
 
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos)
         {
-            var pathTokens = getWalkArea(unit);
+            var pathTokens = GetWalkArea(unit);
             foreach (var token in pathTokens)
             {
                 if (token.fieldPosition == fpos)

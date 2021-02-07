@@ -31,9 +31,9 @@ namespace Controller.Units
             MoveActionPoint = new ActionPoint(this, 0, 1, movelistAction);
 
             HalberdStand halberd = new HalberdStand(this, attacklistAction1);
-            halberd.idx = 1;
+            halberd.idx = 2;
             MeleeAttack melee = new MeleeAttack(this, attacklistAction2);
-            melee.idx = 0;
+            melee.idx = 1;
             Abilities.Add(melee);
             Stands.Add(halberd);
 
@@ -41,7 +41,7 @@ namespace Controller.Units
             healList.AddRange(attacklistAction1);
             healList.AddRange(attacklistAction2);
             Heal heal = new Heal(this, movelistAction);
-            heal.idx = 2;
+            heal.idx = 3;
             Abilities.Add(heal);
         }
     }

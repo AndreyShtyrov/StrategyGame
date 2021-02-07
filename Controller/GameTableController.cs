@@ -57,7 +57,7 @@ namespace Controller
             {
                 case GameTableState.AwaitSelectAbility:
                     {
-                        var walkArea = GameModeContainer.Get().getWalkArea(Selected);
+                        var walkArea = GameModeContainer.Get().GetWalkArea(Selected);
                         FieldGUI.addWalkedArea(walkArea);
                         break;
                     }
