@@ -12,7 +12,7 @@ namespace Controller.Stands
     {
         public override int Damage => 2;
         private readonly UnitPresset unit;
-        public bool active = false;
+        public new bool Active = false;
 
         [JsonConstructor]
         public HalberdStand()
@@ -40,7 +40,7 @@ namespace Controller.Stands
 
         public override bool CouldToReact(UnitPresset sender, UnitPresset target, BattleStage stage)
         {
-            if (!active)
+            if (!Active)
                 return false;
             if (stage == BattleStage.MainAttack && unit.owner == sender.owner)
             {
@@ -55,24 +55,13 @@ namespace Controller.Stands
 
         public override void UpStand()
         {
-            if (unit.MoveActionPoint.State != ActionState.Ready)
-                unit.MoveActionPoint.Spend();
-            if (!active)
-            {
-                active = true;
-                point.Active(unit.owner);
-            }
-            else
-            {
-                active = false;
-                point.Return(unit.owner);
-            }
-            point.Spend();
+            Active = true;
+            point.Active(unit.owner);
         }
 
         public override void DownStand()
         {
-            active = false;
+            Active = false;
             point.Return(unit.owner);
         }
 
@@ -85,12 +74,12 @@ namespace Controller.Stands
         {
             if (unit.owner == sender.owner)
             {
-                active = false;
+                Active = false;
                 target.currentHp -= Damage;
             }
             else
             {
-                active = false;
+                Active = false;
                 sender.currentHp -= Damage;
             }
         }

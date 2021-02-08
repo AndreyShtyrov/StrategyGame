@@ -29,6 +29,7 @@ namespace Controller.Actions
             var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
             unit.Move(EndPosition, distance);
             unit.MoveActionPoint.Active(unit.owner);
+            unit.MoveActionPoint.Spend();
         }
 
         public void reverse()

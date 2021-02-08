@@ -20,7 +20,7 @@ namespace Controller
     {
         private List<IActions> Response = new List<IActions>();
         private List<RequestContainer> DelaiedRequests = new List<RequestContainer>();
-        private List<UnitPresset> ChangeUnits = new List<UnitPresset>();
+        private GameModeLogic GameModeLogic;
         private List<(int index, List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
@@ -58,6 +58,7 @@ namespace Controller
             this.RequestSender = new RequestSender();
             this.RequestSender.SenderType = SenderType.Server;
             this.RequestSender.Player = reqestSender;
+            GameModeLogic = new GameModeLogic(this);
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -192,100 +193,14 @@ namespace Controller
 
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
-            Response = new List<IActions>();
-            ProcessMeleeBattle(unit, target, AbilityIdx);
-            ProcessActions(Response);
+            Response = GameModeLogic.ProcessMeleeBattle(unit, target, AbilityIdx);
             if (GameTableController.Get() != null)
                 GameTableController.Get().State = GameTableState.AwaitSelect;
-            
         }
 
-        private void ProcessMeleeBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
+        public void UpDownStand(UnitPresset unit, int StandIdx)
         {
-            UnitsInBattle.Clear();
-            UnitsInBattle.Add(unit);
-            UnitsInBattle.Add(target);
-            
-            var Attack = unit.GetAbility(AbilityIdx);
-            DealDamage dealDamage;
-            
-            if (Attack.AbilityType == AbilityType.RangeAttack)
-            {
-                dealDamage = new DealDamage(
-                    unit.fieldPosition,
-                    target.fieldPosition,
-                    AbilityIdx);
-                Response.Add(dealDamage);
-                ProcessActions(Response);
-                return;
-            }
-
-            var standActions = CheckInAreaAbilities(unit, target, BattleStage.Preemptive);
-            ProcessActions(standActions);
-            Response.AddRange(standActions);
-
-            if (unit.currentHp > 0)
-            {
-                dealDamage = new DealDamage(
-                    unit.fieldPosition,
-                    target.fieldPosition,
-                    AbilityIdx);
-                Response.Add(dealDamage);
-                //ProcessActions(new List<IActions> { dealDamage });
-            }
-
-            standActions = CheckInAreaAbilities(unit, target, BattleStage.MainAttack);
-            ProcessActions(standActions);
-            Response.AddRange(standActions);
-            
-            if (target.currentHp > 0)
-            {
-                dealDamage = new DealDamage(
-                     target.fieldPosition,
-                     unit.fieldPosition,
-                     1);
-                Response.Add(dealDamage);
-                //ProcessActions(new List<IActions> { dealDamage });
-            }
-
-            standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
-            ProcessActions(standActions);
-            Response.AddRange(standActions);
-
-            foreach (var lunit in units)
-            {
-                if (lunit.currentHp < 0)
-                {
-
-                }
-            }
-        }
-
-        private List<IActions> CheckInAreaAbilities(UnitPresset unit, UnitPresset target, BattleStage stage)
-        {
-            List<IActions> result = new List<IActions>();
-            List<(UnitPresset unit, StandPresset stand)> listStands 
-                = new List<(UnitPresset unit, StandPresset stand)>();
-
-            foreach (var lunit in units)
-            {
-                foreach (var stand in lunit.Stands)
-                {
-                    if (stand.CouldToReact(unit, target, stage))
-                    {
-                        listStands.Add((lunit, stand));
-                        UnitsInBattle.Add(lunit);
-                    }
-                }
-            }
-            foreach (var stand in listStands)
-            {
-                result.Add(
-                    new DealDamage(stand.unit.fieldPosition,
-                        target.fieldPosition,
-                        stand.stand.idx));
-            }
-            return result;
+            GameModeLogic.UpDownStand(unit, StandIdx);
         }
 
         public List<PathToken> GetWalkArea(UnitPresset unit)
@@ -298,21 +213,8 @@ namespace Controller
 
         public void Move(UnitPresset unit, PathToken pathToken)
         {
-            Response = new List<IActions>();
-            if (unit.MoveActionPoint.Active(unit.owner) ||
-                unit.MoveActionPoint.State == ActionState.InProcess)
-            {
-                MoveUnit moveUnit = new MoveUnit();
-                moveUnit.StartPosition = unit.fieldPosition;
-                moveUnit.EndPosition = pathToken.fieldPosition;
-                pathField.Refresh();
-                SpendActionPoints spendActionPoints = new SpendActionPoints();
-                spendActionPoints.AbilityIndx = 0;
-                spendActionPoints.Source = pathToken.fieldPosition;
-                ProcessActions(new List<IActions>() { moveUnit, spendActionPoints });
-                Response.Add(moveUnit);
-                Response.Add(spendActionPoints);
-            }
+            Response = GameModeLogic.Move(unit, pathToken);
+            pathField.Refresh();
             if (GameTableController.Get() != null)
                 GameTableController.Get().State = GameTableState.AwaitSelect;
         }
@@ -407,7 +309,7 @@ namespace Controller
             actionManager.ApplyActions(actions);
         }
 
-        public bool SelectUnit(UnitPresset token)
+        public bool IsUnitSelected(UnitPresset token)
         {
             if (token.owner == CurrentPlayer)
                 return true;

@@ -205,7 +205,7 @@ namespace Controller
             throw new NotImplementedException();
         }
 
-        public bool SelectUnit(UnitPresset token)
+        public bool IsUnitSelected(UnitPresset token)
         {
             if (token.owner == CurrentPlayer)
                 return true;
@@ -303,6 +303,11 @@ namespace Controller
             requestContainer.Player = owner.idx;
             requestContainer.Selected = fpos;
             Client.sendRequest(requestContainer);
+        }
+
+        public void UpDownStand(UnitPresset unit, int StandIdx)
+        {
+            throw new NotImplementedException();
         }
     }
 

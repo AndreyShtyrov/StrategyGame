@@ -13,6 +13,8 @@ namespace Controller
         public int idx
         { get; set; }
 
+        public bool Active;
+
         public string Name = "Stand";
 
         public ActionPoint point;

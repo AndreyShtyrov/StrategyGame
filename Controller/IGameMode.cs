@@ -52,7 +52,7 @@ namespace Controller
 
         public void CreateBuilding(Building build);
 
-        public bool SelectUnit(UnitPresset unit);
+        public bool IsUnitSelected(UnitPresset unit);
 
         public object ProcessRequset(object sender);
 
@@ -69,6 +69,8 @@ namespace Controller
         public Task GetNewGameStates();
 
         public event OnUnitsListChange UnitsListChanged;
+
+        public void UpDownStand(UnitPresset unit, int StandIdx);
 
         public void AddRequestManager(RequestManager Timer);
 

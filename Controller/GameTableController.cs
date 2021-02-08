@@ -66,7 +66,6 @@ namespace Controller
                         Selected = null;
                         if (selectedAbility != null)
                         {
-                            selectedAbility.Return();
                             selectedAbility = null;
                         }    
                             
@@ -98,7 +97,7 @@ namespace Controller
                     {
                         if (sender is UnitPresset selectedUnit)
                         {
-                            if (GameModeContainer.Get().SelectUnit(selectedUnit))
+                            if (GameModeContainer.Get().IsUnitSelected(selectedUnit))
                             {
                                 if (Selected != null)
                                     Selected.isSelected = false;
@@ -168,16 +167,15 @@ namespace Controller
         public static GameTableController Get()
         {
             return instance;
-        }
+         }
 
         public void SelectedUnitRaiseStand(StandPresset stand)
         {
-            stand.UpStand();
+            GameModeContainer.Get().UpDownStand(Selected, stand.idx);
         }
 
         public void SelectedUnitActivateAbility(AbilityPresset ability)
         {
-            ability.PrepareToUse();
             State = GameTableState.AwaitSelectTarget;
         }
 
