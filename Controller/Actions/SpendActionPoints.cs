@@ -15,6 +15,9 @@ namespace Controller.Actions
         public (int X, int Y) Source
         { get; set; }
 
+        public (int X, int Y) Destination
+        { get; set; }
+
         public ActionDirection Direction
         { get; set; }
 
@@ -39,19 +42,7 @@ namespace Controller.Actions
 
         public void reverse()
         {
-            var controller = GameModeContainer.Get();
-            var unit = controller.GetUnit(Source);
-            var ability = unit.GetAbility(AbilityIndx);
-            if (ability == null)
-            {
-                var stand = unit.GetStand(AbilityIndx);
-                stand.point.Return(unit.owner);
-            }
-            else
-            {
-                ability = unit.GetAbility(AbilityIndx);
-                ability.actionPoint.Return(unit.owner);
-            }
+            throw new NotImplementedException();
         }
     }
 }

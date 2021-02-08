@@ -9,6 +9,9 @@ namespace Controller.Actions
         public (int X, int Y) Source
         { get; set; }
 
+        public (int X, int Y) Destination
+        { get; set; }
+
         public int SourceAbility
         { get; set; }
 
@@ -26,9 +29,8 @@ namespace Controller.Actions
         {
             var controller = GameModeContainer.Get();
             var attackUnit = controller.GetUnit(Source);
-            var targetUnit = controller.GetUnit(Source);
-            var ability = attackUnit.GetAbility(0);
-            //var damage;
+            var targetUnit = controller.GetUnit(Destination);
+            attackUnit.Response(targetUnit);
         }
 
         public void reverse()

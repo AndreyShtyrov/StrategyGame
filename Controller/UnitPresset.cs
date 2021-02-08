@@ -117,6 +117,14 @@ namespace Controller
             PropertyChanged?.Invoke(ActionIndexs, new PropertyChangedEventArgs("UnitActionPoint"));
         }
 
+        public void Response(UnitPresset target)
+        {
+            var Response = Abilities[0];
+            Response.Use(target);
+        }
+
+
+
         public void Refresh()
         {
             MoveActionPoint.Refresh();

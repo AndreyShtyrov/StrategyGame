@@ -179,12 +179,12 @@ namespace Controller
                 requestContainer.Selected = unit.fieldPosition;
                 requestContainer.Target = target.fieldPosition;
                 requestContainer.AbilityIdx = AbilityIdx;
-                PrepareToUse action = new PrepareToUse();
-                action.Source = unit.fieldPosition;
-                action.SourceAbility = GameTableController.Get().selectedAbility.idx;
-                requestContainer.Actions = new List<IActions>();
-                requestContainer.Actions.Add(action);
-                Client.sendRequest(requestContainer);
+                //PrepareToUse action = new PrepareToUse();
+                //action.Source = unit.fieldPosition;
+                //action.SourceAbility = GameTableController.Get().selectedAbility.idx;
+                //requestContainer.Actions = new List<IActions>();
+                //requestContainer.Actions.Add(action);
+                //Client.sendRequest(requestContainer);
             }
         }
 

@@ -58,6 +58,7 @@ namespace Controller
                     else
                         unitAction.State = ActionState.InProcess;
                 }
+            
             ActionsIsSpend?.Invoke();
             return result;
         }
