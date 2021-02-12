@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,6 +22,17 @@ namespace Controller.Actions
         public ActionDirection Direction
         { get; set; }
 
+        [JsonConstructor]
+        public SpendActionPoints()
+        { }
+
+        public SpendActionPoints((int X, int Y) Source, int AbilityIndx)
+        {
+            idx = GameModeContainer.Get().ActionIdx;
+            this.Source = Source;
+            this.AbilityIndx = AbilityIndx;
+        }
+
         public void forward()
         {
             var controller = GameModeContainer.Get();
@@ -33,7 +45,12 @@ namespace Controller.Actions
 
         public void reverse()
         {
-            throw new NotImplementedException();
+            var controller = GameModeContainer.Get();
+            var unit = controller.GetUnit(Source);
+            if (AbilityIndx == 0)
+            { unit.MoveActionPoint.Refresh(); return; }
+            var ability = unit.GetAbility(AbilityIndx);
+            ability.actionPoint.Refresh();
         }
     }
 }

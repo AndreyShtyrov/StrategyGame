@@ -24,15 +24,12 @@ namespace Controller
             if (unit.MoveActionPoint.Active(unit.owner) ||
                 unit.MoveActionPoint.State == ActionState.InProcess)
             {
-                MoveUnit moveUnit = new MoveUnit();
-                moveUnit.StartPosition = unit.fieldPosition;
-                moveUnit.EndPosition = pathToken.fieldPosition;
-                SpendActionPoints spendActionPoints = new SpendActionPoints();
-                spendActionPoints.AbilityIndx = 0;
-                spendActionPoints.Source = pathToken.fieldPosition;
+                MoveUnit moveUnit = new MoveUnit(unit.fieldPosition,
+                    pathToken.fieldPosition);
+                SpendActionPoints spendActionPoints = new SpendActionPoints(
+                    pathToken.fieldPosition, 0);
                 var spendPlayerResources = TraitePlayersResources(unit.owner, 0, 1);
                 GameMode.ProcessActions(new List<IActions>() { moveUnit, spendActionPoints, spendPlayerResources });
-
                 result.Add(moveUnit);
                 result.Add(spendActionPoints);
                 result.Add(spendPlayerResources);
@@ -171,6 +168,15 @@ namespace Controller
                 result.Add(playerResources);
             }
                 
+            GameMode.ProcessActions(result);
+            return result;
+        }
+
+        public List<IActions> CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
+        {
+            var result = new List<IActions>();
+            CreateUnit createUnit = new CreateUnit(name, fpos, owner.idx);
+            result.Add(createUnit);
             GameMode.ProcessActions(result);
             return result;
         }

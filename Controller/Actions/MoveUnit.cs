@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,10 +18,19 @@ namespace Controller.Actions
         public ActionDirection Direction
         { get; set; }
 
+        [JsonConstructor]
         public MoveUnit()
         {
-            idx = GameModeContainer.Get().ActionIdx;
+            
         }
+
+        public MoveUnit((int X, int Y) StartPosition, (int X, int Y) EndPosition)
+        {
+            idx = GameModeContainer.Get().ActionIdx;
+            this.StartPosition = StartPosition;
+            this.EndPosition = EndPosition;
+        }
+
 
         public void forward()
         {

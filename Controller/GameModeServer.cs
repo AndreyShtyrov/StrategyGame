@@ -246,12 +246,7 @@ namespace Controller
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
-            Response = new List<IActions>();
-            CreateUnit createUnit = new CreateUnit(name, fpos, owner.idx);
-            var listResponse = new List<IActions>();
-            listResponse.Add(createUnit);
-            Response = listResponse;
-            ProcessActions(Response);
+            Response = GameModeLogic.CreateUnit(name, fpos, owner, typeUnit);
         }
 
         public object ProcessRequset(object sender)
