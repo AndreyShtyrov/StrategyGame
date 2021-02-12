@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Controller.Abilities
 {
-    public class Heal: AbilityPresset
+    public class Heal : AbilityPresset
     {
         private UnitPresset unit;
         public int damage = 2;
@@ -22,12 +22,9 @@ namespace Controller.Abilities
             Name = "Heal";
         }
 
-        public override void PrepareToUse()
+        public override bool IsReadyToUse()
         {
-            if (actionPoint.Active(unit.owner))
-            {
-                Use(this.unit);
-            }
+            return actionPoint.Active(unit.owner);
         }
 
         public override void Use(UnitPresset target)
@@ -48,7 +45,7 @@ namespace Controller.Abilities
 
         public override void Return() => actionPoint.Return(unit.owner);
 
-        public override void BreakActiono() => actionPoint.Return(unit.owner);
+        public override void BreakAction() => actionPoint.Return(unit.owner);
 
     }
 }

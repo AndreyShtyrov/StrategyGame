@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Controller.Actions
 {
-    class ResponseAttack
+    public class ResponseAttack: IActions
     {
         public (int X, int Y) Source
         { get; set; }
@@ -20,9 +21,15 @@ namespace Controller.Actions
 
         public int idx { get; set; }
 
+        [JsonConstructor]
         public ResponseAttack()
+        { }
+
+        public ResponseAttack((int X, int Y) Destination, (int X, int Y) Source)
         {
             idx = GameModeContainer.Get().ActionIdx;
+            this.Source = Source;
+            this.Destination = Destination;
         }
 
         public void forward()

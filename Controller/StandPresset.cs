@@ -13,7 +13,8 @@ namespace Controller
         public int idx
         { get; set; }
 
-        public bool Active;
+        public abstract bool Active
+        { get; set; }
 
         public string Name = "Stand";
 

@@ -34,6 +34,8 @@ namespace Controller.Requests
         public List<(int X, int Y)> Targets
         { get; set; }
 
+        public int LastApprovedState;
+
         public List<IActions> Actions
         { get; set; }
 
@@ -60,6 +62,7 @@ namespace Controller.Requests
         SelectTargest = 3,
         ApplyChanges = 4,
         GetNewStates = 5,
+        RevokeState = 6,
     }
 
 }

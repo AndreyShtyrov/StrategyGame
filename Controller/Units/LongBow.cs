@@ -40,5 +40,10 @@ namespace Controller.Units
             currentHp = MaxHp;
 
         }
+
+        public override void Response(UnitPresset target)
+        {
+            target.currentHp -= 1;
+        }
     }
 }

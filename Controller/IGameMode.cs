@@ -28,7 +28,7 @@ namespace Controller
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public UnitPresset[,] GetUnits();
+        public UnitPresset[,] GetGridOfUnits();
 
         public void SwitchTrun();
 
@@ -71,6 +71,8 @@ namespace Controller
         public event OnUnitsListChange UnitsListChanged;
 
         public void UpDownStand(UnitPresset unit, int StandIdx);
+
+        public List<UnitPresset> GetUnits();
 
         public void AddRequestManager(RequestManager Timer);
 

@@ -24,9 +24,9 @@ namespace Controller
     {
         public ActionState State => _State;
 
-        private readonly int neededAttackPoints;
+        public readonly int neededAttackPoints;
 
-        private readonly int neededMovePoints;
+        public readonly int neededMovePoints;
 
         private List<UnitActionPoint> bindUnitActions;
 
@@ -70,7 +70,6 @@ namespace Controller
                 unitAction.State = ActionState.Ready;
             }
             _State = ActionState.Ready;
-            GameModeContainer.Get().ReturnResources(neededAttackPoints, neededMovePoints, owner);
             ActionsIsSpend?.Invoke();
         }
 
@@ -132,7 +131,6 @@ namespace Controller
     }
 
     public delegate void SpendActions();
-
 
     public enum BattleStage
     {

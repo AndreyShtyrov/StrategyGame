@@ -89,7 +89,12 @@ namespace Controller
 
         public event OnUnitsListChange UnitsListChanged;
 
-        public UnitPresset[,] GetUnits()
+        public List<UnitPresset> GetUnits()
+        {
+            return units;
+        }
+
+        public UnitPresset[,] GetGridOfUnits()
         {
             UnitPresset[,] result = new UnitPresset[field.height, field.width];
             foreach (var unit in units)
@@ -208,7 +213,7 @@ namespace Controller
             pathField.Refresh();
             if (unit.MoveActionPoint.State == ActionState.Ended)
                 return new List<PathToken>();
-            return pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
+            return pathField.getWalkArea(unit.currentSpeed, unit, GetGridOfUnits());
         }
 
         public void Move(UnitPresset unit, PathToken pathToken)
@@ -319,7 +324,7 @@ namespace Controller
 
         public void BacklightTargets(UnitPresset unit, AbilityPresset ability)
         {
-            var targets = pathField.getListOfTargets(unit, ability.DeafaultRange, GetUnits());
+            var targets = pathField.getListOfTargets(unit, ability.DeafaultRange, GetGridOfUnits());
             foreach (var target in targets)
             {
                 target.isTarget = true;

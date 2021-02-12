@@ -23,16 +23,9 @@ namespace Controller.Abilities
             AbilityType = AbilityType.Attack;
         }
 
-        public override void PrepareToUse()
+        public override bool IsReadyToUse()
         {
-            if (actionPoint.Active(unit.owner))
-            {
-                var controller = GameTableController.Get();
-                CurrentRange = DeafaultRange;
-                controller.selectedAbility = this;
-                GameTableController.Get().State = GameTableState.AwaitSelectTarget;
-            }
-            
+            return actionPoint.Active(unit.owner);
         }
 
         public override void Use(UnitPresset target)
@@ -43,6 +36,6 @@ namespace Controller.Abilities
 
         public override void Return() => actionPoint.Return(unit.owner);
 
-        public override void BreakActiono() => actionPoint.Return(unit.owner);
+        public override void BreakAction() => actionPoint.Return(unit.owner);
     }
 }

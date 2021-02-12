@@ -117,13 +117,10 @@ namespace Controller
             PropertyChanged?.Invoke(ActionIndexs, new PropertyChangedEventArgs("UnitActionPoint"));
         }
 
-        public void Response(UnitPresset target)
+        public virtual void Response(UnitPresset target)
         {
-            var Response = Abilities[0];
-            Response.Use(target);
+            target.currentHp -= 2;
         }
-
-
 
         public void Refresh()
         {

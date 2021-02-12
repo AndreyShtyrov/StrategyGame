@@ -30,22 +30,45 @@ namespace Controller
                 SpendActionPoints spendActionPoints = new SpendActionPoints();
                 spendActionPoints.AbilityIndx = 0;
                 spendActionPoints.Source = pathToken.fieldPosition;
-                GameMode.ProcessActions(new List<IActions>() { moveUnit, spendActionPoints });
+                var spendPlayerResources = TraitePlayersResources(unit.owner, 0, 1);
+                GameMode.ProcessActions(new List<IActions>() { moveUnit, spendActionPoints, spendPlayerResources });
+
                 result.Add(moveUnit);
                 result.Add(spendActionPoints);
-            }
+                result.Add(spendPlayerResources);
+            }   
             return result;
         }
 
+        public IActions TraitePlayersResources(Player player,int attackPoints=0, int movePoints=0, bool isReverse=false)
+        {
+            SpendPlayerResources spendPlayerResources;
+            if (isReverse)
+                spendPlayerResources = new SpendPlayerResources(
+                -attackPoints, -movePoints, player.idx);
+            else
+                spendPlayerResources = new SpendPlayerResources(
+                attackPoints, movePoints, player.idx);
+            return spendPlayerResources;
+
+        }
 
         public List<IActions> ProcessMeleeBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
+
             List<IActions> result = new List<IActions>();
             UnitsInBattle.Clear();
             UnitsInBattle.Add(unit);
             UnitsInBattle.Add(target);
 
             var Attack = unit.GetAbility(AbilityIdx);
+            var playersResources = TraitePlayersResources(
+                unit.owner,
+                Attack.actionPoint.neededAttackPoints,
+                Attack.actionPoint.neededMovePoints);
+            GameMode.ProcessActions(new List<IActions>() { playersResources });
+            result.Add(playersResources);
+
             DealDamage dealDamage;
 
             if (Attack.AbilityType == AbilityType.RangeAttack)
@@ -55,7 +78,7 @@ namespace Controller
                     target.fieldPosition,
                     AbilityIdx);
                 result.Add(dealDamage);
-                GameMode.ProcessActions(result);
+                GameMode.ProcessActions(new List<IActions>() { dealDamage });
                 return result;
             }
 
@@ -79,18 +102,18 @@ namespace Controller
 
             if (target.currentHp > 0)
             {
-                dealDamage = new DealDamage(
-                     target.fieldPosition,
+                var responseDamage = new ResponseAttack(
                      unit.fieldPosition,
-                     1);
-                result.Add(dealDamage);
-                //ProcessActions(new List<IActions> { dealDamage });
+                     target.fieldPosition);
+                result.Add(responseDamage);
+                GameMode.ProcessActions(new List<IActions> { responseDamage });
             }
 
             standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
             GameMode.ProcessActions(standActions);
             result.AddRange(standActions);
             return result;
+            
         }
 
         private List<IActions> CheckInAreaAbilities(UnitPresset unit, UnitPresset target, BattleStage stage)
@@ -124,12 +147,30 @@ namespace Controller
         {
             List<IActions> result = new List<IActions>();
             var stand = unit.GetStand(StandIdx);
+            IActions playerResources;
             if (stand.point.State == ActionState.Ended)
                 return result;
             if (!stand.Active)
+            {
                 result.Add(new RaiseStend(unit.fieldPosition, StandIdx, true));
+                playerResources = TraitePlayersResources(
+                    unit.owner,
+                    stand.point.neededAttackPoints,
+                    stand.point.neededMovePoints);
+                result.Add(playerResources);
+
+            }
             else
+            {
                 result.Add(new RaiseStend(unit.fieldPosition, StandIdx, false));
+                playerResources = TraitePlayersResources(
+                    unit.owner,
+                    stand.point.neededAttackPoints,
+                    stand.point.neededMovePoints,
+                    true);
+                result.Add(playerResources);
+            }
+                
             GameMode.ProcessActions(result);
             return result;
         }

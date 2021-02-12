@@ -55,7 +55,7 @@ namespace Controller
                 State = GameModeState.AwaitResponse;
         }
 
-        public UnitPresset[,] GetUnits()
+        public UnitPresset[,] GetGridOfUnits()
         {
             UnitPresset[,] result = new UnitPresset[field.height, field.width];
             foreach (var unit in units)
@@ -151,7 +151,7 @@ namespace Controller
         public List<PathToken> GetWalkArea(UnitPresset unit)
         {
             pathField.Refresh();
-            return pathField.getWalkArea(unit.currentSpeed, unit, GetUnits());
+            return pathField.getWalkArea(unit.currentSpeed, unit, GetGridOfUnits());
         }
 
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos)
@@ -220,7 +220,7 @@ namespace Controller
 
         public void SelectedUnitActivateAbility(AbilityPresset ability)
         {
-            ability.PrepareToUse();
+            ability.IsReadyToUse();
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -264,7 +264,7 @@ namespace Controller
 
         public void BacklightTargets(UnitPresset unit, AbilityPresset ability)
         {
-            var targets = pathField.getListOfTargets(unit, ability.DeafaultRange, GetUnits());
+            var targets = pathField.getListOfTargets(unit, ability.DeafaultRange, GetGridOfUnits());
             foreach (var target in targets)
             {
                 target.isTarget = true;
@@ -306,6 +306,11 @@ namespace Controller
         }
 
         public void UpDownStand(UnitPresset unit, int StandIdx)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<UnitPresset> GetUnits()
         {
             throw new NotImplementedException();
         }

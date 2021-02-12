@@ -28,16 +28,7 @@ namespace Controller.Actions
             if (AbilityIndx == 0)
             { unit.MoveActionPoint.Spend(); return; }
             var ability = unit.GetAbility(AbilityIndx);
-            if (ability == null)
-            {
-                var stand = unit.GetStand(AbilityIndx);
-                stand.point.Spend();
-            }
-            else
-            {
-                ability = unit.GetAbility(AbilityIndx);
-                ability.actionPoint.Spend();
-            }
+            ability.actionPoint.Spend();
         }
 
         public void reverse()

@@ -73,7 +73,6 @@ namespace StrategyGame
             PlayerWindow playerWindow1 = new PlayerWindow(0);
             PlayerWindow playerWindow2 = new PlayerWindow(1);
             TopPannel.Children.Add(playerWindow1);
-            TopPannel.Children.Add(playerWindow2);
             Turn.Click += (object sender, RoutedEventArgs e) => GameModeContainer.Get().SwitchTrun();
             RequestManager timer = new RequestManager();
             GameModeContainer.Get().AddRequestManager(timer);

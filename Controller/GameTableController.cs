@@ -176,7 +176,13 @@ namespace Controller
 
         public void SelectedUnitActivateAbility(AbilityPresset ability)
         {
-            State = GameTableState.AwaitSelectTarget;
+            if (ability.IsReadyToUse())
+            {
+                selectedAbility = ability;
+                State = GameTableState.AwaitSelectTarget;
+            }
+            else
+                State = GameTableState.AwaitSelect;
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")

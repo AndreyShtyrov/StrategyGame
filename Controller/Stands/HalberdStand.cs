@@ -12,7 +12,8 @@ namespace Controller.Stands
     {
         public override int Damage => 2;
         private readonly UnitPresset unit;
-        public new bool Active = false;
+        public override bool Active
+        { get; set; }
 
         [JsonConstructor]
         public HalberdStand()
@@ -21,6 +22,7 @@ namespace Controller.Stands
         public HalberdStand(UnitPresset unit, List<UnitActionPoint> bindActionPoint)
         {
             this.unit = unit;
+            Active = false;
             point = new ActionPoint(unit, 1, 0, bindActionPoint);
             AbilityType = AbilityType.Attack;
             Name = "Halberd";

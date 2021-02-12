@@ -21,9 +21,9 @@ namespace Controller
 
         public abstract void Use(UnitPresset target);
 
-        public abstract void PrepareToUse();
+        public abstract bool IsReadyToUse();
 
-        public abstract void BreakActiono();
+        public abstract void BreakAction();
 
         public abstract void Return();
     }
