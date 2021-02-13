@@ -57,8 +57,11 @@ namespace Controller.Stands
 
         public override void UpStand()
         {
-            Active = true;
-            point.Active(unit.owner);
+            if (point.IsReady(unit.owner))
+            {
+                Active = true;
+                point.ToInProgres();
+            }
         }
 
         public override void DownStand()

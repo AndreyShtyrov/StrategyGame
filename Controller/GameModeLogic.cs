@@ -21,7 +21,7 @@ namespace Controller
         public List<IActions> Move(UnitPresset unit, PathToken pathToken)
         {
             List<IActions> result = new List<IActions>();
-            if (unit.MoveActionPoint.Active(unit.owner) ||
+            if (unit.MoveActionPoint.IsReady(unit.owner) ||
                 unit.MoveActionPoint.State == ActionState.InProcess)
             {
                 MoveUnit moveUnit = new MoveUnit(unit.fieldPosition,

@@ -46,7 +46,7 @@ namespace Controller
 
         private ActionState _State = ActionState.Ready;
 
-        public bool Active(Player owner)
+        public bool IsReady(Player owner)
         {
             var result = GameModeContainer.Get().
                 IsEnoughResources(neededAttackPoints, neededMovePoints, owner);
@@ -55,14 +55,20 @@ namespace Controller
                 {
                     if (unitAction.State != ActionState.Ready)
                         return false;
-                    else
-                        unitAction.State = ActionState.InProcess;
                 }
-            
-            ActionsIsSpend?.Invoke();
             return result;
         }
-        
+
+        public void ToInProgres()
+        {
+            foreach (var unitAction in bindUnitActions)
+            {
+                unitAction.State = ActionState.InProcess;   
+            }
+            _State = ActionState.InProcess;
+            ActionsIsSpend?.Invoke();
+        }
+
         public void Return(Player owner)
         {
             foreach(var unitAction in bindUnitActions)

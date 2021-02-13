@@ -38,7 +38,7 @@ namespace Controller.Actions
             var unit = controller.GetUnit(StartPosition);
             var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
             unit.Move(EndPosition, distance);
-            unit.MoveActionPoint.Active(unit.owner);
+            unit.MoveActionPoint.IsReady(unit.owner);
             unit.MoveActionPoint.Spend();
         }
 

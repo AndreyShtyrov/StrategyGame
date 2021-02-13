@@ -25,7 +25,7 @@ namespace Controller.Abilities
 
         public override bool IsReadyToUse()
         {
-            return actionPoint.Active(unit.owner);
+            return actionPoint.IsReady(unit.owner);
         }
 
         public override void Use(UnitPresset target)

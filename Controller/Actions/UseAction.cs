@@ -16,7 +16,7 @@ namespace Controller.Actions
         { get; set; }
 
         public int idx { get; set; }
-
+ 
         public UseAction()
         {
             idx = GameModeContainer.Get().ActionIdx;
