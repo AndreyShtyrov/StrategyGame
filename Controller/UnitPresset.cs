@@ -8,7 +8,7 @@ using Controller.Stands;
 using InterfaceOfObjects;
 using Controller.Abilities;
 using Controller.Units;
-
+using Newtonsoft.Json;
 
 namespace Controller
 {
@@ -207,12 +207,31 @@ namespace Controller
 
     public struct UnitStatus
     {
-        public List<(int Idx, bool IsActive, ActionState State)> Stends;
-        public List<(int Idx, ActionState State)> Abilities;
-        public int CurrentHp;
-        public ActionState Move;
-        public (int X, int Y) fieldPosition;
+        public List<(int Idx, bool IsActive, ActionState State)> Stends
+        { get; set; }
+        public List<(int Idx, ActionState State)> Abilities
+        { get; set; }
+        public int CurrentHp
+        { get; set; }
+        public ActionState Move
+        { get; set; }
+        public (int X, int Y) FieldPosition
+        { get; set; }
 
+        [JsonConstructor]
+        public UnitStatus(
+            List<(int Idx, bool IsActive, ActionState State)> stends,
+            List<(int Idx, ActionState State)> abilities,
+            int currentHp,
+            ActionState move,
+            (int X, int Y) fieldPosition)
+        {
+            Stends = stends;
+            Abilities = abilities;
+            CurrentHp = currentHp;
+            Move = move;
+            FieldPosition = fieldPosition;
+        }
 
         public UnitStatus(UnitPresset unit)
         {
@@ -228,7 +247,7 @@ namespace Controller
             }
             Move = unit.MoveActionPoint.State;
             CurrentHp = unit.currentHp;
-            fieldPosition = unit.fieldPosition;
+            FieldPosition = unit.fieldPosition;
         }
     }
 

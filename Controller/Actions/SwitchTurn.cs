@@ -96,7 +96,7 @@ namespace Controller.Actions
 
         private void SetStateStates(UnitStatus savedUnit)
         {
-            var unit = GameModeContainer.Get().GetUnit(savedUnit.fieldPosition);
+            var unit = GameModeContainer.Get().GetUnit(savedUnit.FieldPosition);
             foreach (var savedStend in savedUnit.Stends)
             {
                 var stand = unit.GetStand(savedStend.Idx);

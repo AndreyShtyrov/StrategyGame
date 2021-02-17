@@ -73,7 +73,7 @@ namespace StrategyGame
             PlayerWindow playerWindow1 = new PlayerWindow(0);
             PlayerWindow playerWindow2 = new PlayerWindow(1);
             TopPannel.Children.Add(playerWindow1);
-            Turn.Click += (object sender, RoutedEventArgs e) => GameModeContainer.Get().ChangePlayers();
+            //Turn.Click += (object sender, RoutedEventArgs e) => GameModeContainer.Get().ChangePlayers();
             RequestManager timer = new RequestManager();
             gameMode.AddRequestManager(timer);
             gameMode.CreateUnit("Helbard", (4, 4), player1);
