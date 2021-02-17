@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Controller
 {
-    public class Player : INotifyPropertyChanged
+    public sealed class Player : INotifyPropertyChanged
     {
         private static List<Player> instances = new List<Player>();
         private int _AttackPoints;
@@ -73,17 +73,20 @@ namespace Controller
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public static Player getPlayer(int idx, int baseMove = 5, int baseAttack = 5)
+        public static Player Get(int idx)
         {
             foreach (var instance in instances)
             {
                 if (instance.idx == idx)
                     return instance;
             }
+            throw new NotImplementedException(" Player with this index not define yet");
+        }
+
+        public static void Create(int idx, int baseMove = 5, int baseAttack = 5)
+        {
             Player player = new Player(idx, baseMove, baseAttack);
             instances.Add(player);
-            return player;
-            
         }
 
         Player(int idx, int baseMove, int baseAttack)

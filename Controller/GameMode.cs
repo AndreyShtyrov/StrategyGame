@@ -23,7 +23,7 @@ namespace Controller
         private PathField pathField;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-        private Player CurrentPlayer = Player.getPlayer(0);
+        private Player CurrentPlayer = Player.Get(0);
         private ActionManager actionManager;
         private RequestManager requestManager;
 
@@ -65,21 +65,9 @@ namespace Controller
             return result;
         }
 
-        public void SwitchTrun()
+        public void ChangePlayers(Player previusPlayer, Player nextPlayer)
         {
-
-            CurrentPlayer.getIncome();
-            if (CurrentPlayer.idx == 0)
-                CurrentPlayer = Player.getPlayer(1);
-            else
-                CurrentPlayer = Player.getPlayer(0);
-            foreach (var unit in units)
-            {
-                if (unit.owner == CurrentPlayer)
-                {
-                    unit.Refresh();
-                }
-            }
+            throw new NotImplementedException();
         }
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center)

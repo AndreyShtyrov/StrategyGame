@@ -11,12 +11,26 @@ namespace Controller
     {
         private GameModeServer GameMode;
 
-        public GameModeLogic(GameModeServer GameMode)
+        public Player CurrentPlayer
+        { get; set; }
+        
+        
+        public GameModeLogic(GameModeServer GameMode, Player FirstPlyaer)
         {
             this.GameMode = GameMode;
+            CurrentPlayer = FirstPlyaer;
         }
 
-        List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
+
+
+        private List<IActions> SwitchTurn(bool IsIterrupting)
+        {
+            List<IActions> result = new List<IActions>();
+            result.Add(new MoveUnit());
+            return result;
+        }
+
+        private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
   
         public List<IActions> Move(UnitPresset unit, PathToken pathToken)
         {
@@ -121,7 +135,7 @@ namespace Controller
             var units = GameModeContainer.Get().GetUnits();
             foreach (var lunit in units)
             {
-                foreach (var stand in lunit.Stands)
+                foreach (var stand in lunit.Stends)
                 {
                     if (stand.CouldToReact(unit, target, stage))
                     {
@@ -145,7 +159,10 @@ namespace Controller
             List<IActions> result = new List<IActions>();
             var stand = unit.GetStand(StandIdx);
             IActions playerResources;
-            if (stand.point.State == ActionState.Ended)
+            if (stand.point.State == ActionState.Ended ||
+                GameMode.IsEnoughResources(
+                    stand.point.neededAttackPoints,
+                    stand.point.neededMovePoints, unit.owner))
                 return result;
             if (!stand.Active)
             {
@@ -155,7 +172,6 @@ namespace Controller
                     stand.point.neededAttackPoints,
                     stand.point.neededMovePoints);
                 result.Add(playerResources);
-
             }
             else
             {

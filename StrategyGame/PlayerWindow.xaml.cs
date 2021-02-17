@@ -24,7 +24,7 @@ namespace StrategyGame
         public PlayerWindow(int idx)
         {
             InitializeComponent();
-            data = Player.getPlayer(idx);
+            data = Player.Get(idx);
             data.PropertyChanged += OnPropertyChange;
             PlayerName.Content = "Player " + idx.ToString();
             MoveP.Content = data.AttackPoints.ToString();

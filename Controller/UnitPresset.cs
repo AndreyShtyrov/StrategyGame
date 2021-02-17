@@ -30,7 +30,7 @@ namespace Controller
                 return base.currentHp;
             }
         }
-        public List<StandPresset> Stands = new List<StandPresset>();
+        public List<StandPresset> Stends = new List<StandPresset>();
         public List<AbilityPresset> Abilities = new List<AbilityPresset>();
         public float maxSpeed = 2f;
         public float currentSpeed;
@@ -129,7 +129,7 @@ namespace Controller
             {
                 ability.actionPoint.Refresh();
             }
-            foreach (var stand in Stands)
+            foreach (var stand in Stends)
             {
                 stand.Refresh();
             }
@@ -154,7 +154,7 @@ namespace Controller
 
         public StandPresset GetStand(int idx)
         {
-            foreach (var stand in Stands)
+            foreach (var stand in Stends)
             {
                 if (stand.idx == idx)
                     return stand;
@@ -174,9 +174,9 @@ namespace Controller
             }
             else
             {
-                for (int i = 0; i < Stands.Count; i++)
+                for (int i = 0; i < Stends.Count; i++)
                 {
-                    if (Stands[i] == action)
+                    if (Stends[i] == action)
                         return i;
                 }
             }
@@ -204,4 +204,32 @@ namespace Controller
         }
         private bool _isTarget;
     }
+
+    public struct UnitStatus
+    {
+        public List<(int Idx, bool IsActive, ActionState State)> Stends;
+        public List<(int Idx, ActionState State)> Abilities;
+        public int CurrentHp;
+        public ActionState Move;
+        public (int X, int Y) fieldPosition;
+
+
+        public UnitStatus(UnitPresset unit)
+        {
+            Stends = new List<(int Stand, bool IsActive, ActionState State)>();
+            foreach (var stend in unit.Stends)
+            {
+                Stends.Add((stend.idx, stend.Active, stend.point.State));
+            }
+            Abilities = new List<(int Ability, ActionState State)>();
+            foreach (var ability in unit.Abilities)
+            {
+                Abilities.Add((ability.idx, ability.actionPoint.State));
+            }
+            Move = unit.MoveActionPoint.State;
+            CurrentHp = unit.currentHp;
+            fieldPosition = unit.fieldPosition;
+        }
+    }
+
 }

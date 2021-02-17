@@ -35,7 +35,7 @@ namespace Controller.Units
             MeleeAttack melee = new MeleeAttack(this, attacklistAction2);
             melee.idx = 1;
             Abilities.Add(melee);
-            Stands.Add(halberd);
+            Stends.Add(halberd);
 
             var healList = new List<UnitActionPoint>(movelistAction);
             healList.AddRange(attacklistAction1);

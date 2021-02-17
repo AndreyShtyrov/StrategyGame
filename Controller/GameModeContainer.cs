@@ -9,11 +9,9 @@ namespace Controller
     {
         static public IGameMode instance;
 
-
         public static IGameMode Get()
         {
             return instance;
         }
-        
     }
 }

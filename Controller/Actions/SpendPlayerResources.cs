@@ -28,14 +28,14 @@ namespace Controller.Actions
 
         public void forward()
         {
-            var player = Player.getPlayer(this.PlayerIdx);
+            var player = Player.Get(this.PlayerIdx);
             player.AttackPoints -= this.AttackActions;
             player.MovePoints -= this.MoveActions;
         }
 
         public void reverse()
         {
-            var player = Player.getPlayer(this.PlayerIdx);
+            var player = Player.Get(this.PlayerIdx);
             player.AttackPoints += this.AttackActions;
             player.MovePoints += this.MoveActions;
         }

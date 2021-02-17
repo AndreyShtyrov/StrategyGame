@@ -29,7 +29,7 @@ namespace Controller
         private ActionManager actionManager;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-        private Player CurrentPlayer = Player.getPlayer(0);
+        private Player CurrentPlayer => GameModeLogic.CurrentPlayer;
         private int _ActionIdx = 0;
         private RequestManager requestManager;
 
@@ -58,7 +58,7 @@ namespace Controller
             this.RequestSender = new RequestSender();
             this.RequestSender.SenderType = SenderType.Server;
             this.RequestSender.Player = reqestSender;
-            GameModeLogic = new GameModeLogic(this);
+            GameModeLogic = new GameModeLogic(this, Player.Get(0));
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -104,21 +104,10 @@ namespace Controller
             return result;
         }
 
-        public void SwitchTrun()
+        public void ChangePlayers(Player PrivousPlayer, Player NextPlayer)
         {
-
-            CurrentPlayer.getIncome();
-            if (CurrentPlayer.idx == 0)
-                CurrentPlayer = Player.getPlayer(1);
-            else
-                CurrentPlayer = Player.getPlayer(0);
-            foreach (var unit in units)
-            {
-                if (unit.owner == CurrentPlayer)
-                {
-                    unit.Refresh();
-                }
-            }
+            
+            
         }
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center)
@@ -294,7 +283,7 @@ namespace Controller
                     }
                     if (request.Type == RequestType.CreateUnit)
                     {
-                        CreateUnit(request.Name, request.Selected, Player.getPlayer(request.Player));
+                        CreateUnit(request.Name, request.Selected, Player.Get(request.Player));
                     }
                     RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
                     applyChangesRequest.Actions = Response;
@@ -364,7 +353,6 @@ namespace Controller
     {
         Standart = 0,
         AwaitResponse = 1,
-
     }
 
     public delegate RequestContainer GetDelaiedResponse(RequestContainer requestContainer);

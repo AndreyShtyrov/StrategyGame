@@ -30,7 +30,7 @@ namespace Controller
 
         public UnitPresset[,] GetGridOfUnits();
 
-        public void SwitchTrun();
+        public void ChangePlayers(Player previousPlayer, Player nextPlayer);
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None");
 

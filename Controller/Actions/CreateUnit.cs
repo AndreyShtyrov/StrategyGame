@@ -10,6 +10,7 @@ namespace Controller.Actions
     {
         public int idx { get; set; }
 
+
         public string Name
         { get; set; }
 
@@ -34,7 +35,7 @@ namespace Controller.Actions
         public void forward()
         {
             var conntroller = GameModeContainer.Get();
-            var unit = UnitPresset.CreateUnit(Name, fieldPosition, Player.getPlayer(PlayerIndex));
+            var unit = UnitPresset.CreateUnit(Name, fieldPosition, Player.Get(PlayerIndex));
             conntroller.AddUnit(unit);
         }
 

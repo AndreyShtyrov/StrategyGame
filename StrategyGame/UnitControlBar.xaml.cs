@@ -42,7 +42,7 @@ namespace StrategyGame
                         SelectedUnitActivateAbility(ability);
                     AbilityStack.Children.Add(button);
                 }
-                foreach ( var stand in unit.Stands)
+                foreach ( var stand in unit.Stends)
                 {
                     Button button = new Button();
                     button.Content = stand.Name;

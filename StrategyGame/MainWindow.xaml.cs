@@ -45,8 +45,11 @@ namespace StrategyGame
         private void StartClient(int ClientIdx)
         {
             fieldgui.clearField();
-            var player1 = Player.getPlayer(0, 5, 5);
-            var player2 = Player.getPlayer(1, 5, 5);
+            Player.Create(0, 5, 5);
+            Player.Create(1, 5, 5);
+            var player1 = Player.Get(0);
+            var player2 = Player.Get(1);
+
             if (ClientIdx == 0)
             {
                 GameTableController.Create(player1, fieldgui);
@@ -59,28 +62,25 @@ namespace StrategyGame
             field = Field.load(savefile);
 
             GameModeContainer.instance = new GameModeServer(field);
-            GameModeContainer.Get().UnitsListChanged += OnUnitsListChange;
-
             
+            var gameMode = GameModeContainer.Get();
+            gameMode.UnitsListChanged += OnUnitsListChange;
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
             fieldgui.drawGrid(field);
-            player1.AttackPoints = 5;
-            player1.MovePoints = 5;
-            player2.MovePoints = 5;
-            player2.AttackPoints = 5;
+            
 
             gameTable.PropertyChanged += UnitPanel.OnSelectedHandler;
             PlayerWindow playerWindow1 = new PlayerWindow(0);
             PlayerWindow playerWindow2 = new PlayerWindow(1);
             TopPannel.Children.Add(playerWindow1);
-            Turn.Click += (object sender, RoutedEventArgs e) => GameModeContainer.Get().SwitchTrun();
+            Turn.Click += (object sender, RoutedEventArgs e) => GameModeContainer.Get().ChangePlayers();
             RequestManager timer = new RequestManager();
-            GameModeContainer.Get().AddRequestManager(timer);
-            GameModeContainer.Get().CreateUnit("Helbard", (4, 4), player1);
-            GameModeContainer.Get().CreateUnit("Helbard", (6, 6), player2);
-            GameModeContainer.Get().CreateUnit("Helbard", (7, 7), player2);
-            GameModeContainer.Get().CreateUnit("LongBow", (5, 6), player1);
-            GameModeContainer.Get().CreateUnit("LongBow", (7, 6), player2);
+            gameMode.AddRequestManager(timer);
+            gameMode.CreateUnit("Helbard", (4, 4), player1);
+            gameMode.CreateUnit("Helbard", (6, 6), player2);
+            gameMode.CreateUnit("Helbard", (7, 7), player2);
+            gameMode.CreateUnit("LongBow", (5, 6), player1);
+            gameMode.CreateUnit("LongBow", (7, 6), player2);
             //gameMode.GetNewGameStates();
         }
 
