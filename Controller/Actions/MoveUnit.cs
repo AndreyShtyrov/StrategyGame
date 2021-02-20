@@ -38,8 +38,6 @@ namespace Controller.Actions
             var unit = controller.GetUnit(StartPosition);
             var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
             unit.Move(EndPosition, distance);
-            unit.MoveActionPoint.IsReady(unit.owner);
-            unit.MoveActionPoint.Spend();
         }
 
         public void reverse()
@@ -49,7 +47,6 @@ namespace Controller.Actions
             unit.Move(StartPosition, 0);
             var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
             unit.Move(StartPosition, -distance);
-            unit.MoveActionPoint.Return(unit.owner);
         }
     }
 }

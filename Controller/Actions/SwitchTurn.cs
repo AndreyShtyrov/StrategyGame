@@ -39,6 +39,8 @@ namespace Controller.Actions
                 nextPlayer.MovePoints + nextPlayer.IncomeMovePoints);
             PrevPlayer = prevPlayer.idx;
             NextPlayer = nextPlayer.idx;
+            PreviousPlayerUnitsStatuses = new List<UnitStatus>();
+            NextPlayerUnitsStatuses = new List<UnitStatus>();
             PreviousPointsPreviosPlayer = (nextPlayer.AttackPoints, nextPlayer.MovePoints);
             foreach (var unit in GameModeContainer.Get().GetUnits())
             {

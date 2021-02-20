@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Controller.Actions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,15 +29,28 @@ namespace Controller.Abilities
             return actionPoint.IsReady(unit.owner);
         }
 
-        public override void Use(UnitPresset target)
+        public override List<IActions> Use(UnitPresset target)
         {
-            target.currentHp -= damage;
-            actionPoint.Spend();
+            return new List<IActions>() {
+            new DealDamage(
+                unit.fieldPosition,
+                target.fieldPosition,
+                idx,
+                damage), new ChangeActionPointState(
+                    unit.fieldPosition,
+                    idx,
+                    actionPoint.State,
+                    ActionState.Ended),
+            new SpendPlayerResources(
+                actionPoint.neededAttackPoints,
+                actionPoint.neededMovePoints,
+                unit.owner.idx)};
+
         }
 
-        public override void Return() => actionPoint.Return(unit.owner);
+        public override void Return() => actionPoint.Return();
 
-        public override void BreakAction() => actionPoint.Return(unit.owner);
+        public override void BreakAction() => actionPoint.Return();
 
     }
 }

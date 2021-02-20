@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Controller.Actions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -24,7 +25,7 @@ namespace Controller
 
         public abstract bool CouldToReact(UnitPresset sender, UnitPresset target, BattleStage stage);
 
-        public abstract void Use(UnitPresset sender, UnitPresset target);
+        public abstract List<IActions> Use(UnitPresset sender, UnitPresset target);
 
         public virtual void UpStand()
         { }

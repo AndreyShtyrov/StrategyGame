@@ -5,6 +5,7 @@ using System.Windows;
 using Controller;
 using InterfaceOfObjects;
 using Newtonsoft.Json;
+using Controller.Actions;
 
 namespace Controller.Stands
 {
@@ -67,7 +68,7 @@ namespace Controller.Stands
         public override void DownStand()
         {
             Active = false;
-            point.Return(unit.owner);
+            point.Return();
         }
 
         public override void Refresh()
@@ -75,18 +76,16 @@ namespace Controller.Stands
             point.Refresh();
         }
 
-        public override void Use(UnitPresset sender, UnitPresset target)
+        public override List<IActions> Use(UnitPresset sender, UnitPresset target)
         {
-            if (unit.owner == sender.owner)
-            {
-                Active = false;
-                target.currentHp -= Damage;
-            }
-            else
-            {
-                Active = false;
-                sender.currentHp -= Damage;
-            }
+            DealDamage dealDamage = new DealDamage(
+                sender.fieldPosition,
+                target.fieldPosition,
+                this.idx,
+                this.Damage);
+            ChangeActionPointState changeAction = new ChangeActionPointState(
+                this.unit.fieldPosition, this.idx, point.State,ActionState.Ended);
+            return new List<IActions>() { dealDamage, changeAction};
         }
     }
 }

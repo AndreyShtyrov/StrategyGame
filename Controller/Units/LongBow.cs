@@ -28,22 +28,20 @@ namespace Controller.Units
 
             WeakMeleeAttack meleeAttack = new WeakMeleeAttack(this, attacklistAction);
             LongBowAttack longBowAttack = new LongBowAttack(this, attacklistAction);
-            meleeAttack.idx = 1;
-            longBowAttack.idx = 2;
+            meleeAttack.idx = 2;
+            longBowAttack.idx = 3;
             Abilities.Add(meleeAttack);
             Abilities.Add(longBowAttack);
 
             movelistAction.AddRange(attacklistAction);
             Heal heal = new Heal(this, movelistAction);
-            heal.idx = 3;
+            heal.idx = 4;
             Abilities.Add(heal);
             currentHp = MaxHp;
+            ResponseDamage = 1;
 
         }
 
-        public override void Response(UnitPresset target)
-        {
-            target.currentHp -= 1;
-        }
+
     }
 }

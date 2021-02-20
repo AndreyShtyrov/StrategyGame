@@ -40,8 +40,8 @@ namespace Controller
             {
                 MoveUnit moveUnit = new MoveUnit(unit.fieldPosition,
                     pathToken.fieldPosition);
-                SpendActionPoints spendActionPoints = new SpendActionPoints(
-                    pathToken.fieldPosition, 0);
+                ChangeActionPointState spendActionPoints = new ChangeActionPointState(
+                    pathToken.fieldPosition, 0, ActionState.Ready ,ActionState.Ended);
                 var spendPlayerResources = TraitePlayersResources(unit.owner, 0, 1);
                 GameMode.ProcessActions(new List<IActions>() { moveUnit, spendActionPoints, spendPlayerResources });
                 result.Add(moveUnit);
@@ -73,23 +73,12 @@ namespace Controller
             UnitsInBattle.Add(target);
 
             var Attack = unit.GetAbility(AbilityIdx);
-            var playersResources = TraitePlayersResources(
-                unit.owner,
-                Attack.actionPoint.neededAttackPoints,
-                Attack.actionPoint.neededMovePoints);
-            GameMode.ProcessActions(new List<IActions>() { playersResources });
-            result.Add(playersResources);
 
-            DealDamage dealDamage;
 
             if (Attack.AbilityType == AbilityType.RangeAttack)
             {
-                dealDamage = new DealDamage(
-                    unit.fieldPosition,
-                    target.fieldPosition,
-                    AbilityIdx);
-                result.Add(dealDamage);
-                GameMode.ProcessActions(new List<IActions>() { dealDamage });
+                result.AddRange(Attack.Use(target));
+                GameMode.ProcessActions(result);
                 return result;
             }
 
@@ -98,27 +87,15 @@ namespace Controller
             result.AddRange(standActions);
 
             if (unit.currentHp > 0)
-            {
-                dealDamage = new DealDamage(
-                    unit.fieldPosition,
-                    target.fieldPosition,
-                    1);
-                result.Add(dealDamage);
-                GameMode.ProcessActions(new List<IActions> { dealDamage });
-            }
+                result.AddRange(Attack.Use(target));
+            GameMode.ProcessActions(result);
+
+            result.AddRange(target.Response(unit));
+            GameMode.ProcessActions(result);
 
             standActions = CheckInAreaAbilities(unit, target, BattleStage.MainAttack);
             GameMode.ProcessActions(standActions);
             result.AddRange(standActions);
-
-            if (target.currentHp > 0)
-            {
-                var responseDamage = new ResponseAttack(
-                     unit.fieldPosition,
-                     target.fieldPosition);
-                result.Add(responseDamage);
-                GameMode.ProcessActions(new List<IActions> { responseDamage });
-            }
 
             standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
             GameMode.ProcessActions(standActions);
@@ -146,10 +123,7 @@ namespace Controller
             }
             foreach (var stand in listStands)
             {
-                result.Add(
-                    new DealDamage(stand.unit.fieldPosition,
-                        target.fieldPosition,
-                        stand.stand.idx));
+                result.AddRange(stand.stand.Use(stand.unit,target));
             }
             return result;
         }
@@ -160,7 +134,7 @@ namespace Controller
             var stand = unit.GetStand(StandIdx);
             IActions playerResources;
             if (stand.point.State == ActionState.Ended ||
-                GameMode.IsEnoughResources(
+                !GameMode.IsEnoughResources(
                     stand.point.neededAttackPoints,
                     stand.point.neededMovePoints, unit.owner))
                 return result;
@@ -193,6 +167,22 @@ namespace Controller
             var result = new List<IActions>();
             CreateUnit createUnit = new CreateUnit(name, fpos, owner.idx);
             result.Add(createUnit);
+            GameMode.ProcessActions(result);
+            return result;
+        }
+
+        public List<IActions> SwitchTurn(Player currentPlayer, Player NextPlayer)
+        {
+            var result = new List<IActions>() { new SwitchTurn(currentPlayer, NextPlayer) };
+            GameMode.ProcessActions(result);
+            return result;
+
+        }
+
+        public List<IActions> ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset ability)
+        {
+            var result = new List<IActions>();
+            result.AddRange(ability.Use(unit));
             GameMode.ProcessActions(result);
             return result;
         }

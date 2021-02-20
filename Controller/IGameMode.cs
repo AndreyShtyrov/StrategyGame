@@ -22,6 +22,9 @@ namespace Controller
         public RequestSender RequestSender
         { get; }
 
+        public Player CurrentPlayer
+        { get; }
+
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos);
 
         public UnitPresset GetUnit((int X, int Y) fpos);
@@ -68,6 +71,8 @@ namespace Controller
 
         public Task GetNewGameStates();
 
+        public void SwitchTurn();
+
         public event OnUnitsListChange UnitsListChanged;
 
         public void UpDownStand(UnitPresset unit, int StandIdx);
@@ -76,5 +81,6 @@ namespace Controller
 
         public void AddRequestManager(RequestManager Timer);
 
+        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability);
     }
 }

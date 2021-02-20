@@ -31,9 +31,9 @@ namespace Controller.Units
             MoveActionPoint = new ActionPoint(this, 0, 1, movelistAction);
 
             HalberdStand halberd = new HalberdStand(this, attacklistAction1);
-            halberd.idx = 2;
+            halberd.idx = 3;
             MeleeAttack melee = new MeleeAttack(this, attacklistAction2);
-            melee.idx = 1;
+            melee.idx = 2;
             Abilities.Add(melee);
             Stends.Add(halberd);
 

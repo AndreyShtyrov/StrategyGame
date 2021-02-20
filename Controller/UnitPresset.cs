@@ -9,12 +9,13 @@ using InterfaceOfObjects;
 using Controller.Abilities;
 using Controller.Units;
 using Newtonsoft.Json;
+using Controller.Actions;
 
 namespace Controller
 {
-    public class UnitPresset: UnitData, IUnitPresset, INotifyPropertyChanged
+    public class UnitPresset : UnitData, IUnitPresset, INotifyPropertyChanged
     {
-        
+
         public override int currentHp
         {
             set
@@ -30,6 +31,8 @@ namespace Controller
                 return base.currentHp;
             }
         }
+        public int ResponseDamage
+        { get; set; }
         public List<StandPresset> Stends = new List<StandPresset>();
         public List<AbilityPresset> Abilities = new List<AbilityPresset>();
         public float maxSpeed = 2f;
@@ -77,8 +80,8 @@ namespace Controller
         public ActionPoint MoveActionPoint;
 
         public event PropertyChangedEventHandler PropertyChanged;
-        
-        public UnitPresset():base()
+
+        public UnitPresset() : base()
         { }
 
         public UnitPresset((int X, int Y) fpos, Player owner) : base(fpos)
@@ -95,6 +98,7 @@ namespace Controller
             MovePoints[0] = new UnitActionPoint(ActionName.Move);
             MovePoints[1] = new UnitActionPoint(ActionName.Move);
             currentSpeed = maxSpeed;
+            ResponseDamage = 2;
         }
 
         public void Move((int X, int Y) fpos, float distance)
@@ -117,9 +121,21 @@ namespace Controller
             PropertyChanged?.Invoke(ActionIndexs, new PropertyChangedEventArgs("UnitActionPoint"));
         }
 
-        public virtual void Response(UnitPresset target)
+        public virtual List<IActions> Response(UnitPresset target)
         {
-            target.currentHp -= 2;
+            if (currentHp > 0)
+                return new List<IActions>()
+                {
+                    new DealDamage(
+                        fieldPosition,
+                        target.fieldPosition,
+                        1,
+                        ResponseDamage)
+                };
+            else
+            {
+                return new List<IActions>();
+            }
         }
 
         public void Refresh()
@@ -164,9 +180,9 @@ namespace Controller
 
         public int GetAbilityIndex(object action)
         {
-            if (action is AbilityPresset )
+            if (action is AbilityPresset)
             {
-                for (int i=0; i< Abilities.Count; i++)
+                for (int i = 0; i < Abilities.Count; i++)
                 {
                     if (Abilities[i] == action)
                         return i;

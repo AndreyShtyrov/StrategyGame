@@ -69,7 +69,7 @@ namespace Controller
             ActionsIsSpend?.Invoke();
         }
 
-        public void Return(Player owner)
+        public void Return()
         {
             foreach(var unitAction in bindUnitActions)
             {
@@ -88,8 +88,6 @@ namespace Controller
             }
             ActionsIsSpend?.Invoke();
         }
-
-        public ActionState GetActionState() => _State;
 
         public void Refresh()
         {
@@ -133,7 +131,8 @@ namespace Controller
         RangeAttack = 3,
         AttackWithoutResponse = 4,
         Heal = 5,
-        SelectAndAttack = 6,
+        ActionWitoutTargetSelect = 6,
+        SelectAndAttack = 7,
     }
 
     public delegate void SpendActions();

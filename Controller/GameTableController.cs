@@ -179,11 +179,18 @@ namespace Controller
         {
             if (ability.IsReadyToUse())
             {
+                if (ability.AbilityType == AbilityType.ActionWitoutTargetSelect)
+                { GameModeContainer.Get().ApplyAbilityWithoutSelection(Selected, ability); return; }
                 selectedAbility = ability;
                 State = GameTableState.AwaitSelectTarget;
             }
             else
                 State = GameTableState.AwaitSelect;
+        }
+
+        public void SwitchTurn()
+        {
+            GameModeContainer.Get().SwitchTurn();
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
+using Controller.Actions;
 
 namespace Controller
 {
@@ -19,7 +20,7 @@ namespace Controller
         public int DeafaultRange = 1;
         public int CurrentRange;
 
-        public abstract void Use(UnitPresset target);
+        public abstract List<IActions> Use(UnitPresset target);
 
         public abstract bool IsReadyToUse();
 

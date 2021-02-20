@@ -23,7 +23,7 @@ namespace Controller
         private PathField pathField;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-        private Player CurrentPlayer = Player.Get(0);
+        public Player CurrentPlayer => Player.Get(0);
         private ActionManager actionManager;
         private RequestManager requestManager;
 
@@ -299,6 +299,16 @@ namespace Controller
         }
 
         public List<UnitPresset> GetUnits()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SwitchTurn()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
         {
             throw new NotImplementedException();
         }

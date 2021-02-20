@@ -29,8 +29,7 @@ namespace Controller
         private ActionManager actionManager;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-        private Player CurrentPlayer => GameModeLogic.CurrentPlayer;
-        private int _ActionIdx = 0;
+        public Player CurrentPlayer => GameModeLogic.CurrentPlayer;
         private RequestManager requestManager;
 
         public GameModeState State
@@ -58,7 +57,7 @@ namespace Controller
             this.RequestSender = new RequestSender();
             this.RequestSender.SenderType = SenderType.Server;
             this.RequestSender.Player = reqestSender;
-            GameModeLogic = new GameModeLogic(this, Player.Get(0));
+            GameModeLogic = new GameModeLogic(this, Player.Get(1));
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -106,8 +105,8 @@ namespace Controller
 
         public void ChangePlayers(Player PrivousPlayer, Player NextPlayer)
         {
-            
-            
+            GameModeLogic.CurrentPlayer = NextPlayer;
+            OnPropertyChanged("CurrentPlayer");
         }
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center)
@@ -345,6 +344,22 @@ namespace Controller
             this.requestManager = Timer;
         }
 
+        public void SwitchTurn()
+        {
+            if (CurrentPlayer.idx == 1)
+            {
+                Response = GameModeLogic.SwitchTurn(CurrentPlayer, Player.Get(0));
+            }
+            else
+            {
+                Response = GameModeLogic.SwitchTurn(CurrentPlayer, Player.Get(1));
+            }
+        }
+
+        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
+        {
+            GameModeLogic.ApplyAbilityWithoutSelection(unit, Ability);
+        }
     }
 
     public delegate void GameModeEventHandler(UnitPresset sender, UnitPresset target, GameModEventArgs e);

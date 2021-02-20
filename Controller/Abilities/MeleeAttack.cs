@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Controller.Actions;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Windows;
 
 namespace Controller.Abilities
 {
-    public class MeleeAttack: AbilityPresset
+    public class MeleeAttack : AbilityPresset
     {
         private UnitPresset unit;
         public virtual int damage => 2;
@@ -28,14 +29,28 @@ namespace Controller.Abilities
             return actionPoint.IsReady(unit.owner);
         }
 
-        public override void Use(UnitPresset target)
+        public override List<IActions> Use(UnitPresset target)
         {
-            target.currentHp -= damage;
-            actionPoint.Spend();
+
+            DealDamage dealDamage = new DealDamage(
+                unit.fieldPosition,
+                target.fieldPosition,
+                idx,
+                damage);
+            ChangeActionPointState point = new ChangeActionPointState(
+                unit.fieldPosition,
+                    idx,
+                    actionPoint.State,
+                    ActionState.Ended);
+            SpendPlayerResources resources = new SpendPlayerResources(
+                actionPoint.neededAttackPoints,
+                actionPoint.neededMovePoints,
+                unit.owner.idx);
+            return new List<IActions>() {dealDamage, point, resources};
         }
 
-        public override void Return() => actionPoint.Return(unit.owner);
+        public override void Return() => actionPoint.Return();
 
-        public override void BreakAction() => actionPoint.Return(unit.owner);
+        public override void BreakAction() => actionPoint.Return();
     }
 }
