@@ -21,6 +21,7 @@ namespace Controller.Actions
 
         public SpendPlayerResources(int AttackActions, int MoveActions, int Player)
         {
+            idx = GameModeContainer.Get().ActionIdx;
             this.MoveActions = MoveActions;
             this.AttackActions = AttackActions;
             this.PlayerIdx = Player;

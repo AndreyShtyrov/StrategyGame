@@ -272,12 +272,9 @@ namespace Controller
                             var target = GetUnit(request.Target);
                             AttackUnit(unit, target, ability.idx);
                         }
-                        else
+                        else if ( ability.AbilityType == AbilityType.ActionWitoutTargetSelect)
                         {
-                            UseAction useAction = new UseAction();
-                            useAction.Source = unit.fieldPosition;
-                            useAction.SourceAbility = ability.idx;
-                            Response.Add(useAction);
+                            ApplyAbilityWithoutSelection(unit, ability);
                         }
                     }
                     if (request.Type == RequestType.CreateUnit)
@@ -358,7 +355,7 @@ namespace Controller
 
         public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
         {
-            GameModeLogic.ApplyAbilityWithoutSelection(unit, Ability);
+            Response = GameModeLogic.ApplyAbilityWithoutSelection(unit, Ability);
         }
     }
 

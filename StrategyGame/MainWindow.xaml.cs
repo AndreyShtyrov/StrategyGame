@@ -63,7 +63,8 @@ namespace StrategyGame
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
 
             fieldgui.drawGrid(field);
-
+            RequestManager timer = new RequestManager();
+            gameMode.AddRequestManager(timer);
 
             gameTable.PropertyChanged += UnitPanel.OnSelectedHandler;
             PlayerWindow playerWindow1 = new PlayerWindow(0);
@@ -71,7 +72,7 @@ namespace StrategyGame
             TopPannel.Children.Add(playerWindow1);
             TopPannel.Children.Add(playerWindow2);
 
-            gameMode.GetNewGameStates();
+            //gameMode.GetNewGameStates();
             
 
         }

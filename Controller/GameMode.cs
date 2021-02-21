@@ -23,10 +23,10 @@ namespace Controller
         private PathField pathField;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-        public Player CurrentPlayer => Player.Get(0);
+        public Player CurrentPlayer => _CurrentPlayer = Player.Get(0);
         private ActionManager actionManager;
         private RequestManager requestManager;
-
+        private Player _CurrentPlayer;
         public RequestSender RequestSender
         { get; }
         public GameModeState State
@@ -67,7 +67,8 @@ namespace Controller
 
         public void ChangePlayers(Player previusPlayer, Player nextPlayer)
         {
-            throw new NotImplementedException();
+            _CurrentPlayer = nextPlayer;
+            OnPropertyChanged("CurrentPlayer");
         }
 
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center)
@@ -167,12 +168,6 @@ namespace Controller
                 requestContainer.Selected = unit.fieldPosition;
                 requestContainer.Target = target.fieldPosition;
                 requestContainer.AbilityIdx = AbilityIdx;
-                //PrepareToUse action = new PrepareToUse();
-                //action.Source = unit.fieldPosition;
-                //action.SourceAbility = GameTableController.Get().selectedAbility.idx;
-                //requestContainer.Actions = new List<IActions>();
-                //requestContainer.Actions.Add(action);
-                //Client.sendRequest(requestContainer);
             }
         }
 
@@ -234,7 +229,7 @@ namespace Controller
                     ProcessActions(tsender.Actions);
                 GameTableController.Get().State = GameTableState.AwaitSelect;
             }
-            State = GameModeState.Standart;
+            //State = GameModeState.Standart;
             return null;
         }
 
@@ -298,17 +293,14 @@ namespace Controller
             throw new NotImplementedException();
         }
 
-        public List<UnitPresset> GetUnits()
+        public List<UnitPresset> GetUnits() => units;
+
+        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
         {
             throw new NotImplementedException();
         }
 
         public void SwitchTurn()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
         {
             throw new NotImplementedException();
         }

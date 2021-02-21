@@ -42,9 +42,12 @@ namespace Controller.Actions
             CashedActions.Clear();
             foreach (var action in actions)
             {
-                action.forward();
-                CurrentActionIdx = action.idx;
-                PreviousStates.Add(action);
+                if (CurrentActionIdx < action.idx)
+                {
+                    action.forward();
+                    CurrentActionIdx = action.idx;
+                    PreviousStates.Add(action);
+                }
             }
         }
 

@@ -15,7 +15,6 @@ namespace Controller.Stands
         private readonly UnitPresset unit;
         public override bool Active
         { get; set; }
-
         [JsonConstructor]
         public HalberdStand()
         { }
@@ -78,13 +77,26 @@ namespace Controller.Stands
 
         public override List<IActions> Use(UnitPresset sender, UnitPresset target)
         {
-            DealDamage dealDamage = new DealDamage(
-                sender.fieldPosition,
+            ChangeActionPointState changeAction = new ChangeActionPointState(
+                this.unit.fieldPosition, this.idx, point.State, ActionState.Ended);
+            DealDamage dealDamage;
+            if (target.owner != unit.owner)
+            {
+                dealDamage = new DealDamage(
+                unit.fieldPosition,
                 target.fieldPosition,
                 this.idx,
                 this.Damage);
-            ChangeActionPointState changeAction = new ChangeActionPointState(
-                this.unit.fieldPosition, this.idx, point.State,ActionState.Ended);
+            }
+            else
+            {
+                dealDamage = new DealDamage(
+                unit.fieldPosition,
+                sender.fieldPosition,
+                this.idx,
+                this.Damage);
+            }
+            Active = false;
             return new List<IActions>() { dealDamage, changeAction};
         }
     }
