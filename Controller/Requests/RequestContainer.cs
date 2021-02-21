@@ -51,7 +51,6 @@ namespace Controller.Requests
             Type = requestType;
             this.RequestSender = GameModeContainer.Get().RequestSender;
         }
-
     }
 
     public enum RequestType 

@@ -123,7 +123,7 @@ namespace Controller
             }
             foreach (var stand in listStands)
             {
-                result.AddRange(stand.stand.Use(stand.unit,target));
+                result.AddRange(stand.stand.Use(unit, target));
             }
             return result;
         }
