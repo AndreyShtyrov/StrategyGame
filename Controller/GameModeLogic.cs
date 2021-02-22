@@ -176,7 +176,6 @@ namespace Controller
             var result = new List<IActions>() { new SwitchTurn(currentPlayer, NextPlayer) };
             GameMode.ProcessActions(result);
             return result;
-
         }
 
         public List<IActions> ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset ability)

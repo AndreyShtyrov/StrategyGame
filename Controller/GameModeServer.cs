@@ -31,6 +31,7 @@ namespace Controller
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
         public Player CurrentPlayer => GameModeLogic.CurrentPlayer;
         private RequestManager requestManager;
+        private Player ControllingPlayer;
 
         public GameModeState State
         {
@@ -54,9 +55,9 @@ namespace Controller
             this.field = field;
             pathField = new PathField(field);
             actionManager = new ActionManager();
-            this.RequestSender = new RequestSender();
-            this.RequestSender.SenderType = SenderType.Server;
-            this.RequestSender.Player = reqestSender;
+            RequestSender = new RequestSender();
+            RequestSender.SenderType = SenderType.Server;
+            RequestSender.Player = reqestSender;
             GameModeLogic = new GameModeLogic(this, Player.Get(1));
         }
 
@@ -106,6 +107,7 @@ namespace Controller
         public void ChangePlayers(Player PrivousPlayer, Player NextPlayer)
         {
             GameModeLogic.CurrentPlayer = NextPlayer;
+            ControllingPlayer = NextPlayer;
             OnPropertyChanged("CurrentPlayer");
         }
 
@@ -193,7 +195,7 @@ namespace Controller
 
         public void UpDownStand(UnitPresset unit, int StandIdx)
         {
-            GameModeLogic.UpDownStand(unit, StandIdx);
+            Response = GameModeLogic.UpDownStand(unit, StandIdx);
         }
 
         public List<PathToken> GetWalkArea(UnitPresset unit)
@@ -244,11 +246,18 @@ namespace Controller
             {
                 if (getNewStates.Type == RequestType.GetNewStates)
                 {
+                    if (Player.Get(getNewStates.RequestSender.Player)  == ControllingPlayer)
+                    {
+                        RequestContainer request = new RequestContainer(RequestType.ApplyChangesAndTakeControl);
+                        request.Actions = actionManager.GetMissedActions(getNewStates.CurrentActionIndex);
+                        return request;
+                    }
                     var response = actionManager.GetMissedActions(getNewStates.CurrentActionIndex);
                     RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
                     applyChangesRequest.Actions = response;
                     return applyChangesRequest;
                 }
+                
             }
             if (State == GameModeState.Standart)
             {
@@ -281,12 +290,34 @@ namespace Controller
                     {
                         CreateUnit(request.Name, request.Selected, Player.Get(request.Player));
                     }
+                    if (request.Type == RequestType.UpDownStand)
+                    {
+                        var standUnit = GetUnit(request.Selected);
+                        UpDownStand(standUnit, request.AbilityIdx);
+                    }
                     RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
                     applyChangesRequest.Actions = Response;
                     return applyChangesRequest;
                 }
             }
             return null;
+        }
+
+        private void AcivateDeactivateGameTable(bool IsActive)
+        {
+            var gameTable = GameTableController.Get();
+            if (gameTable == null)
+                return;
+            if (IsActive)
+            {
+                gameTable.State = GameTableState.AwaitSelect;
+                State = GameModeState.Standart;
+            }
+            else
+            {
+                gameTable.State = GameTableState.AwaitEndEnemyTurn;
+                State = GameModeState.AwaitResponse;
+            }
         }
 
         public void ProcessActions(List<IActions> actions)

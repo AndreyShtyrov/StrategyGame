@@ -49,7 +49,11 @@ namespace Controller.Requests
         public RequestContainer(RequestType requestType)
         {
             Type = requestType;
-            this.RequestSender = GameModeContainer.Get().RequestSender;
+            var requestSender = GameModeContainer.Get().RequestSender;
+            if (requestSender != null)
+            {
+                RequestSender = requestSender;
+            }
         }
     }
 
@@ -62,6 +66,10 @@ namespace Controller.Requests
         ApplyChanges = 4,
         GetNewStates = 5,
         RevokeState = 6,
+        ApplyChangesAndTakeControl = 7,
+        AbadonAction = 8,
+        UpDownStand = 9,
+        SwitchTurn = 10,
     }
 
 }

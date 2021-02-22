@@ -23,10 +23,10 @@ namespace Controller
         private PathField pathField;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-        public Player CurrentPlayer => _CurrentPlayer = Player.Get(0);
+        public Player CurrentPlayer => _CurrentPlayer;
         private ActionManager actionManager;
         private RequestManager requestManager;
-        private Player _CurrentPlayer;
+        private Player _CurrentPlayer = Player.Get(0);
         public RequestSender RequestSender
         { get; }
         public GameModeState State
@@ -48,11 +48,10 @@ namespace Controller
             this.field = field;
             pathField = new PathField(field);
             actionManager = new ActionManager();
-            this.RequestSender = new RequestSender();
-            this.RequestSender.SenderType = SenderType.Client;
-            this.RequestSender.Player = GameTableController.Get().owner.idx;
-            if (this.RequestSender.Player != CurrentPlayer.idx)
-                State = GameModeState.AwaitResponse;
+            RequestSender = new RequestSender();
+            RequestSender.SenderType = SenderType.Client;
+            RequestSender.Player = GameTableController.Get().owner.idx;
+            State = GameModeState.AwaitResponse;
         }
 
         public UnitPresset[,] GetGridOfUnits()
@@ -168,6 +167,7 @@ namespace Controller
                 requestContainer.Selected = unit.fieldPosition;
                 requestContainer.Target = target.fieldPosition;
                 requestContainer.AbilityIdx = AbilityIdx;
+                Client.sendRequest(requestContainer);
             }
         }
 
@@ -227,9 +227,14 @@ namespace Controller
             {
                 if (tsender.Type == RequestType.ApplyChanges)
                     ProcessActions(tsender.Actions);
+                if (tsender.Type == RequestType.ApplyChangesAndTakeControl)
+                {
+                    ProcessActions(tsender.Actions);
+                    AcivateDeactivateGameTable(true);
+                }
                 GameTableController.Get().State = GameTableState.AwaitSelect;
             }
-            //State = GameModeState.Standart;
+            
             return null;
         }
 
@@ -290,19 +295,47 @@ namespace Controller
 
         public void UpDownStand(UnitPresset unit, int StandIdx)
         {
-            throw new NotImplementedException();
+            RequestContainer request = new RequestContainer(RequestType.UpDownStand);
+            request.Player = GameTableController.Get().owner.idx;
+            request.Selected = unit.fieldPosition;
+            request.AbilityIdx = StandIdx;
+            Client.sendRequest(request);
         }
 
         public List<UnitPresset> GetUnits() => units;
 
         public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
         {
-            throw new NotImplementedException();
+            RequestContainer request = new RequestContainer(RequestType.UpDownStand);
+            request.Player = GameTableController.Get().owner.idx;
+            request.Selected = unit.fieldPosition;
+            request.AbilityIdx = Ability.idx;
+            Client.sendRequest(request);
         }
 
         public void SwitchTurn()
         {
-            throw new NotImplementedException();
+            AcivateDeactivateGameTable(false);
+            RequestContainer request = new RequestContainer(RequestType.SwitchTurn);
+            request.Player = GameTableController.Get().owner.idx;
+            Client.sendRequest(request);
+        }
+
+        private void AcivateDeactivateGameTable(bool IsActive)
+        {
+            var gameTable = GameTableController.Get();
+            if (gameTable == null)
+                return;
+            if (IsActive)
+            {
+                gameTable.State = GameTableState.AwaitSelect;
+                State = GameModeState.Standart;
+            }
+            else
+            {
+                gameTable.State = GameTableState.AwaitEndEnemyTurn;
+                State = GameModeState.AwaitResponse;
+            }
         }
     }
 
