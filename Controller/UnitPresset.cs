@@ -35,7 +35,7 @@ namespace Controller
         { get; set; }
         public List<StandPresset> Stends = new List<StandPresset>();
         public List<AbilityPresset> Abilities = new List<AbilityPresset>();
-        public float maxSpeed = 2f;
+        public float maxSpeed;
         public float currentSpeed;
         public Player owner
         { set; get; }
@@ -77,7 +77,8 @@ namespace Controller
         }
         public UnitActionPoint[] AttackPoints;
         public UnitActionPoint[] MovePoints;
-        public ActionPoint MoveActionPoint;
+        public virtual ActionPoint MoveActionPoint
+        { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -89,7 +90,7 @@ namespace Controller
             var gameMode = GameModeContainer.Get();
             this.owner = owner;
             currentHp = 4;
-
+            maxSpeed = 2f;
             fieldPosition = fpos;
             AttackPoints = new UnitActionPoint[2];
             AttackPoints[0] = new UnitActionPoint(ActionName.Attack);
@@ -116,7 +117,7 @@ namespace Controller
                 ActionIndexs.Add(1);
             if (MovePoints[0].State != ActionState.Ready)
                 ActionIndexs.Add(2);
-            if (MovePoints[0].State != ActionState.Ready)
+            if (MovePoints[1].State != ActionState.Ready)
                 ActionIndexs.Add(3);
             PropertyChanged?.Invoke(ActionIndexs, new PropertyChangedEventArgs("UnitActionPoint"));
         }
@@ -216,6 +217,11 @@ namespace Controller
                 Fork unit = new Fork(fpos, owner);
                 return unit;
             }
+            if (name == "Buckler")
+            {
+                Buckler unit = new Buckler(fpos, owner);
+                return unit;
+            }
             return null;
         }
 
@@ -234,6 +240,9 @@ namespace Controller
         { get; set; }
         public int CurrentHp
         { get; set; }
+
+        public float CurrentSpeed
+        { get; set; }
         public ActionState Move
         { get; set; }
         public (int X, int Y) FieldPosition
@@ -245,12 +254,14 @@ namespace Controller
             List<(int Idx, ActionState State)> abilities,
             int currentHp,
             ActionState move,
+            float currentSpeed,
             (int X, int Y) fieldPosition)
         {
             Stends = stends;
             Abilities = abilities;
             CurrentHp = currentHp;
             Move = move;
+            CurrentSpeed = currentSpeed;
             FieldPosition = fieldPosition;
         }
 
@@ -269,6 +280,7 @@ namespace Controller
             Move = unit.MoveActionPoint.State;
             CurrentHp = unit.currentHp;
             FieldPosition = unit.fieldPosition;
+            CurrentSpeed = unit.currentSpeed;
         }
     }
 

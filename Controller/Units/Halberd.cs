@@ -18,7 +18,6 @@ namespace Controller.Units
 
         public Halberd((int X, int Y) fpos, Player owner):base(fpos, owner)
         {
-            maxSpeed = 2;
 
             currentHp = MaxHp;
             List<UnitActionPoint> movelistAction = new List<UnitActionPoint>();
@@ -41,7 +40,7 @@ namespace Controller.Units
             healList.AddRange(attacklistAction1);
             healList.AddRange(attacklistAction2);
             Heal heal = new Heal(this, movelistAction);
-            heal.idx = 3;
+            heal.idx = 4;
             Abilities.Add(heal);
         }
     }

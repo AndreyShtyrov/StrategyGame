@@ -19,8 +19,6 @@ namespace Controller.Units
 
         public Fork((int X, int Y) fpos, Player owner) : base(fpos, owner)
         {
-            maxSpeed = 2;
-
             currentHp = MaxHp;
             List<UnitActionPoint> movelistAction = new List<UnitActionPoint>();
             movelistAction.Add(MovePoints[0]);

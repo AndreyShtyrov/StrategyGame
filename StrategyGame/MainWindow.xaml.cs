@@ -122,6 +122,7 @@ namespace StrategyGame
             gameMode.CreateUnit("Fork", (7, 7), player2);
             gameMode.CreateUnit("LongBow", (5, 6), player1);
             gameMode.CreateUnit("LongBow", (7, 6), player2);
+            gameMode.CreateUnit("Buckler", (7, 8), player1);
 
             //gameMode.GetNewGameStates();
         }
