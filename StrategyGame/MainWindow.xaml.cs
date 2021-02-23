@@ -61,7 +61,7 @@ namespace StrategyGame
             var gameMode = GameModeContainer.Get();
             gameMode.UnitsListChanged += OnUnitsListChange;
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
-
+            Turn.Click += (object sender, RoutedEventArgs e) => gameTable.SwitchTurn();
             fieldgui.drawGrid(field);
             RequestManager timer = new RequestManager();
             gameMode.AddRequestManager(timer);

@@ -16,9 +16,9 @@ namespace Controller
 
         private Player PlayerBeforeIteration;
 
-        private (DelayStand action, UnitPresset unit) AwaitSelection;
+        private (StandPresset stand, UnitPresset unit, UnitPresset sender,UnitPresset target) AwaitSelection;
 
-        private List<(DelayStand action, UnitPresset unit, UnitPresset target)> DelayedActions;
+        private List<(StandPresset stand, UnitPresset unit, UnitPresset sender,UnitPresset target)> DelayedActions;
 
         public Player CurrentPlayer
         { get; set; }
@@ -151,24 +151,27 @@ namespace Controller
                     }
                 }
             }
-            DelayedActions = new List<(DelayStand action, UnitPresset unit, UnitPresset target)>();
+            DelayedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset sender,UnitPresset target)>();
             bool isDelay = false;
             int delayedActionsIdx = -1;
             foreach (var stand in listStands)
             {
-                if (stand.stand.AbilityType == AbilityType.SelectAndAttack)
+                if (stand.stand.AbilityType == AbilityType.SelectAndAttack && !isDelay)
                 {
                     isDelay = true;
-                    AwaitSelection = (stand.stand.Use, stand.unit);
+                    AwaitSelection = (stand.stand, stand.unit, unit, target);
                     delayedActionsIdx = stand.stand.idx;
                     InteraptionAction = AbilityType.SelectAndAttack;
                     continue;
                 }
                 if (!isDelay)
+                {
                     result.AddRange(stand.stand.Use(unit, target));
+                }
                 else
                 {
-                    DelayedActions.Add((stand.stand.Use, stand.unit, target));
+                    DelayedActions.Add((stand.stand, stand.unit, unit, target));
+                    continue;
                 }
             }
             if (isDelay)
@@ -235,17 +238,44 @@ namespace Controller
             return result;
         }
 
-        public List<IActions> ProcessInteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
+        public List<IActions> ProcessIteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
         {
             List<IActions> result = new List<IActions>();
             if (InteraptionAction == AbilityType.SelectAndAttack)
             {
                 var target = GameMode.GetUnit(fpos);
-                result.AddRange(AwaitSelection.action(unit, target));
+                result.AddRange(AwaitSelection.stand.Use(unit, target));
             }
+            bool isDelaid = false;
+            var newDealiedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset target)>();
+            int delayedActionsIdx = -1;
+            
             foreach (var ability in DelayedActions)
             {
-                result.AddRange(ability.action(ability.unit, ability.target));
+                if (isDelaid)
+                {
+                    DelayedActions.Add(ability);
+                    continue;
+                }
+                if ( ability.stand.AbilityType != AbilityType.SelectAndAttack)
+                    result.AddRange(ability.stand.Use(ability.sender, ability.target));
+                else
+                {
+                    isDelaid = true;
+                    AwaitSelection = ability;
+                    InteraptionAction = AbilityType.SelectAndAttack;
+                    delayedActionsIdx = ability.stand.idx;
+                }
+            }
+            if (isDelaid)
+            {
+                IteruptAndMakeUserRequest(AwaitSelection.sender, 
+                    AwaitSelection.unit, 
+                    AwaitSelection.target,
+                    AwaitSelection.stand.idx, 
+                    result);
+                GameMode.ChangePlayers(GameMode.CurrentPlayer, AwaitSelection.unit.owner);
+                return result;
             }
             GameMode.ChangePlayers(GameMode.CurrentPlayer, PlayerBeforeIteration);
             GameMode.ProcessActions(result);

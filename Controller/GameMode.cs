@@ -227,17 +227,18 @@ namespace Controller
             {
                 if (tsender.Type == RequestType.ApplyChanges)
                     ProcessActions(tsender.Actions);
-                if (tsender.Type == RequestType.ApplyChangesAndTakeControl)
+                else if (tsender.Type == RequestType.ApplyChangesAndTakeControl)
                 {
                     ProcessActions(tsender.Actions);
                     AcivateDeactivateGameTable(true);
                 }
-                if (tsender.Type == RequestType.NeedResponse)
+                else if (tsender.Type == RequestType.NeedResponse)
                 {
                     AcivateDeactivateGameTable(true);
                     ProcessActions(tsender.Actions);
+                    RequestUserInput(tsender);
                 }
-                if (tsender.Type == RequestType.ResponseApplied)
+                else if (tsender.Type == RequestType.ResponseApplied)
                 {
                     if (CurrentPlayer.idx == RequestSender.Player)
                     {
@@ -252,15 +253,15 @@ namespace Controller
                         AcivateDeactivateGameTable(false);
                     }
                 }
-                if (tsender.Type == RequestType.ApplyAndWait)
+                else if (tsender.Type == RequestType.ApplyAndWait)
                 {
                     ProcessActions(tsender.Actions);
                     AcivateDeactivateGameTable(false);
                     State = GameModeState.AwaitResponse;
                 }
-                GameTableController.Get().State = GameTableState.AwaitSelect;
+                if (State == GameModeState.InteruptAndAwaitUserResponse)
+                    GameTableController.Get().State = GameTableState.AwaitSelect;
             }
-            
             return null;
         }
 
@@ -352,6 +353,7 @@ namespace Controller
             var gameTable = GameTableController.Get();
             var unit = GetUnit(container.Selected);
             gameTable.State = GameTableState.InteruptAndAnswerOnRequest;
+            gameTable.Selected = unit;
             if (gameTable != null)
             {
                 if (container.TargetsTypeName == "UnitPresset")
