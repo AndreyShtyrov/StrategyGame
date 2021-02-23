@@ -32,6 +32,7 @@ namespace Controller
         public Player CurrentPlayer => GameModeLogic.CurrentPlayer;
         private RequestManager requestManager;
         private Player ControllingPlayer;
+        private RequestContainer preparedContainer;
 
         public GameModeState State
         {
@@ -186,10 +187,23 @@ namespace Controller
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        public void PrepareToRequestUserInput(RequestContainer requestContainer, Player player)
+        {
+            preparedContainer = requestContainer;
+            State = GameModeState.InteruptAndAwaitUserResponse;
+            
+            ChangePlayers(CurrentPlayer, player);
+            if (CurrentPlayer.idx != RequestSender.Player)
+            {
+                RequestUserInput(preparedContainer);
+            }
+        }
+
         public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
             Response = GameModeLogic.ProcessMeleeBattle(unit, target, AbilityIdx);
-            if (GameTableController.Get() != null)
+            if (GameTableController.Get() != null 
+                && GameTableController.Get().State != GameTableState.InteruptAndAnswerOnRequest)
                 GameTableController.Get().State = GameTableState.AwaitSelect;
         }
 
@@ -242,22 +256,56 @@ namespace Controller
         public object ProcessRequset(object sender)
         {
             Response.Clear();
+
+
             if (sender is RequestContainer getNewStates)
             {
                 if (getNewStates.Type == RequestType.GetNewStates)
                 {
-                    if (Player.Get(getNewStates.RequestSender.Player)  == ControllingPlayer)
+                    if (Player.Get(getNewStates.RequestSender.Player) == ControllingPlayer)
                     {
                         RequestContainer request = new RequestContainer(RequestType.ApplyChangesAndTakeControl);
                         request.Actions = actionManager.GetMissedActions(getNewStates.CurrentActionIndex);
                         return request;
                     }
                     var response = actionManager.GetMissedActions(getNewStates.CurrentActionIndex);
+                    if (State == GameModeState.InteruptAndAwaitUserResponse)
+                    {
+                        if (getNewStates.RequestSender.Player == ControllingPlayer.idx)
+                        {
+
+                            preparedContainer.Actions = response;
+                            return preparedContainer;
+                        }
+                        else
+                        {
+                            var applyAndWait = new RequestContainer(RequestType.ApplyAndWait);
+                            applyAndWait.Actions = response;
+                            return applyAndWait;
+                        }
+                    }
                     RequestContainer applyChangesRequest = new RequestContainer(RequestType.ApplyChanges);
                     applyChangesRequest.Actions = response;
                     return applyChangesRequest;
                 }
-                
+                else if (getNewStates.Type == RequestType.UserResponse)
+                {
+                    var unit = GetUnit(getNewStates.Selected);
+                    SendUserResponse(unit, getNewStates.Target);
+                    if (Response.Count != 0)
+                    {
+                        RequestContainer request;
+                        if (getNewStates.RequestSender.Player == CurrentPlayer.idx)
+                        {
+                            request = new RequestContainer(RequestType.ResponseApplied);
+                        }
+                        else
+                        {
+                            request = new RequestContainer(RequestType.ApplyAndWait);
+                        }
+                        request.Actions = Response;
+                    }
+                }
             }
             if (State == GameModeState.Standart)
             {
@@ -281,7 +329,7 @@ namespace Controller
                             var target = GetUnit(request.Target);
                             AttackUnit(unit, target, ability.idx);
                         }
-                        else if ( ability.AbilityType == AbilityType.ActionWitoutTargetSelect)
+                        else if (ability.AbilityType == AbilityType.ActionWitoutTargetSelect)
                         {
                             ApplyAbilityWithoutSelection(unit, ability);
                         }
@@ -384,9 +432,47 @@ namespace Controller
             }
         }
 
+        public void RequestUserInput(RequestContainer container)
+        {
+            var gameTable = GameTableController.Get();
+            if (gameTable != null)
+            {
+                var unit = GetUnit(container.Selected);
+
+                gameTable.State = GameTableState.InteruptAndAnswerOnRequest;
+                if (container.TargetsTypeName == "UnitPresset")
+                {
+                    foreach (var posUnit in container.Targets)
+                    {
+                        GetUnit(posUnit).isTarget = true;
+                    }
+                }
+                else if (container.TargetsTypeName == "PathToken")
+                {
+                    var area = GetWalkArea(unit);
+                    gameTable.DrawWalkArea(area);
+                }
+
+            }
+        }
+
         public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
         {
             Response = GameModeLogic.ApplyAbilityWithoutSelection(unit, Ability);
+        }
+
+        public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition)
+        {
+            Response = GameModeLogic.ProcessInteraptedAndNextActions(unit, targetPosition);
+            if (Response.Count != 0)
+            {
+                State = GameModeState.Standart;
+                var gameTableState = GameTableController.Get();
+                if (gameTableState != null)
+                {
+                    gameTableState.State = GameTableState.AwaitSelect;
+                }
+            }
         }
     }
 
@@ -396,6 +482,7 @@ namespace Controller
     {
         Standart = 0,
         AwaitResponse = 1,
+        InteruptAndAwaitUserResponse = 2,
     }
 
     public delegate RequestContainer GetDelaiedResponse(RequestContainer requestContainer);

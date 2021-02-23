@@ -119,7 +119,7 @@ namespace StrategyGame
             gameMode.AddRequestManager(timer);
             gameMode.CreateUnit("Helbard", (4, 4), player1);
             gameMode.CreateUnit("Helbard", (6, 6), player2);
-            gameMode.CreateUnit("Helbard", (7, 7), player2);
+            gameMode.CreateUnit("Fork", (7, 7), player2);
             gameMode.CreateUnit("LongBow", (5, 6), player1);
             gameMode.CreateUnit("LongBow", (7, 6), player2);
 

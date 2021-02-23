@@ -82,5 +82,7 @@ namespace Controller
         public void AddRequestManager(RequestManager Timer);
 
         public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability);
+
+        public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition);
     }
 }

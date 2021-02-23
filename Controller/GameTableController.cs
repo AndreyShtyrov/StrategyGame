@@ -29,6 +29,7 @@ namespace Controller
         }
         public AbilityPresset selectedAbility;
 
+
         public Player owner;
         private GameTableState _State = GameTableState.AwaitSelect;
 
@@ -52,6 +53,11 @@ namespace Controller
         {
             if (prevState == GameTableState.AwaitSelectTarget)
             {
+                GameModeContainer.Get().RefreshBacklight();
+            }
+            if (prevState == GameTableState.InteruptAndAnswerOnRequest)
+            {
+                FieldGUI.clearWalkedArea();
                 GameModeContainer.Get().RefreshBacklight();
             }
             switch ((State))
@@ -86,6 +92,14 @@ namespace Controller
                             GameModeContainer.Get().BacklightTargets(Selected, selectedAbility);
                         break;
                     }
+                case GameTableState.InteruptAndAnswerOnRequest:
+                    {
+                        Selected = null;
+                        selectedAbility = null;
+                        FieldGUI.clearWalkedArea();
+                        GameModeContainer.Get().RefreshBacklight();
+                        break;
+                    }
                 
             }
         }
@@ -116,7 +130,8 @@ namespace Controller
                             if (target.isTarget)
                             {
                                 GameModeContainer.Get().AttackUnit(Selected, target, selectedAbility.idx);
-                                State = GameTableState.AwaitSelect;
+                                if (State != GameTableState.InteruptAndAnswerOnRequest)
+                                    State = GameTableState.AwaitSelect;
                             }
                         }
                         else
@@ -143,6 +158,21 @@ namespace Controller
                     }
                 case GameTableState.AwaitGameModeResponse:
                     {
+                        break;
+                    }
+                case GameTableState.InteruptAndAnswerOnRequest:
+                    {
+                        if (sender is PathToken pathToken)
+                        {
+                            GameModeContainer.Get().SendUserResponse(Selected, pathToken.fieldPosition);
+                        }
+                        else if (sender is UnitPresset unitPresset)
+                        {
+                            if (unitPresset.isTarget)
+                            {
+                                GameModeContainer.Get().SendUserResponse(Selected, unitPresset.fieldPosition);
+                            }
+                        }
                         break;
                     }
             }
@@ -193,6 +223,11 @@ namespace Controller
             GameModeContainer.Get().SwitchTurn();
         }
 
+        public void DrawWalkArea(List<PathToken> paths)
+        {
+            FieldGUI.addWalkedArea(paths);
+        }
+
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
             GameModeContainer.Get().CreateUnit(name, fpos, owner, typeUnit);
@@ -207,6 +242,7 @@ namespace Controller
         AwaitEndEnemyTurn = 3,
         AwaitApplyAbility = 4,
         AwaitGameModeResponse = 5,
+        InteruptAndAnswerOnRequest = 6,
     }
 
 }

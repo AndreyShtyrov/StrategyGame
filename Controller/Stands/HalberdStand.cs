@@ -28,7 +28,7 @@ namespace Controller.Stands
             Name = "Halberd";
         }
 
-        private bool CheckCorrectTargetsCondition(UnitPresset sender, UnitPresset target)
+        internal bool CheckCorrectTargetsCondition(UnitPresset sender, UnitPresset target)
         {
             var controller = GameModeContainer.Get();
             var pos = controller.TransformToCube(target.fieldPosition, unit.fieldPosition);

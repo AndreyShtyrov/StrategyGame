@@ -211,6 +211,11 @@ namespace Controller
                 LongBow unit = new LongBow(fpos, owner);
                 return unit;
             }
+            if (name == "Fork")
+            {
+                Fork unit = new Fork(fpos, owner);
+                return unit;
+            }
             return null;
         }
 

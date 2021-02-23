@@ -232,6 +232,32 @@ namespace Controller
                     ProcessActions(tsender.Actions);
                     AcivateDeactivateGameTable(true);
                 }
+                if (tsender.Type == RequestType.NeedResponse)
+                {
+                    AcivateDeactivateGameTable(true);
+                    ProcessActions(tsender.Actions);
+                }
+                if (tsender.Type == RequestType.ResponseApplied)
+                {
+                    if (CurrentPlayer.idx == RequestSender.Player)
+                    {
+                        ProcessActions(tsender.Actions);
+                        State = GameModeState.Standart;
+                        AcivateDeactivateGameTable(true);
+                    }
+                    else
+                    {
+                        ProcessActions(tsender.Actions);
+                        State = GameModeState.AwaitResponse;
+                        AcivateDeactivateGameTable(false);
+                    }
+                }
+                if (tsender.Type == RequestType.ApplyAndWait)
+                {
+                    ProcessActions(tsender.Actions);
+                    AcivateDeactivateGameTable(false);
+                    State = GameModeState.AwaitResponse;
+                }
                 GameTableController.Get().State = GameTableState.AwaitSelect;
             }
             
@@ -319,6 +345,36 @@ namespace Controller
             RequestContainer request = new RequestContainer(RequestType.SwitchTurn);
             request.Player = GameTableController.Get().owner.idx;
             Client.sendRequest(request);
+        }
+
+        public void RequestUserInput(RequestContainer container)
+        {
+            var gameTable = GameTableController.Get();
+            var unit = GetUnit(container.Selected);
+            gameTable.State = GameTableState.InteruptAndAnswerOnRequest;
+            if (gameTable != null)
+            {
+                if (container.TargetsTypeName == "UnitPresset")
+                {
+                    foreach (var posUnit in container.Targets)
+                    {
+                        GetUnit(posUnit).isTarget = true;
+                    }
+                }
+                else if (container.TargetsTypeName == "PathToken")
+                {
+                    var area = GetWalkArea(unit);
+                    gameTable.DrawWalkArea(area);
+                }
+            }
+        }
+
+        public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition)
+        {
+            RequestContainer requestContainer = new RequestContainer(RequestType.UserResponse);
+            requestContainer.Selected = unit.fieldPosition;
+            requestContainer.Target = targetPosition;            
+            Client.sendRequest(requestContainer);
         }
 
         private void AcivateDeactivateGameTable(bool IsActive)

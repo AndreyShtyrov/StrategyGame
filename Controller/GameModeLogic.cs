@@ -4,6 +4,7 @@ using System.Text;
 using Controller.Actions;
 using Controller.Abilities;
 using UnitsAnPathFinding;
+using Controller.Requests;
 
 namespace Controller
 {
@@ -11,17 +12,46 @@ namespace Controller
     {
         private GameModeServer GameMode;
 
+        private AbilityType InteraptionAction;
+
+        private Player PlayerBeforeIteration;
+
+        private (DelayStand action, UnitPresset unit) AwaitSelection;
+
+        private List<(DelayStand action, UnitPresset unit, UnitPresset target)> DelayedActions;
+
         public Player CurrentPlayer
         { get; set; }
-        
-        
+
         public GameModeLogic(GameModeServer GameMode, Player FirstPlyaer)
         {
             this.GameMode = GameMode;
             CurrentPlayer = FirstPlyaer;
         }
 
+        public void IteruptAndMakeUserRequest(UnitPresset sender, UnitPresset unit, UnitPresset target, int abilityIdx, List<IActions> actions)
+        {
+            RequestContainer requestContainer = new RequestContainer(RequestType.NeedResponse);
+            requestContainer.Selected = unit.fieldPosition;
+            requestContainer.Targets = new List<(int X, int Y)>();
+            if (abilityIdx == 0)
+            {
+                throw new NotImplementedException();
+            }
+            var ability = unit.GetAbility(abilityIdx);
+            if (ability != null)
+            {
+                var stand = unit.GetStand(abilityIdx);
+                foreach (var ctarget in stand.GetAllTargets(sender, target))
+                {
+                    requestContainer.Targets.Add(ctarget.fieldPosition);
+                }
+                requestContainer.TargetsTypeName = "UnitPresset";
+            }
+            PlayerBeforeIteration = GameMode.CurrentPlayer;
+            GameMode.PrepareToRequestUserInput(requestContainer, unit.owner);
 
+        }
 
         private List<IActions> SwitchTurn(bool IsIterrupting)
         {
@@ -31,7 +61,7 @@ namespace Controller
         }
 
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
-  
+
         public List<IActions> Move(UnitPresset unit, PathToken pathToken)
         {
             List<IActions> result = new List<IActions>();
@@ -41,17 +71,17 @@ namespace Controller
                 MoveUnit moveUnit = new MoveUnit(unit.fieldPosition,
                     pathToken.fieldPosition);
                 ChangeActionPointState spendActionPoints = new ChangeActionPointState(
-                    pathToken.fieldPosition, 0, ActionState.Ready ,ActionState.Ended);
+                    pathToken.fieldPosition, 0, ActionState.Ready, ActionState.Ended);
                 var spendPlayerResources = TraitePlayersResources(unit.owner, 0, 1);
                 GameMode.ProcessActions(new List<IActions>() { moveUnit, spendActionPoints, spendPlayerResources });
                 result.Add(moveUnit);
                 result.Add(spendActionPoints);
                 result.Add(spendPlayerResources);
-            }   
+            }
             return result;
         }
 
-        public IActions TraitePlayersResources(Player player,int attackPoints=0, int movePoints=0, bool isReverse=false)
+        public IActions TraitePlayersResources(Player player, int attackPoints = 0, int movePoints = 0, bool isReverse = false)
         {
             SpendPlayerResources spendPlayerResources;
             if (isReverse)
@@ -90,18 +120,18 @@ namespace Controller
                 result.AddRange(Attack.Use(target));
             GameMode.ProcessActions(result);
 
-            result.AddRange(target.Response(unit));
-            GameMode.ProcessActions(result);
-
             standActions = CheckInAreaAbilities(unit, target, BattleStage.MainAttack);
             GameMode.ProcessActions(standActions);
             result.AddRange(standActions);
+
+            result.AddRange(target.Response(unit));
+            GameMode.ProcessActions(result);
 
             standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
             GameMode.ProcessActions(standActions);
             result.AddRange(standActions);
             return result;
-            
+
         }
 
         private List<IActions> CheckInAreaAbilities(UnitPresset unit, UnitPresset target, BattleStage stage)
@@ -121,10 +151,28 @@ namespace Controller
                     }
                 }
             }
+            DelayedActions = new List<(DelayStand action, UnitPresset unit, UnitPresset target)>();
+            bool isDelay = false;
+            int delayedActionsIdx = -1;
             foreach (var stand in listStands)
             {
-                result.AddRange(stand.stand.Use(unit, target));
+                if (stand.stand.AbilityType == AbilityType.SelectAndAttack)
+                {
+                    isDelay = true;
+                    AwaitSelection = (stand.stand.Use, stand.unit);
+                    delayedActionsIdx = stand.stand.idx;
+                    InteraptionAction = AbilityType.SelectAndAttack;
+                    continue;
+                }
+                if (!isDelay)
+                    result.AddRange(stand.stand.Use(unit, target));
+                else
+                {
+                    DelayedActions.Add((stand.stand.Use, stand.unit, target));
+                }
             }
+            if (isDelay)
+                IteruptAndMakeUserRequest(unit ,AwaitSelection.unit, target, delayedActionsIdx,result);
             return result;
         }
 
@@ -138,6 +186,7 @@ namespace Controller
                     stand.point.neededAttackPoints,
                     stand.point.neededMovePoints, unit.owner))
                 return result;
+
             if (!stand.Active)
             {
                 result.Add(new RaiseStend(unit.fieldPosition, StandIdx, true));
@@ -157,7 +206,7 @@ namespace Controller
                     true);
                 result.Add(playerResources);
             }
-                
+
             GameMode.ProcessActions(result);
             return result;
         }
@@ -185,5 +234,25 @@ namespace Controller
             GameMode.ProcessActions(result);
             return result;
         }
+
+        public List<IActions> ProcessInteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
+        {
+            List<IActions> result = new List<IActions>();
+            if (InteraptionAction == AbilityType.SelectAndAttack)
+            {
+                var target = GameMode.GetUnit(fpos);
+                result.AddRange(AwaitSelection.action(unit, target));
+            }
+            foreach (var ability in DelayedActions)
+            {
+                result.AddRange(ability.action(ability.unit, ability.target));
+            }
+            GameMode.ChangePlayers(GameMode.CurrentPlayer, PlayerBeforeIteration);
+            GameMode.ProcessActions(result);
+            DelayedActions = null;
+            return result;
+        }
+
+        private delegate List<IActions> DelayStand(UnitPresset unit, UnitPresset target);
     }
 }

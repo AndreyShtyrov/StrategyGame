@@ -25,6 +25,8 @@ namespace Controller.Requests
         public int Player
         { get; set; }
 
+        public string TargetsTypeName;
+
         public (int X, int Y) Selected
         { get; set; }
 
@@ -70,6 +72,10 @@ namespace Controller.Requests
         AbadonAction = 8,
         UpDownStand = 9,
         SwitchTurn = 10,
+        NeedResponse = 11,
+        UserResponse = 12,
+        ResponseApplied = 13,
+        ApplyAndWait = 14,
     }
 
 }

@@ -27,6 +27,8 @@ namespace Controller
 
         public abstract List<IActions> Use(UnitPresset sender, UnitPresset target);
 
+        public virtual List<UnitPresset> GetAllTargets(UnitPresset sender, UnitPresset target) => throw new NotImplementedException();
+
         public virtual void UpStand()
         { }
 
