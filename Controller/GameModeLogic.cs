@@ -147,7 +147,6 @@ namespace Controller
                     }
                 }
             }
-            int delayedActionsIdx = -1;
             foreach (var stand in listStands)
             {
                 if (stand.stand.AbilityType == AbilityType.SelectAndAttack && !isDelay)
@@ -155,7 +154,6 @@ namespace Controller
                     isDelay = true;
                     isHereDelay = true;
                     AwaitSelection = (stand.stand, stand.unit, unit, target);
-                    delayedActionsIdx = stand.stand.idx;
                     InteraptionAction = AbilityType.SelectAndAttack;
                     continue;
                 }
@@ -171,7 +169,7 @@ namespace Controller
             }
             
             if (isHereDelay)
-                IteruptAndMakeUserRequest(unit ,AwaitSelection.unit, target, delayedActionsIdx,result);
+                IteruptAndMakeUserRequest(unit ,AwaitSelection.unit, target, AwaitSelection.stand.idx, result);
             return result;
         }
 
@@ -234,6 +232,8 @@ namespace Controller
             return result;
         }
 
+
+
         public List<IActions> ProcessIteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
         {
             isDelay = false;
@@ -244,14 +244,13 @@ namespace Controller
                 result.AddRange(AwaitSelection.stand.Use(unit, target));
             }
             bool isDelaid = false;
-            var newDealiedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset target)>();
-            int delayedActionsIdx = -1;
+            var newDealiedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset sender, UnitPresset target)>();
             
             foreach (var ability in DelayedActions)
             {
                 if (isDelaid)
                 {
-                    DelayedActions.Add(ability);
+                    newDealiedActions.Add(ability);
                     continue;
                 }
                 if ( ability.stand.AbilityType != AbilityType.SelectAndAttack)
@@ -261,11 +260,11 @@ namespace Controller
                     isDelaid = true;
                     AwaitSelection = ability;
                     InteraptionAction = AbilityType.SelectAndAttack;
-                    delayedActionsIdx = ability.stand.idx;
                 }
             }
             if (isDelaid)
             {
+                DelayedActions = newDealiedActions;
                 GameMode.ProcessActions(result);
                 IteruptAndMakeUserRequest(AwaitSelection.sender, 
                     AwaitSelection.unit, 
