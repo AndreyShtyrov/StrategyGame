@@ -13,6 +13,9 @@ namespace Controller.Actions
         public (int X, int Y) EndPosition
         { get; set; }
 
+        public float Distance
+        { get; set; }
+
         public int idx { get; set; }
 
         public ActionDirection Direction
@@ -29,6 +32,8 @@ namespace Controller.Actions
             idx = GameModeContainer.Get().ActionIdx;
             this.StartPosition = StartPosition;
             this.EndPosition = EndPosition;
+            var unit = GameModeContainer.Get().GetUnit(StartPosition);
+            Distance = GameModeContainer.Get().GetPathToken(unit, EndPosition).pathLeght;
         }
 
 
@@ -36,17 +41,16 @@ namespace Controller.Actions
         {
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(StartPosition);
-            var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
-            unit.Move(EndPosition, distance);
+            unit.fieldPosition = EndPosition;
+            unit.currentSpeed -= Distance;
         }
 
         public void reverse()
         {
             var controller = GameModeContainer.Get();
             var unit = controller.GetUnit(EndPosition);
-            unit.Move(StartPosition, 0);
-            var distance = controller.GetPathToken(unit, EndPosition).pathLeght;
-            unit.Move(StartPosition, -distance);
+            unit.fieldPosition = StartPosition;
+            unit.currentSpeed += Distance;
         }
     }
 }

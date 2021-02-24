@@ -27,7 +27,8 @@ namespace Controller.Units
                 }
                 else
                 {
-                    currentSpeed = 1;
+                    if (AdditionMovePoint.State == ActionState.Ready)
+                        currentSpeed = 1;
                     return AdditionMovePoint;
                 }
             }
@@ -39,7 +40,8 @@ namespace Controller.Units
                 }
                 else
                 {
-                    currentSpeed = 1;
+                    if (AdditionMovePoint.State == ActionState.Ready)
+                        currentSpeed = 1;
                     AdditionMovePoint = value;
                 }
             }

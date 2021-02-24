@@ -102,10 +102,14 @@ namespace Controller
             ResponseDamage = 2;
         }
 
-        public void Move((int X, int Y) fpos, float distance)
+        public virtual List<IActions> Move((int X, int Y) EndPosition)
         {
-            fieldPosition = fpos;
-            currentSpeed -= distance;
+            MoveUnit moveUnit = new MoveUnit(fieldPosition,
+                    EndPosition);
+            ChangeActionPointState spendActionPoints = new ChangeActionPointState(
+                EndPosition, 0, ActionState.Ready, ActionState.Ended);
+            SpendPlayerResources spendPlayerResources = new SpendPlayerResources(0, 1, owner.idx);
+            return new List<IActions>() { moveUnit, spendActionPoints, spendPlayerResources };
         }
 
         public void OnSpendActionsHandler()
@@ -154,7 +158,7 @@ namespace Controller
             currentSpeed = maxSpeed;
         }
 
-        public void RefreshForRetreat()
+        public virtual void RefreshForRetreat()
         {
             MoveActionPoint.Refresh();
         }
@@ -220,6 +224,11 @@ namespace Controller
             if (name == "Buckler")
             {
                 Buckler unit = new Buckler(fpos, owner);
+                return unit;
+            }
+            if (name == "Veteran")
+            {
+                Veteran unit = new Veteran(fpos, owner);
                 return unit;
             }
             return null;

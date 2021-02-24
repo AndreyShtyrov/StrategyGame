@@ -123,6 +123,8 @@ namespace StrategyGame
             gameMode.CreateUnit("LongBow", (5, 6), player1);
             gameMode.CreateUnit("LongBow", (7, 6), player2);
             gameMode.CreateUnit("Buckler", (7, 8), player1);
+            gameMode.CreateUnit("Veteran", (6, 8), player1);
+            gameMode.CreateUnit("Fork", (5, 8), player2);
 
             //gameMode.GetNewGameStates();
         }

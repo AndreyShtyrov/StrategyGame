@@ -470,9 +470,8 @@ namespace Controller
         public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition)
         {
             Response = GameModeLogic.ProcessIteraptedAndNextActions(unit, targetPosition);
-            if (Response.Count != 0)
+            if (State == GameModeState.Standart)
             {
-                State = GameModeState.Standart;
                 var gameTableState = GameTableController.Get();
                 if (gameTableState != null)
                 {

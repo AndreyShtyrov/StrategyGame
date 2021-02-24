@@ -10,6 +10,7 @@ namespace Controller
 {
     internal class GameModeLogic
     {
+        private bool isDelay = false;
         private GameModeServer GameMode;
 
         private AbilityType InteraptionAction;
@@ -68,16 +69,9 @@ namespace Controller
             if (unit.MoveActionPoint.IsReady(unit.owner) ||
                 unit.MoveActionPoint.State == ActionState.InProcess)
             {
-                MoveUnit moveUnit = new MoveUnit(unit.fieldPosition,
-                    pathToken.fieldPosition);
-                ChangeActionPointState spendActionPoints = new ChangeActionPointState(
-                    pathToken.fieldPosition, 0, ActionState.Ready, ActionState.Ended);
-                var spendPlayerResources = TraitePlayersResources(unit.owner, 0, 1);
-                GameMode.ProcessActions(new List<IActions>() { moveUnit, spendActionPoints, spendPlayerResources });
-                result.Add(moveUnit);
-                result.Add(spendActionPoints);
-                result.Add(spendPlayerResources);
+                result.AddRange(unit.Move(pathToken.fieldPosition));
             }
+            GameMode.ProcessActions(result);
             return result;
         }
 
@@ -96,7 +90,8 @@ namespace Controller
 
         public List<IActions> ProcessMeleeBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
-
+            isDelay = false;
+            DelayedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset sender, UnitPresset target)>();
             List<IActions> result = new List<IActions>();
             UnitsInBattle.Clear();
             UnitsInBattle.Add(unit);
@@ -136,6 +131,7 @@ namespace Controller
 
         private List<IActions> CheckInAreaAbilities(UnitPresset unit, UnitPresset target, BattleStage stage)
         {
+            bool isHereDelay = false;
             List<IActions> result = new List<IActions>();
             List<(UnitPresset unit, StandPresset stand)> listStands
                 = new List<(UnitPresset unit, StandPresset stand)>();
@@ -151,14 +147,13 @@ namespace Controller
                     }
                 }
             }
-            DelayedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset sender,UnitPresset target)>();
-            bool isDelay = false;
             int delayedActionsIdx = -1;
             foreach (var stand in listStands)
             {
                 if (stand.stand.AbilityType == AbilityType.SelectAndAttack && !isDelay)
                 {
                     isDelay = true;
+                    isHereDelay = true;
                     AwaitSelection = (stand.stand, stand.unit, unit, target);
                     delayedActionsIdx = stand.stand.idx;
                     InteraptionAction = AbilityType.SelectAndAttack;
@@ -174,7 +169,8 @@ namespace Controller
                     continue;
                 }
             }
-            if (isDelay)
+            
+            if (isHereDelay)
                 IteruptAndMakeUserRequest(unit ,AwaitSelection.unit, target, delayedActionsIdx,result);
             return result;
         }
@@ -240,6 +236,7 @@ namespace Controller
 
         public List<IActions> ProcessIteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
         {
+            isDelay = false;
             List<IActions> result = new List<IActions>();
             if (InteraptionAction == AbilityType.SelectAndAttack)
             {
@@ -269,16 +266,17 @@ namespace Controller
             }
             if (isDelaid)
             {
+                GameMode.ProcessActions(result);
                 IteruptAndMakeUserRequest(AwaitSelection.sender, 
                     AwaitSelection.unit, 
                     AwaitSelection.target,
                     AwaitSelection.stand.idx, 
                     result);
-                GameMode.ChangePlayers(GameMode.CurrentPlayer, AwaitSelection.unit.owner);
                 return result;
             }
             GameMode.ChangePlayers(GameMode.CurrentPlayer, PlayerBeforeIteration);
             GameMode.ProcessActions(result);
+            GameMode.State = GameModeState.Standart;
             DelayedActions = null;
             return result;
         }
