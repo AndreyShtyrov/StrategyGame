@@ -133,6 +133,7 @@ namespace Controller
         Heal = 5,
         ActionWitoutTargetSelect = 6,
         SelectAndAttack = 7,
+        Move = 8,
     }
 
     public delegate void SpendActions();

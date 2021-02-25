@@ -26,6 +26,7 @@ namespace DrawField
         public UnitGUI selected;
         public GameModeHandler gameModeHandler;
         private List<PathTokenGUI> walkedArea = new List<PathTokenGUI>();
+        
         public FieldGUI()
         {
 
@@ -73,6 +74,22 @@ namespace DrawField
             UnitGUI ng = new UnitGUI(item);
             ng.MouseDown += mouseBtnClicked;
             FieldMap.Children.Add(ng);
+        }
+
+        public void removeUnit(IUnitPresset item)
+        {
+            foreach (var child in FieldMap.Children)
+            {
+                if (child is UnitGUI  unitChild)
+                {
+                    if (unitChild.data == item)
+                    {
+                        unitChild.MouseDown -= mouseBtnClicked;
+                        FieldMap.Children.Remove(unitChild);
+                        break;
+                    }
+                }
+            }
         }
 
         public void mouseBtnClicked(object sender, MouseEventArgs e)

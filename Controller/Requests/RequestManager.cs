@@ -18,7 +18,7 @@ namespace Controller.Requests
         {
             var gameMode = GameModeContainer.Get();
             timer = new DispatcherTimer();
-            timer.Interval = new TimeSpan(0, 0, 7);
+            timer.Interval = new TimeSpan(0, 0, 2);
             if (!(gameMode is GameModeServer))
             {
                 timer.Tick += (o, e) =>

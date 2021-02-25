@@ -17,9 +17,9 @@ namespace Controller
 
         private Player PlayerBeforeIteration;
 
-        private (StandPresset stand, UnitPresset unit, UnitPresset sender,UnitPresset target) AwaitSelection;
+        private AbilityContanier AwaitSelection;
 
-        private List<(StandPresset stand, UnitPresset unit, UnitPresset sender,UnitPresset target)> DelayedActions;
+        private List<AbilityContanier> DelayedActions;
 
         public Player CurrentPlayer
         { get; set; }
@@ -37,7 +37,16 @@ namespace Controller
             requestContainer.Targets = new List<(int X, int Y)>();
             if (abilityIdx == 0)
             {
-                throw new NotImplementedException();
+                var area = GameMode.GetWalkArea(unit);
+                foreach (var ctarget in area)
+                {
+                    requestContainer.Targets.Add(ctarget.fieldPosition);
+                }
+                if (GameMode.State != GameModeState.InteruptAndAwaitUserResponse)
+                    requestContainer.TargetsTypeName = "PathToken";
+                PlayerBeforeIteration = GameMode.CurrentPlayer;
+                GameMode.PrepareToRequestUserInput(requestContainer, unit.owner);
+                return;
             }
             var ability = unit.GetAbility(abilityIdx);
             if (ability != null)
@@ -49,9 +58,9 @@ namespace Controller
                 }
                 requestContainer.TargetsTypeName = "UnitPresset";
             }
-            PlayerBeforeIteration = GameMode.CurrentPlayer;
+            if (GameMode.State != GameModeState.InteruptAndAwaitUserResponse)
+                PlayerBeforeIteration = GameMode.CurrentPlayer;
             GameMode.PrepareToRequestUserInput(requestContainer, unit.owner);
-
         }
 
         private List<IActions> SwitchTurn(bool IsIterrupting)
@@ -88,10 +97,38 @@ namespace Controller
 
         }
 
+        public List<IActions> CheckUnitsAfterBattle()
+        { 
+            DelayedActions = new List<AbilityContanier>();
+            AwaitSelection = null;
+            List<IActions> result = new List<IActions>();
+            foreach (var unit in UnitsInBattle)
+            {
+                if (unit.currentHp < 0)
+                {
+                    result.Add(new KillUnit(unit));
+                }
+                else if (unit.currentHp == 0)
+                {
+                    if (AwaitSelection == null)
+                    {
+                        isDelay = true;
+                        AwaitSelection = new AbilityContanier(unit, unit, AbilityType.Move);
+                    }
+                    else
+                    {
+                        DelayedActions.Add(new AbilityContanier(unit, unit, AbilityType.Move));
+                    }
+                }
+            }
+            UnitsInBattle = new List<UnitPresset>();
+            return result;
+        }
+
         public List<IActions> ProcessMeleeBattle(UnitPresset unit, UnitPresset target, int AbilityIdx)
         {
             isDelay = false;
-            DelayedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset sender, UnitPresset target)>();
+            DelayedActions = new List<AbilityContanier>();
             List<IActions> result = new List<IActions>();
             UnitsInBattle.Clear();
             UnitsInBattle.Add(unit);
@@ -125,6 +162,20 @@ namespace Controller
             standActions = CheckInAreaAbilities(unit, target, BattleStage.ResponseAttack);
             GameMode.ProcessActions(standActions);
             result.AddRange(standActions);
+
+            if (GameMode.State != GameModeState.InteruptAndAwaitUserResponse)
+            {
+                var kills = CheckUnitsAfterBattle();
+                GameMode.ProcessActions(kills);
+                result.AddRange(kills);
+                if (isDelay)
+                    IteruptAndMakeUserRequest(AwaitSelection.unit,
+                        AwaitSelection.sender,
+                        AwaitSelection.unit,
+                        AwaitSelection.AbilityIdx,
+                        result);
+            }
+            
             return result;
 
         }
@@ -153,7 +204,7 @@ namespace Controller
                 {
                     isDelay = true;
                     isHereDelay = true;
-                    AwaitSelection = (stand.stand, stand.unit, unit, target);
+                    AwaitSelection = new AbilityContanier(stand.unit, unit, stand.stand.AbilityType, target, stand.stand);
                     InteraptionAction = AbilityType.SelectAndAttack;
                     continue;
                 }
@@ -163,13 +214,13 @@ namespace Controller
                 }
                 else
                 {
-                    DelayedActions.Add((stand.stand, stand.unit, unit, target));
+                    DelayedActions.Add(new AbilityContanier(stand.unit, unit, stand.stand.AbilityType, target, stand.stand));
                     continue;
                 }
             }
             
             if (isHereDelay)
-                IteruptAndMakeUserRequest(unit ,AwaitSelection.unit, target, AwaitSelection.stand.idx, result);
+                IteruptAndMakeUserRequest(AwaitSelection.sender, AwaitSelection.unit, target, AwaitSelection.AbilityIdx, result);
             return result;
         }
 
@@ -236,50 +287,122 @@ namespace Controller
 
         public List<IActions> ProcessIteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
         {
-            isDelay = false;
+            this.isDelay = false;
             List<IActions> result = new List<IActions>();
             if (InteraptionAction == AbilityType.SelectAndAttack)
             {
-                var target = GameMode.GetUnit(fpos);
-                result.AddRange(AwaitSelection.stand.Use(unit, target));
+                result.AddRange(AwaitSelection.Use(fpos));
             }
-            bool isDelaid = false;
-            var newDealiedActions = new List<(StandPresset stand, UnitPresset unit, UnitPresset sender, UnitPresset target)>();
+            var newDealiedActions = new List<AbilityContanier>();
             
             foreach (var ability in DelayedActions)
             {
-                if (isDelaid)
+                if (isDelay)
                 {
                     newDealiedActions.Add(ability);
                     continue;
                 }
-                if ( ability.stand.AbilityType != AbilityType.SelectAndAttack)
-                    result.AddRange(ability.stand.Use(ability.sender, ability.target));
+                if ( ability.Type != AbilityType.SelectAndAttack)
+                    result.AddRange(ability.Use());
                 else
                 {
-                    isDelaid = true;
+                    isDelay = true;
                     AwaitSelection = ability;
                     InteraptionAction = AbilityType.SelectAndAttack;
                 }
             }
-            if (isDelaid)
+            if (isDelay)
             {
                 DelayedActions = newDealiedActions;
                 GameMode.ProcessActions(result);
                 IteruptAndMakeUserRequest(AwaitSelection.sender, 
                     AwaitSelection.unit, 
                     AwaitSelection.target,
-                    AwaitSelection.stand.idx, 
+                    AwaitSelection.AbilityIdx, 
                     result);
                 return result;
             }
             GameMode.ChangePlayers(GameMode.CurrentPlayer, PlayerBeforeIteration);
             GameMode.ProcessActions(result);
             GameMode.State = GameModeState.Standart;
+            AwaitSelection = null;
             DelayedActions = null;
+            if (!isDelay)
+            {
+                result.AddRange(CheckUnitsAfterBattle());
+                if (isDelay)
+                {
+                    IteruptAndMakeUserRequest(AwaitSelection.sender,
+                    AwaitSelection.unit,
+                    AwaitSelection.unit,
+                    AwaitSelection.AbilityIdx,
+                    result);
+                }
+            }
+                
             return result;
         }
 
         private delegate List<IActions> DelayStand(UnitPresset unit, UnitPresset target);
+
+        private class AbilityContanier
+        {
+            public readonly UnitPresset unit;
+            public readonly UnitPresset sender;
+            public readonly UnitPresset target;
+            public readonly AbilityType Type;
+            StandPresset stand;
+
+            public int AbilityIdx
+            {
+                get
+                {
+                    if (Type != AbilityType.Move)
+                        return stand.idx;
+                    else
+                        return 0;
+                }
+            }
+
+            public AbilityContanier(UnitPresset unit, UnitPresset sender, AbilityType type, UnitPresset target =null, StandPresset stand = null)
+            {
+                this.unit = unit;
+                Type = type;
+                this.sender = sender;
+                if (type == AbilityType.SelectAndAttack)
+                {
+                    this.target = target;
+                    this.stand = stand;
+                }
+            }
+
+            public List<IActions> Use()
+            {
+                if (Type == AbilityType.SelectAndAttack ||
+                    Type == AbilityType.Move )
+                {
+                    throw new NotImplementedException();
+                }
+                return stand.Use(unit, target);
+            }
+            public List<IActions> Use((int X, int Y) fpos)
+            {
+                List<IActions> result = new List<IActions>();
+                if (Type == AbilityType.SelectAndAttack)
+                {
+                    var selected = GameModeContainer.Get().GetUnit(fpos);
+                    result = stand.Use(unit, selected);
+                    return result;
+                }
+                else
+                {
+                    MoveUnit move = new MoveUnit(unit.fieldPosition, fpos);
+                    SpendPlayerResources spend = new SpendPlayerResources(0, 1, unit.owner.idx);
+                    result.Add(move);
+                    result.Add(spend);
+                    return result;
+                }
+            }
+        }
     }
 }

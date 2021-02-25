@@ -139,7 +139,10 @@ namespace StrategyGame
 
         private void OnUnitsListChange(UnitPresset unitPresset, bool isExist)
         {
-            fieldgui.addUnit(unitPresset);
+            if (isExist)
+                fieldgui.addUnit(unitPresset);
+            else
+                fieldgui.removeUnit(unitPresset);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
