@@ -41,6 +41,24 @@ namespace Controller
             }
         }
         public int ActionIdx => actionManager.NextActionIdx;
+
+        private int _CurrentTurnNumber = 0;
+        public int CurrentTurnNumber
+        {
+            get
+            {
+                return _CurrentTurnNumber;
+            }
+            set
+            {
+                _CurrentTurnNumber = value;
+                OnPropertyChanged("CurrentTurnNumber");
+            }
+        }
+
+        public List<TurnSpeciffication> Turns
+        { get; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public GameMode(Field field)
@@ -52,6 +70,7 @@ namespace Controller
             RequestSender.SenderType = SenderType.Client;
             RequestSender.Player = GameTableController.Get().owner.idx;
             State = GameModeState.AwaitResponse;
+            CurrentTurnNumber = 0;
         }
 
         public UnitPresset[,] GetGridOfUnits()
@@ -394,6 +413,11 @@ namespace Controller
                 gameTable.State = GameTableState.AwaitEndEnemyTurn;
                 State = GameModeState.AwaitResponse;
             }
+        }
+
+        public WeatherType GetWeather()
+        {
+            throw new NotImplementedException();
         }
     }
 

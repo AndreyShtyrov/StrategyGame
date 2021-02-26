@@ -67,6 +67,8 @@ namespace Controller
         }
         public int BaseIncomeAttackPoints;
         public int BaseIncomeMovePoints;
+        public int CurrentTurnNumber
+        { get; set; }
 
         public void OnPropertyChanged(string name)
         {
@@ -96,6 +98,7 @@ namespace Controller
             BaseIncomeAttackPoints = baseAttack;
             IncomeAttackPoints = BaseIncomeAttackPoints;
             IncomeMovePoints = BaseIncomeMovePoints;
+            CurrentTurnNumber = GameModeContainer.Get().CurrentTurnNumber;
         }
 
         public void getIncome()

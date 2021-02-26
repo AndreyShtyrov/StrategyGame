@@ -63,6 +63,10 @@ namespace Controller.Actions
             nextPlayer.AttackPoints = NextPointsNextPlayer.AttackPoint;
             prevPlayer.MovePoints = 0;
             prevPlayer.AttackPoints = 0;
+            
+            if (nextPlayer.idx == 0)
+                GameModeContainer.Get().CurrentTurnNumber += 1;
+            prevPlayer.CurrentTurnNumber += 1;
             GameModeContainer.Get().ChangePlayers(prevPlayer, nextPlayer);
             foreach (var unit in GameModeContainer.Get().GetUnits())
             {
@@ -79,6 +83,9 @@ namespace Controller.Actions
             var prevPlayer = Player.Get(PrevPlayer);
             prevPlayer.MovePoints = 10000;
             prevPlayer.AttackPoints = 1000;
+            prevPlayer.CurrentTurnNumber -= 1;
+            if (prevPlayer.idx == 1)
+                GameModeContainer.Get().CurrentTurnNumber -= 1;
             foreach (var savedUnit in PreviousPlayerUnitsStatuses)
             {
                 SetStateStates(savedUnit);

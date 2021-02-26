@@ -33,7 +33,20 @@ namespace Controller
         private RequestManager requestManager;
         private Player ControllingPlayer;
         private RequestContainer preparedContainer;
-
+        public List<TurnSpeciffication> AllTurns;
+        private int _CurrentTurnNumber=0;
+        public int CurrentTurnNumber
+        {
+            get
+            {
+                return _CurrentTurnNumber;
+            }
+            set
+            {
+                _CurrentTurnNumber = value;
+                OnPropertyChanged("CurrentTurnNumber");
+            }
+        }
         public GameModeState State
         {
             set
@@ -48,6 +61,9 @@ namespace Controller
         public RequestSender RequestSender
         { get; }
         public int ActionIdx => actionManager.NextActionIdx;
+
+        public List<TurnSpeciffication> Turns
+        { get; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -149,11 +165,6 @@ namespace Controller
             }
             return (result.X + center.X, result.Y + center.Y);
         }
-
-        //public async Task<UnitPresset> AwaitSelectTarget(UnitPresset unit, AbilityPresset ability, List<UnitPresset> targets)
-        //{
-        //    State = GameModeState.AwaitResponse;
-        //}
 
         public bool IsEnoughResources(int action, int move, Player owner)
         {
@@ -478,6 +489,16 @@ namespace Controller
                     gameTableState.State = GameTableState.AwaitSelect;
                 }
             }
+        }
+
+        public WeatherType GetWeather()
+        {
+            foreach (var turn in Turns)
+            {
+                if (turn.Number == CurrentTurnNumber)
+                    return turn.Weather;
+            }
+            throw new NotImplementedException();
         }
     }
 

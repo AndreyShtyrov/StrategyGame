@@ -22,7 +22,15 @@ namespace Controller
         public RequestSender RequestSender
         { get; }
 
+        public int CurrentTurnNumber
+        { get; set; }
+
         public Player CurrentPlayer
+        { get; }
+
+        public WeatherType GetWeather();
+
+        public List<TurnSpeciffication> Turns
         { get; }
 
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos);
