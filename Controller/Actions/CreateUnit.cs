@@ -10,7 +10,6 @@ namespace Controller.Actions
     {
         public int idx { get; set; }
 
-
         public string Name
         { get; set; }
 

@@ -7,6 +7,7 @@ using UnitsAnPathFinding;
 using Controller.Actions;
 using System.Threading.Tasks;
 using Controller.Requests;
+using Controller.Building;
 
 namespace Controller
 {
@@ -61,7 +62,7 @@ namespace Controller
 
         public void Move(UnitPresset unit, PathToken pathToken);
 
-        public void CreateBuilding(Building build);
+        public void CreateBuilding(BuildingPresset build);
 
         public bool IsUnitSelected(UnitPresset unit);
 
@@ -92,5 +93,7 @@ namespace Controller
         public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability);
 
         public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition);
+
+        public BuildingPresset GetBuilding((int X, int Y) position); 
     }
 }

@@ -10,16 +10,16 @@ using Controller.Actions;
 using Controller.Units;
 using Controller.Requests;
 using System.Threading.Tasks;
+using Controller.Building;
 
 namespace Controller
 {
     public class GameMode: IGameMode
     {
         private List<IActions> Response = new List<IActions>();
-        private List<(int index, List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
-        private List<Building> buildings = new List<Building>();
+        private List<BuildingPresset> buildings = new List<BuildingPresset>();
         private PathField pathField;
         private GameModeState _State;
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
@@ -71,6 +71,8 @@ namespace Controller
             RequestSender.Player = GameTableController.Get().owner.idx;
             State = GameModeState.AwaitResponse;
             CurrentTurnNumber = 0;
+            Player.Get(0).CurrentTurnNumber = 0;
+            Player.Get(1).CurrentTurnNumber = 0;
         }
 
         public UnitPresset[,] GetGridOfUnits()
@@ -202,9 +204,21 @@ namespace Controller
             }
         }
 
-        public void CreateBuilding(Building build)
+        public void CreateBuilding(BuildingPresset build)
         {
             throw new NotImplementedException();
+        }
+
+        public BuildingPresset GetBuilding((int X ,int Y) position)
+        {
+            foreach ( var build in buildings)
+            {
+                if (build.fieldPosition == position)
+                {
+                    return build;
+                }
+            }
+            return null;
         }
 
         public bool IsUnitSelected(UnitPresset token)

@@ -141,6 +141,15 @@ namespace Controller
             {
                 result.AddRange(Attack.Use(target));
                 GameMode.ProcessActions(result);
+                var kills = CheckUnitsAfterBattle();
+                GameMode.ProcessActions(kills);
+                result.AddRange(kills);
+                if (isDelay)
+                    IteruptAndMakeUserRequest(AwaitSelection.unit,
+                        AwaitSelection.sender,
+                        AwaitSelection.unit,
+                        AwaitSelection.AbilityIdx,
+                        result);
                 return result;
             }
 
@@ -289,7 +298,11 @@ namespace Controller
         {
             this.isDelay = false;
             List<IActions> result = new List<IActions>();
-            if (InteraptionAction == AbilityType.SelectAndAttack)
+            if (AwaitSelection.Type == AbilityType.SelectAndAttack)
+            {
+                result.AddRange(AwaitSelection.Use(fpos));
+            }
+            else if (AwaitSelection.Type == AbilityType.Move)
             {
                 result.AddRange(AwaitSelection.Use(fpos));
             }

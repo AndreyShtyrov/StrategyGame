@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Controller.Units;
 using Controller.Actions;
 using Controller.Requests;
-
+using Controller.Building;
 
 namespace Controller
 {
@@ -21,10 +21,9 @@ namespace Controller
         private List<IActions> Response = new List<IActions>();
         private List<RequestContainer> DelaiedRequests = new List<RequestContainer>();
         private GameModeLogic GameModeLogic;
-        private List<(int index, List<UnitPresset> Units, List<Building> buildings)> PrevState;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
-        private List<Building> buildings = new List<Building>();
+        private List<BuildingPresset> buildings = new List<BuildingPresset>();
         private PathField pathField;
         private ActionManager actionManager;
         private GameModeState _State;
@@ -67,7 +66,7 @@ namespace Controller
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public GameModeServer(Field field, int reqestSender = -1)
+        public GameModeServer(Field field, int reqestSender = 0)
         {
             this.field = field;
             pathField = new PathField(field);
@@ -76,6 +75,8 @@ namespace Controller
             RequestSender.SenderType = SenderType.Server;
             RequestSender.Player = reqestSender;
             GameModeLogic = new GameModeLogic(this, Player.Get(1));
+            Player.Get(0).CurrentTurnNumber = 0;
+            Player.Get(1).CurrentTurnNumber = 0;
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -239,24 +240,13 @@ namespace Controller
                 GameTableController.Get().State = GameTableState.AwaitSelect;
         }
 
-        private void OnChangeOwner(Building sender, Player prevOwner)
+        private void OnChangeOwner(BuildingPresset sender, Player prevOwner)
         {
-            if (sender.Type == BuildingTypes.AttackFlag)
-            {
-                sender.owner.IncomeAttackPoints += 1;
-                prevOwner.IncomeAttackPoints -= 1;
-            }
-            if (sender.Type == BuildingTypes.MoveFlag)
-            {
-                sender.owner.IncomeAttackPoints += 1;
-                prevOwner.IncomeAttackPoints -= 1;
-            }
         }
 
-        public void CreateBuilding(Building build)
+        public void CreateBuilding(BuildingPresset build)
         {
             buildings.Add(build);
-            build.ChangeOwner += OnChangeOwner;
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
@@ -499,6 +489,18 @@ namespace Controller
                     return turn.Weather;
             }
             throw new NotImplementedException();
+        }
+
+        public BuildingPresset GetBuilding((int X, int Y) position)
+        {
+            foreach (var build in buildings)
+            {
+                if (build.fieldPosition == position)
+                {
+                    return build;
+                }
+            }
+            return null;
         }
     }
 

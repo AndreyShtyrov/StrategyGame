@@ -96,9 +96,8 @@ namespace Controller
             this.idx = idx;
             BaseIncomeMovePoints = baseMove;
             BaseIncomeAttackPoints = baseAttack;
-            IncomeAttackPoints = BaseIncomeAttackPoints;
-            IncomeMovePoints = BaseIncomeMovePoints;
-            CurrentTurnNumber = GameModeContainer.Get().CurrentTurnNumber;
+            IncomeAttackPoints = 0;
+            IncomeMovePoints = 0;
         }
 
         public void getIncome()
