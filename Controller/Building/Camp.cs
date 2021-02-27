@@ -34,7 +34,7 @@ namespace Controller.Building
 
         public override SolidColorBrush getBackGround()
         {
-            throw new NotImplementedException();
+            return Brushes.Gray;
         }
 
         public override List<IActions> Use()

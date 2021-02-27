@@ -107,6 +107,8 @@ namespace Controller
 
         public event OnUnitsListChange UnitsListChanged;
 
+        public event OnBuildingListChange BuildingListChanged;
+
         public List<UnitPresset> GetUnits()
         {
             return units;
@@ -246,7 +248,7 @@ namespace Controller
 
         public void CreateBuilding(BuildingPresset build)
         {
-            buildings.Add(build);
+            AddBuilding(build);
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
@@ -403,6 +405,18 @@ namespace Controller
             {
                 unit.isTarget = false;
             }
+        }
+
+        public void AddBuilding(BuildingPresset building)
+        {
+            buildings.Add(building);
+            BuildingListChanged?.Invoke(building, true);
+        }
+
+        public void DeleteBuilding(BuildingPresset building)
+        {
+            buildings.Remove(building);
+            BuildingListChanged?.Invoke(building, false);
         }
 
         public void AddUnit(UnitPresset unitPresset)

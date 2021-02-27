@@ -78,9 +78,15 @@ namespace Controller
 
         public void DeleteUnit(UnitPresset unitPresset);
 
+        public void AddBuilding(BuildingPresset building);
+
+        public void DeleteBuilding(BuildingPresset building);
+
         public Task GetNewGameStates();
 
         public void SwitchTurn();
+
+        public event OnBuildingListChange BuildingListChanged;
 
         public event OnUnitsListChange UnitsListChanged;
 

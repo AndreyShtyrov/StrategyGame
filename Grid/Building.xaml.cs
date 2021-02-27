@@ -32,6 +32,8 @@ namespace DrawField
             PointCollection Vertexs = new PointCollection();
             CPoligon.Stroke = Brushes.Black;
             CPoligon.Fill = Brushes.Transparent;
+            MainCircle.Stroke = data.getBackGround();
+            MainCircle1.Stroke = data.getBackGround();
             Vector defalutCenter = new Vector(Math.Sqrt(3) * size, size);
             for (int i = 0; i < 6; i++)
             {

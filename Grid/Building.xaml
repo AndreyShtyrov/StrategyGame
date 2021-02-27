@@ -8,8 +8,32 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Canvas>
         <Canvas.RenderTransform>
-            <TranslateTransform x:Name="tranlateGrid" X="10" Y="10"/>
+            <TranslateTransform x:Name="tranlateGrid" X="0" Y="0"/>
         </Canvas.RenderTransform>
         <Polygon x:Name="CPoligon" Stretch="Fill"/>
+        <Path x:Name="MainCircle" Stroke="Black" StrokeThickness="3">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="10,14">
+                        <ArcSegment  IsLargeArc="True" 
+                                Size="15, 15"
+                                Point="40, 44"
+                                SweepDirection="Clockwise" />
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
+        <Path x:Name="MainCircle1" Stroke="Black" StrokeThickness="3">
+            <Path.Data>
+                <PathGeometry>
+                    <PathFigure StartPoint="40,44">
+                        <ArcSegment  IsLargeArc="True" 
+                                Size="15, 15"
+                                Point="10, 14"
+                                SweepDirection="Clockwise" />
+                    </PathFigure>
+                </PathGeometry>
+            </Path.Data>
+        </Path>
     </Canvas>
 </UserControl>

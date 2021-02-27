@@ -136,6 +136,8 @@ namespace Controller
 
         public event OnUnitsListChange UnitsListChanged;
 
+        public event OnBuildingListChange BuildingListChanged;
+
         public bool IsEnoughResources(int action, int move, Player owner)
         {
             if (owner.AttackPoints - action >= 0 && owner.MovePoints - move >= 0)
@@ -433,7 +435,22 @@ namespace Controller
         {
             throw new NotImplementedException();
         }
+
+        public void AddBuilding(BuildingPresset building)
+        {
+            buildings.Add(building);
+            BuildingListChanged?.Invoke(building, true);
+        }
+
+        public void DeleteBuilding(BuildingPresset building)
+        {
+            buildings.Remove(building);
+            BuildingListChanged?.Invoke(building, false);
+        }
+
     }
+
+    public delegate void OnBuildingListChange(ITokenData building, bool isExist);
 
     public delegate void OnUnitsListChange(UnitPresset unit, bool isExist);
 }

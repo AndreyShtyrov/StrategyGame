@@ -92,6 +92,27 @@ namespace DrawField
             }
         }
 
+        public void addBuilding(ITokenData item)
+        {
+            Building ng = new Building(item);
+            FieldMap.Children.Add(ng);
+        }
+
+        public void removeBuilding(ITokenData item)
+        {
+            foreach (var child in FieldMap.Children)
+            {
+                if (child is Building unitChild)
+                {
+                    if (unitChild.data == item)
+                    {
+                        FieldMap.Children.Remove(unitChild);
+                        break;
+                    }
+                }
+            }
+        }
+
         public void mouseBtnClicked(object sender, MouseEventArgs e)
         {
             if (sender is UnitGUI unit)

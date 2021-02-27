@@ -20,6 +20,8 @@ using Controller;
 using Controller.Requests;
 using System.ComponentModel;
 using System.Net;
+using Controller.Building;
+using InterfaceOfObjects;
 
 namespace StrategyGame
 {
@@ -102,9 +104,12 @@ namespace StrategyGame
             GameModeContainer.instance = new GameModeServer(field);
             
             var gameMode = GameModeContainer.Get();
+            
             gameMode.SwitchTurn();
             gameMode.UnitsListChanged += OnUnitsListChange;
+            gameMode.BuildingListChanged += OnBuildingListChange;
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
+            
             fieldgui.drawGrid(field);
             
 
@@ -125,6 +130,7 @@ namespace StrategyGame
             gameMode.CreateUnit("Buckler", (7, 8), player1);
             gameMode.CreateUnit("Veteran", (6, 8), player1);
             gameMode.CreateUnit("Fork", (5, 8), player2);
+            gameMode.AddBuilding(BuildingPresset.Build("Camp", (0, 0), null));
 
             //gameMode.GetNewGameStates();
         }
@@ -143,6 +149,14 @@ namespace StrategyGame
                 fieldgui.addUnit(unitPresset);
             else
                 fieldgui.removeUnit(unitPresset);
+        }
+
+        private void OnBuildingListChange(ITokenData building, bool isExist)
+        {
+            if (isExist)
+                fieldgui.addBuilding(building);
+            else
+                fieldgui.removeBuilding(building);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
