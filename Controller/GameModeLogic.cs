@@ -80,8 +80,12 @@ namespace Controller
             {
                 result.AddRange(unit.Move(pathToken.fieldPosition));
             }
+            var building = GameMode.GetBuilding(unit.fieldPosition);
+            if (building != null)
+                result.AddRange(building.Capture(unit));
             GameMode.ProcessActions(result);
             return result;
+
         }
 
         public IActions TraitePlayersResources(Player player, int attackPoints = 0, int movePoints = 0, bool isReverse = false)
@@ -280,6 +284,11 @@ namespace Controller
         public List<IActions> SwitchTurn(Player currentPlayer, Player NextPlayer)
         {
             var result = new List<IActions>() { new SwitchTurn(currentPlayer, NextPlayer) };
+            
+            foreach (var building in GameMode.Buildings)
+            {
+                result.AddRange(building.Use());
+            }
             GameMode.ProcessActions(result);
             return result;
         }
@@ -288,6 +297,10 @@ namespace Controller
         {
             var result = new List<IActions>();
             result.AddRange(ability.Use(unit));
+            var building = GameMode.GetBuilding(unit.fieldPosition);
+            if (building != null)
+                result.AddRange(building.Capture(unit));
+            GameMode.ProcessActions(result);
             GameMode.ProcessActions(result);
             return result;
         }

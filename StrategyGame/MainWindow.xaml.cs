@@ -62,6 +62,7 @@ namespace StrategyGame
             GameModeContainer.instance = new GameMode(field);
             var gameMode = GameModeContainer.Get();
             gameMode.UnitsListChanged += OnUnitsListChange;
+            gameMode.BuildingListChanged += OnBuildingListChange;
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
             Turn.Click += (object sender, RoutedEventArgs e) => gameTable.SwitchTurn();
             fieldgui.drawGrid(field);
@@ -125,7 +126,7 @@ namespace StrategyGame
             gameMode.CreateUnit("Helbard", (4, 4), player1);
             gameMode.CreateUnit("Helbard", (6, 6), player2);
             gameMode.CreateUnit("Fork", (7, 7), player2);
-            gameMode.CreateUnit("LongBow", (5, 6), player1);
+            gameMode.CreateUnit("Veteran", (5, 6), player1);
             gameMode.CreateUnit("LongBow", (7, 6), player2);
             gameMode.CreateUnit("Buckler", (7, 8), player1);
             gameMode.CreateUnit("Veteran", (6, 8), player1);

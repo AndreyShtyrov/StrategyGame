@@ -37,6 +37,9 @@ namespace Controller
         public List<AbilityPresset> Abilities = new List<AbilityPresset>();
         public float maxSpeed;
         public float currentSpeed;
+        public bool HaveSupply
+        { get; set; }
+
         public Player owner
         { set; get; }
         public override (int X, int Y) fieldPosition
@@ -100,6 +103,7 @@ namespace Controller
             MovePoints[1] = new UnitActionPoint(ActionName.Move);
             currentSpeed = maxSpeed;
             ResponseDamage = 2;
+            HaveSupply = true;
         }
 
         public virtual List<IActions> Move((int X, int Y) EndPosition)
@@ -257,6 +261,9 @@ namespace Controller
         public (int X, int Y) FieldPosition
         { get; set; }
 
+        public bool HaveSupply
+        { get; set; }
+
         [JsonConstructor]
         public UnitStatus(
             List<(int Idx, bool IsActive, ActionState State)> stends,
@@ -264,12 +271,14 @@ namespace Controller
             int currentHp,
             ActionState move,
             float currentSpeed,
-            (int X, int Y) fieldPosition)
+            (int X, int Y) fieldPosition,
+            bool supply)
         {
             Stends = stends;
             Abilities = abilities;
             CurrentHp = currentHp;
             Move = move;
+            HaveSupply = supply;
             CurrentSpeed = currentSpeed;
             FieldPosition = fieldPosition;
         }
@@ -288,6 +297,7 @@ namespace Controller
             }
             Move = unit.MoveActionPoint.State;
             CurrentHp = unit.currentHp;
+            HaveSupply = unit.HaveSupply;
             FieldPosition = unit.fieldPosition;
             CurrentSpeed = unit.currentSpeed;
         }

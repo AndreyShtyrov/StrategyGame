@@ -23,7 +23,8 @@ namespace Controller
         private GameModeLogic GameModeLogic;
         private IListOfToken field;
         private List<UnitPresset> units = new List<UnitPresset>();
-        private List<BuildingPresset> buildings = new List<BuildingPresset>();
+        private List<BuildingPresset> _Buildings = new List<BuildingPresset>();
+        public List<BuildingPresset> Buildings => _Buildings;
         private PathField pathField;
         private ActionManager actionManager;
         private GameModeState _State;
@@ -34,6 +35,7 @@ namespace Controller
         private RequestContainer preparedContainer;
         public List<TurnSpeciffication> AllTurns;
         private int _CurrentTurnNumber=0;
+        
         public int CurrentTurnNumber
         {
             get
@@ -409,13 +411,13 @@ namespace Controller
 
         public void AddBuilding(BuildingPresset building)
         {
-            buildings.Add(building);
+            _Buildings.Add(building);
             BuildingListChanged?.Invoke(building, true);
         }
 
         public void DeleteBuilding(BuildingPresset building)
         {
-            buildings.Remove(building);
+            _Buildings.Remove(building);
             BuildingListChanged?.Invoke(building, false);
         }
 
@@ -507,7 +509,7 @@ namespace Controller
 
         public BuildingPresset GetBuilding((int X, int Y) position)
         {
-            foreach (var build in buildings)
+            foreach (var build in Buildings)
             {
                 if (build.fieldPosition == position)
                 {

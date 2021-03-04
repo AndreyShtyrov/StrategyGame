@@ -31,6 +31,8 @@ namespace Controller.Units
             healList.AddRange(attackListAction);
 
             Heal heal = new Heal(this, healList);
+            BuildCamp buildCamp = new BuildCamp(this, new List<UnitActionPoint>());
+            Abilities.Add(buildCamp);
             heal.idx = 3;
             Abilities.Add(heal);
         }

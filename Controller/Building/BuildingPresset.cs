@@ -36,7 +36,7 @@ namespace Controller.Building
 
         public abstract List<IActions> Destoy();
 
-        public abstract List<IActions> Capture();
+        public abstract List<IActions> Capture(UnitPresset unit);
 
         public abstract List<IActions> Use();
     }

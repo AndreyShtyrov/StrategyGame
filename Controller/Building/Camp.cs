@@ -22,9 +22,9 @@ namespace Controller.Building
 
         public override string fieldtype => throw new NotImplementedException();
 
-        public override List<IActions> Capture()
+        public override List<IActions> Capture(UnitPresset unit)
         {
-            throw new NotImplementedException();
+            return new List<IActions>();
         }
 
         public override List<IActions> Destoy()
@@ -42,6 +42,8 @@ namespace Controller.Building
             var unit = GameModeContainer.Get().GetUnit(fieldPosition);
             if (unit != null)
             {
+                if (unit.owner == GameModeContainer.Get().CurrentPlayer)
+                    return new List<IActions>();
                 if (unit.currentHp < unit.MaxHp)
                 {
                     DealDamage dealDamage = new DealDamage(fieldPosition, fieldPosition, -1, -1);
