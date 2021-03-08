@@ -39,11 +39,31 @@ namespace StrategyGame
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         private void StartClient(int ClientIdx)
         {
+
             fieldgui.clearField();
+            List<TurnSpeciffication> turns = new List<TurnSpeciffication>();
+            turns.Add(new TurnSpeciffication(WeatherType.Rain, 0));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 1));
+            turns.Add(new TurnSpeciffication(WeatherType.Rain, 2));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 3));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 4));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 5));
+            //TurnsBar turnsBar = new TurnsBar(turns);
+            //Grid.SetColumn(turnsBar, 1);
+            //Grid.SetRow(turnsBar, 0);
+            //AddChild(turnsBar);
+            Label label = new Label();
+            label.Content = "test";
+            Grid.SetColumn(label, 1);
+            Grid.SetRow(label, 0);
+            grid.Children.Add(label);
+            //grid.Children.Add(turnsBar);
+            //grid.Children.Add(new Button());
             Player.Create(0, 5, 5);
             Player.Create(1, 5, 5);
             var player1 = Player.Get(0);
@@ -76,12 +96,27 @@ namespace StrategyGame
             TopPannel.Children.Add(playerWindow2);
 
             //gameMode.GetNewGameStates();
-            
+
 
         }
 
         private void StartServer(int ClientIdx)
         {
+
+            List<TurnSpeciffication> turns = new List<TurnSpeciffication>();
+            turns.Add(new TurnSpeciffication(WeatherType.Rain, 0));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 1));
+            turns.Add(new TurnSpeciffication(WeatherType.Rain, 2));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 3));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 4));
+            turns.Add(new TurnSpeciffication(WeatherType.Normal, 5));
+            TurnsBar turnsBar = new TurnsBar(turns);
+            Grid.SetColumn(turnsBar, 1);
+            Grid.SetRow(turnsBar, 0);
+            grid.Children.Add(turnsBar);
+
+
+
             fieldgui.clearField();
             Player.Create(0, 5, 5);
             Player.Create(1, 5, 5);

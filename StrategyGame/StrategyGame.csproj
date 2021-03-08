@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="WeatherData\Normal.png" />
+    <None Remove="WeatherData\Rain.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
@@ -15,6 +20,26 @@
     <ProjectReference Include="..\Grid\DrawField.csproj" />
     <ProjectReference Include="..\Redactor\Redactor.csproj" />
     <ProjectReference Include="..\UnitsAnPathFinding\PathFinding.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="WeatherData\Normal.png" />
+    <Resource Include="WeatherData\Rain.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

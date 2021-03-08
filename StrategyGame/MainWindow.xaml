@@ -7,7 +7,7 @@
         xmlns:gridfield="clr-namespace:DrawField;assembly=DrawField"
         mc:Ignorable="d"
         Title="MainWindow" Height="750" Width="800">
-    <Grid>
+    <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="8*"/>
@@ -25,6 +25,7 @@
             <Button Content="StartClient1" Click="Button_Click" />
             <Button Content="StartClient2" Click="Button_Click_1"/>
         </StackPanel>
+        <StackPanel x:Name="MiddlePannel" Grid.Row="0" Grid.Column="1" />
         <Button x:Name="Turn" Grid.Row="2"  Grid.Column="2" Content="EndTurn" />
     </Grid>
 </Window>

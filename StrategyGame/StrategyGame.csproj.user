@@ -13,7 +13,13 @@
     <Compile Update="PlayerWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="TurnsBar.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UnitControlBar.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="WeatherControl.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -27,7 +33,13 @@
     <Page Update="PlayerWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="TurnsBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="UnitControlBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="WeatherControl.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
