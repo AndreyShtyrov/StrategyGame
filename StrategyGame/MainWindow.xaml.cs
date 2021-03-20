@@ -42,6 +42,19 @@ namespace StrategyGame
 
         }
 
+        private void StartMultipleSelectWindow()
+        {
+            MyltipleSelection selections = new MyltipleSelection();
+            selections.Show();
+            GameTableController.Get().AddUnitToMulitpleSelect = selections.AddUnit;
+
+        }
+
+        private void CloseMultipleSelectWindow()
+        {
+
+        }
+
         private void StartClient(int ClientIdx)
         {
 
@@ -53,17 +66,12 @@ namespace StrategyGame
             turns.Add(new TurnSpeciffication(WeatherType.Normal, 3));
             turns.Add(new TurnSpeciffication(WeatherType.Normal, 4));
             turns.Add(new TurnSpeciffication(WeatherType.Normal, 5));
-            //TurnsBar turnsBar = new TurnsBar(turns);
-            //Grid.SetColumn(turnsBar, 1);
-            //Grid.SetRow(turnsBar, 0);
-            //AddChild(turnsBar);
-            Label label = new Label();
-            label.Content = "test";
-            Grid.SetColumn(label, 1);
-            Grid.SetRow(label, 0);
-            grid.Children.Add(label);
-            //grid.Children.Add(turnsBar);
-            //grid.Children.Add(new Button());
+            TurnsBar turnsBar = new TurnsBar(turns);
+            Grid.SetColumn(turnsBar, 1);
+            Grid.SetRow(turnsBar, 0);
+            grid.Children.Add(turnsBar);
+
+
             Player.Create(0, 5, 5);
             Player.Create(1, 5, 5);
             var player1 = Player.Get(0);
@@ -94,9 +102,6 @@ namespace StrategyGame
             PlayerWindow playerWindow2 = new PlayerWindow(1);
             TopPannel.Children.Add(playerWindow1);
             TopPannel.Children.Add(playerWindow2);
-
-            //gameMode.GetNewGameStates();
-
 
         }
 
@@ -136,7 +141,8 @@ namespace StrategyGame
             }
             var gameTable = GameTableController.Get();
             field = Field.load(savefile);
-
+            gameTable.StartMulitpleSelectWindow = StartMultipleSelectWindow;
+            
             GameModeContainer.instance = new GameModeServer(field);
             
             var gameMode = GameModeContainer.Get();

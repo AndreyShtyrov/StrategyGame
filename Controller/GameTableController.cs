@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Controller
 {
-    public class GameTableController: INotifyPropertyChanged
+    public class GameTableController : INotifyPropertyChanged
     {
         private static GameTableController instance;
         public FieldGUI FieldGUI;
@@ -19,7 +19,8 @@ namespace Controller
             set
             {
                 _Selected = value;
-                OnPropertyChanged("Selected");
+                if (State != GameTableState.MultipleSelections)
+                    OnPropertyChanged("Selected");
             }
 
             get
@@ -28,7 +29,6 @@ namespace Controller
             }
         }
         public AbilityPresset selectedAbility;
-
 
         public Player owner;
         private GameTableState _State = GameTableState.AwaitSelect;
@@ -74,8 +74,8 @@ namespace Controller
                         if (selectedAbility != null)
                         {
                             selectedAbility = null;
-                        }    
-                            
+                        }
+
                         if (GameTableState.AwaitSelectAbility == prevState ||
                             GameTableState.AwaitApplyAbility == prevState)
                             FieldGUI.clearWalkedArea();
@@ -100,7 +100,13 @@ namespace Controller
                         GameModeContainer.Get().RefreshBacklight();
                         break;
                     }
-                
+                case GameTableState.MultipleSelections:
+                    {
+                        FieldGUI.clearWalkedArea();
+                        Selected = null;
+                        selectedAbility = null; 
+                        break;
+                    }
             }
         }
 
@@ -119,7 +125,7 @@ namespace Controller
                                 Selected = null;
                                 Selected = selectedUnit;
                                 State = GameTableState.AwaitSelectAbility;
-                            } 
+                            }
                         }
                         break;
                     }
@@ -152,7 +158,7 @@ namespace Controller
                         }
                         else
                         {
-                            State = GameTableState.AwaitSelect; 
+                            State = GameTableState.AwaitSelect;
                         }
                         break;
                     }
@@ -173,6 +179,16 @@ namespace Controller
                                 GameModeContainer.Get().SendUserResponse(Selected, unitPresset.fieldPosition);
                             }
                         }
+                        break;
+                    }
+                case GameTableState.MultipleSelections:
+                    {
+                        if (sender is UnitPresset selectUnit)
+                        {
+                            AddToMyltipleSelection(selectUnit);
+                            Selected = selectUnit;
+                        }
+                            
                         break;
                     }
             }
@@ -198,7 +214,7 @@ namespace Controller
         public static GameTableController Get()
         {
             return instance;
-         }
+        }
 
         public void SelectedUnitRaiseStand(StandPresset stand)
         {
@@ -228,11 +244,60 @@ namespace Controller
             FieldGUI.addWalkedArea(paths);
         }
 
+        public void MultipleSelectionMouseDown(object sender, MouseEventArgs e)
+        {
+            if (sender is UnitIcon tsender)
+            {
+                var unit = GameModeContainer.Get().
+                    GetUnit(tsender.Data.fieldPosition);
+                unit.isSelected = true;
+                Selected = unit;
+            }
+        }
+
+        public AddUnitToMulitpleSelectWindow AddUnitToMulitpleSelect;
+
+        public RemoveUnitToMulitpleSelectWindow RemoveUnitToMulitpleSelect;
+
+        public StartMulitpleSelectWindowHandler StartMulitpleSelectWindow;
+
+        public void AddToMyltipleSelection(UnitPresset unit)
+        {
+            if (owner == unit.owner)
+            {
+                AddUnitToMulitpleSelect(unit, true);
+            }
+            else
+            {
+                AddUnitToMulitpleSelect(unit, false);
+            }
+        }
+
+        public void MultipleSelectionMove(object sender, MouseEventArgs e)
+        {
+            
+        }
+
+        public void StartMulitpleSelection()
+        {
+            State = GameTableState.MultipleSelections;
+            StartMulitpleSelectWindow();
+        }
+
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
             GameModeContainer.Get().CreateUnit(name, fpos, owner, typeUnit);
         }
     }
+
+    public delegate void StartMulitpleSelectWindowHandler();
+
+    public delegate void CloseMulitpleSelectWindowHandler();
+
+    public delegate void AddUnitToMulitpleSelectWindow(UnitPresset unit, bool Attacker);
+
+
+    public delegate void RemoveUnitToMulitpleSelectWindow(UnitPresset unit);
 
     public enum GameTableState
     {
@@ -243,6 +308,7 @@ namespace Controller
         AwaitApplyAbility = 4,
         AwaitGameModeResponse = 5,
         InteruptAndAnswerOnRequest = 6,
+        MultipleSelections = 7,
     }
 
 }

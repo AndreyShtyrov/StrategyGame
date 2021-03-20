@@ -15,12 +15,21 @@
     <Compile Update="FieldGUI.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="MultipleSelectionWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="SimpleTokenGui.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UnitIcon.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="FieldGUI.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="MultipleSelectionWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="PathToken.xaml">
@@ -36,6 +45,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UnitGUI.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UnitIcon.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

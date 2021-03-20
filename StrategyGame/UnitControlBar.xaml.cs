@@ -52,6 +52,13 @@ namespace StrategyGame
                         SelectedUnitRaiseStand(stand);
                     AbilityStack.Children.Add(button);
                 }
+                Button button1 = new Button();
+                button1.Content = "MultipleAttack";
+                button1.Click += (object sender, RoutedEventArgs e)
+                    => GameTableController.Get().
+                    StartMulitpleSelection();
+                AbilityStack.Children.Add(button1);
+
             }
             else
             {
