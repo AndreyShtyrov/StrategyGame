@@ -11,7 +11,7 @@ using Controller.Building;
 
 namespace Controller
 {
-    public interface IGameMode: IController, INotifyPropertyChanged
+    public interface IGameMode: INotifyPropertyChanged
     {
 
         public int ActionIdx

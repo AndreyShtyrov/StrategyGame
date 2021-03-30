@@ -18,6 +18,6 @@
         <StackPanel x:Name="Allies" Grid.Row="0" Grid.Column="0"/>
         <StackPanel x:Name="Enemies" Grid.Row="0" Grid.Column="1"/>
         <Button Content="EndSelection" Grid.Column="1" Grid.Row="1"/>
-        <Button Content="Remove" Grid.Column="0" Grid.Row="1"/>
+        <Button Content="Remove" Grid.Column="0" Click="Button_Click" Grid.Row="1"/>
     </Grid>
 </Window>

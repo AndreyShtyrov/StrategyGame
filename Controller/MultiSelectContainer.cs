@@ -19,8 +19,9 @@ namespace Controller
         public List<IUnitsInBattle> Packs
         { get ; }
         
-        public void AddUnit(UnitPresset unit)
+        public void AddUnit(IUnitPresset iUnit)
         {
+            var unit = GameModeContainer.instance.GetUnit(iUnit.fieldPosition);
             if (!checkUnitInPacks(unit))
             {
                 if (owner == unit.owner)
@@ -36,8 +37,9 @@ namespace Controller
             }
         }
 
-        private bool checkUnitInPacks(UnitPresset unit)
+        private bool checkUnitInPacks(IUnitPresset iUnit)
         {
+            var unit = GameModeContainer.instance.GetUnit(iUnit.fieldPosition);
             foreach (var pack in Packs)
             {
                 if (owner == unit.owner)
@@ -54,8 +56,9 @@ namespace Controller
             return false;
         }
 
-        public void RemoveUnit(UnitPresset unit)
+        public void RemoveUnit(IUnitPresset iUnit)
         {
+            var unit = GameModeContainer.instance.GetUnit(iUnit.fieldPosition);
             if (checkUnitInPacks(unit))
             {
                 if (unit.owner == owner)

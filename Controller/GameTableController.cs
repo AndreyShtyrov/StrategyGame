@@ -6,13 +6,15 @@ using UnitsAnPathFinding;
 using DrawField;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using InterfaceOfObjects;
+using System.Windows;
 
 namespace Controller
 {
     public class GameTableController : INotifyPropertyChanged
     {
         private static GameTableController instance;
-        public FieldGUI FieldGUI;
+        public IDrawFieldGUI FieldGUI;
         public UnitPresset _Selected;
         public UnitPresset Selected
         {
@@ -29,6 +31,7 @@ namespace Controller
             }
         }
         public AbilityPresset selectedAbility;
+        public MultiSelectContainer MultiSelect;
 
         public Player owner;
         private GameTableState _State = GameTableState.AwaitSelect;
@@ -185,10 +188,9 @@ namespace Controller
                     {
                         if (sender is UnitPresset selectUnit)
                         {
-                            AddToMyltipleSelection(selectUnit);
+                            MultiSelect.AddUnit(selectUnit);
                             Selected = selectUnit;
                         }
-                            
                         break;
                     }
             }
@@ -255,33 +257,14 @@ namespace Controller
             }
         }
 
-        public AddUnitToMulitpleSelectWindow AddUnitToMulitpleSelect;
-
-        public RemoveUnitToMulitpleSelectWindow RemoveUnitToMulitpleSelect;
-
         public StartMulitpleSelectWindowHandler StartMulitpleSelectWindow;
-
-        public void AddToMyltipleSelection(UnitPresset unit)
-        {
-            if (owner == unit.owner)
-            {
-                AddUnitToMulitpleSelect(unit, true);
-            }
-            else
-            {
-                AddUnitToMulitpleSelect(unit, false);
-            }
-        }
-
-        public void MultipleSelectionMove(object sender, MouseEventArgs e)
-        {
-            
-        }
 
         public void StartMulitpleSelection()
         {
             State = GameTableState.MultipleSelections;
-            StartMulitpleSelectWindow();
+            MultiSelect = new MultiSelectContainer(owner);
+            var multipleSelection = FieldGUI.generateMultipleSelectWindow(MultiSelect);
+            StartMulitpleSelectWindow(multipleSelection);
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
@@ -290,12 +273,11 @@ namespace Controller
         }
     }
 
-    public delegate void StartMulitpleSelectWindowHandler();
+    public delegate void StartMulitpleSelectWindowHandler(Window multipleSelection);
 
     public delegate void CloseMulitpleSelectWindowHandler();
 
     public delegate void AddUnitToMulitpleSelectWindow(UnitPresset unit, bool Attacker);
-
 
     public delegate void RemoveUnitToMulitpleSelectWindow(UnitPresset unit);
 

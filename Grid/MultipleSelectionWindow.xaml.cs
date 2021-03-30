@@ -89,16 +89,9 @@ namespace DrawField
             }
         }
 
-
-        public void RemoveUnit()
-        {
-            
-        }
-
-        public void RemovePack()
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
 
         }
-
     }
 }

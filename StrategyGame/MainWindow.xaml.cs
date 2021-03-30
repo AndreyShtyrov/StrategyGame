@@ -42,17 +42,9 @@ namespace StrategyGame
 
         }
 
-        private void StartMultipleSelectWindow()
+        private void StartMultipleSelectWindow(Window window)
         {
-            MyltipleSelection selections = new MyltipleSelection();
-            selections.Show();
-            GameTableController.Get().AddUnitToMulitpleSelect = selections.AddUnit;
-
-        }
-
-        private void CloseMultipleSelectWindow()
-        {
-
+            window.Show();
         }
 
         private void StartClient(int ClientIdx)

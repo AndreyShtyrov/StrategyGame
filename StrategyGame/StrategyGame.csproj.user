@@ -10,9 +10,6 @@
     <Compile Update="ChooseServerOrPlayer.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="MyltipleSelection.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Update="PlayerWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -31,9 +28,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="MyltipleSelection.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="PlayerWindow.xaml">

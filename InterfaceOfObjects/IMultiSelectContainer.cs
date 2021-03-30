@@ -9,6 +9,11 @@ namespace InterfaceOfObjects
     {
         public List<IUnitsInBattle> Packs
         { get; }
+
+
+        public void AddUnit(IUnitPresset iUnit);
+
+        public void RemoveUnit(IUnitPresset iUnit);
     }
 
     public interface IUnitsInBattle
@@ -18,5 +23,6 @@ namespace InterfaceOfObjects
 
         public List<IUnitPresset> Enemyies
         { get; set; }
+
     }
 }

@@ -19,7 +19,8 @@ namespace DrawField
     /// <summary>
     /// Interaction logic for FieldGUI.xaml
     /// </summary>
-    public partial class FieldGUI : UserControl
+    public partial class FieldGUI : UserControl, IDrawFieldGUI
+
     {
         private HexagonalGrid gridSettings;
         public Field data;
@@ -169,6 +170,10 @@ namespace DrawField
             FieldMap.Children.Clear();
         }
 
+        public Window generateMultipleSelectWindow(IMultiSelectContainer item)
+        {
+            return new MultipleSelectionWindow(item);
+        }
     }
     public delegate void GameModeHandler(ITokenData sender, MouseEventArgs e);
 }
