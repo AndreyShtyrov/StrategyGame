@@ -270,7 +270,7 @@ namespace Controller
 
         public void StartMultipleBattle()
         {
-            AbortMulitpleSelection();
+            throw new NotImplementedException();
             if (multipleSelection != null)
                 multipleSelection.Close();
         }
