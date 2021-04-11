@@ -14,6 +14,14 @@ namespace InterfaceOfObjects
         public void AddUnit(IUnitPresset iUnit);
 
         public void RemoveUnit(IUnitPresset iUnit);
+
+        public void AddNewPack();
+
+        public void RemoveLastPack();
+
+        public void AbortSelection();
+
+        public void Apply();
     }
 
     public interface IUnitsInBattle

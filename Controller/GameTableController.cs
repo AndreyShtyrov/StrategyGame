@@ -32,6 +32,7 @@ namespace Controller
         }
         public AbilityPresset selectedAbility;
         public MultiSelectContainer MultiSelect;
+        private Window multipleSelection;
 
         public Player owner;
         private GameTableState _State = GameTableState.AwaitSelect;
@@ -263,8 +264,27 @@ namespace Controller
         {
             State = GameTableState.MultipleSelections;
             MultiSelect = new MultiSelectContainer(owner);
-            var multipleSelection = FieldGUI.generateMultipleSelectWindow(MultiSelect);
+            multipleSelection = FieldGUI.generateMultipleSelectWindow(MultiSelect);
             StartMulitpleSelectWindow(multipleSelection);
+        }
+
+        public void StartMultipleBattle()
+        {
+            AbortMulitpleSelection();
+            if (multipleSelection != null)
+                multipleSelection.Close();
+        }
+
+        public void AbortMulitpleSelection()
+        {
+            if (Selected != null)
+            {
+                Selected.isSelected = false;
+                Selected = null;
+            }
+            MultiSelect = null;
+            if (multipleSelection != null)
+                multipleSelection.Close();
         }
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
@@ -274,12 +294,6 @@ namespace Controller
     }
 
     public delegate void StartMulitpleSelectWindowHandler(Window multipleSelection);
-
-    public delegate void CloseMulitpleSelectWindowHandler();
-
-    public delegate void AddUnitToMulitpleSelectWindow(UnitPresset unit, bool Attacker);
-
-    public delegate void RemoveUnitToMulitpleSelectWindow(UnitPresset unit);
 
     public enum GameTableState
     {

@@ -92,7 +92,21 @@ namespace Controller
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
+
+        public void Apply()
+        {
+            GameTableController.Get().StartMultipleBattle();
+        }
+
+
+        public void AbortSelection()
+        {
+            var tableControll = GameTableController.Get();
+            tableControll.AbortMulitpleSelection();
+        }
+
     }
+
 
     public class UnitsInBattle : IUnitsInBattle
     {

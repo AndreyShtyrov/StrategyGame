@@ -24,6 +24,7 @@ namespace DrawField
             InitializeComponent();
             Data = data;
             UnitName.Content = data.getUnitName();
+            Border.BorderBrush = Brushes.Black;
         }
 
         public bool IsSelected
@@ -35,6 +36,14 @@ namespace DrawField
             set
             {
                 Data.isSelected = value;
+                if (value  == true)
+                {
+                    Border.BorderBrush = Brushes.Yellow;
+                }
+                else
+                {
+                    Border.BorderBrush = Brushes.Black;
+                }
             }
         }
 

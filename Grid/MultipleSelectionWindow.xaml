@@ -10,14 +10,18 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="9*"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <StackPanel x:Name="Allies" Grid.Row="0" Grid.Column="0"/>
-        <StackPanel x:Name="Enemies" Grid.Row="0" Grid.Column="1"/>
-        <Button Content="EndSelection" Grid.Column="1" Grid.Row="1"/>
-        <Button Content="Remove" Grid.Column="0" Click="Button_Click" Grid.Row="1"/>
+        <StackPanel x:Name="Allies" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
+        <StackPanel x:Name="Enemies" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"/>
+        <Button Content="Apply" Grid.Column="3" Grid.Row="1" Click="Apply"/>
+        <Button Content="Remove Pack" Grid.Column="1" Grid.Row="1" Click="RemovePack" />
+        <Button Content="Add Pack" Grid.Column="2" Grid.Row="1"  Click="AddPack"/>
+        <Button Content="Remove" Grid.Column="0" Click="RemoveUnitButton" Grid.Row="1"/>
     </Grid>
 </Window>
