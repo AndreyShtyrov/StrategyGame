@@ -16,7 +16,7 @@ namespace Tokens
 
         public override string fieldtype => nameof(UnitData);
         private bool _isSelected = false;
-        public virtual bool   isSelected 
+        public virtual bool isSelected 
         { get
             {
                 return _isSelected;
@@ -40,10 +40,6 @@ namespace Tokens
             return Name;
         }
 
-        public void mouseBtnClicked(object sender, MouseEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
         public UnitData(): base()
         { }

@@ -19,7 +19,7 @@ namespace StrategyGame
     /// </summary>
     public partial class WeatherControl : UserControl
     {
-        public WeatherControl(TurnSpeciffication turn)
+        public WeatherControl(TurnsSpeciffication turn)
         {
             InitializeComponent();
             if (turn.Weather == WeatherType.Normal)

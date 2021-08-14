@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Controller.Actions;
 using Newtonsoft.Json;
+using Tokens;
 
 namespace Controller.Requests
 {
@@ -21,6 +22,12 @@ namespace Controller.Requests
 
         public int CurrentActionIndex
         { get; set; }
+
+        public Field Map;
+
+        public List<QuerryAction> ActionTurns;
+
+        public List<TurnsSpeciffication> Turns;
 
         public int Player
         { get; set; }
@@ -76,6 +83,7 @@ namespace Controller.Requests
         UserResponse = 12,
         ResponseApplied = 13,
         ApplyAndWait = 14,
+        LoadMap = 15,
     }
 
 }

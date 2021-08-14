@@ -31,7 +31,7 @@ namespace Controller
 
         public WeatherType GetWeather();
 
-        public List<TurnSpeciffication> Turns
+        public List<TurnsSpeciffication> Turns
         { get; }
 
         public PathToken GetPathToken(UnitPresset unit, (int X, int Y) fpos);

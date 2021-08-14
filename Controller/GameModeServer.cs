@@ -21,7 +21,7 @@ namespace Controller
         private List<IActions> Response = new List<IActions>();
         private List<RequestContainer> DelaiedRequests = new List<RequestContainer>();
         private GameModeLogic GameModeLogic;
-        private IListOfToken field;
+        private Field field;
         private List<UnitPresset> units = new List<UnitPresset>();
         private List<BuildingPresset> _Buildings = new List<BuildingPresset>();
         public List<BuildingPresset> Buildings => _Buildings;
@@ -33,7 +33,10 @@ namespace Controller
         private RequestManager requestManager;
         private Player ControllingPlayer;
         private RequestContainer preparedContainer;
-        public List<TurnSpeciffication> AllTurns;
+        public List<TurnsSpeciffication> AllTurns;
+        private List<QuerryAction> player1Querry;
+        private int ActionIndex = 0;
+
         private int _CurrentTurnNumber=0;
         
         public int CurrentTurnNumber
@@ -63,7 +66,7 @@ namespace Controller
         { get; }
         public int ActionIdx => actionManager.NextActionIdx;
 
-        public List<TurnSpeciffication> Turns
+        public List<TurnsSpeciffication> Turns
         { get; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -79,6 +82,12 @@ namespace Controller
             GameModeLogic = new GameModeLogic(this, Player.Get(1));
             Player.Get(0).CurrentTurnNumber = 0;
             Player.Get(1).CurrentTurnNumber = 0;
+            player1Querry = new List<QuerryAction>();
+            ActionIndex = 0;
+            player1Querry.Add(QuerryAction.Deploy);
+            player1Querry.Add(QuerryAction.Await);
+            player1Querry.Add(QuerryAction.Deploy);
+            player1Querry.Add(QuerryAction.Await);
         }
 
         public ITokenData getToken((int X, int Y) fpos)
@@ -303,6 +312,16 @@ namespace Controller
                     applyChanges.Actions = Response;
                     return applyChanges;
                 }
+                else if (getNewStates.Type == RequestType.LoadMap)
+                {
+                    var map = field;
+                    RequestContainer applyChanges = new RequestContainer(RequestType.LoadMap);
+                    applyChanges.Map = map;
+                    applyChanges.Turns = Turns;
+                    applyChanges.ActionTurns = player1Querry;
+                    return applyChanges;
+
+                }
             }
             if (State == GameModeState.Standart)
             {
@@ -501,7 +520,7 @@ namespace Controller
         {
             foreach (var turn in Turns)
             {
-                if (turn.Number == CurrentTurnNumber)
+                if (turn.ActionIndex == CurrentTurnNumber)
                     return turn.Weather;
             }
             throw new NotImplementedException();

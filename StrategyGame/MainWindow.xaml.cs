@@ -51,13 +51,13 @@ namespace StrategyGame
         {
 
             fieldgui.clearField();
-            List<TurnSpeciffication> turns = new List<TurnSpeciffication>();
-            turns.Add(new TurnSpeciffication(WeatherType.Rain, 0));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 1));
-            turns.Add(new TurnSpeciffication(WeatherType.Rain, 2));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 3));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 4));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 5));
+            List<TurnsSpeciffication> turns = new List<TurnsSpeciffication>();
+            turns.Add(new TurnsSpeciffication(WeatherType.Rain, 0));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 1));
+            turns.Add(new TurnsSpeciffication(WeatherType.Rain, 2));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 3));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 4));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 5));
             TurnsBar turnsBar = new TurnsBar(turns);
             Grid.SetColumn(turnsBar, 1);
             Grid.SetRow(turnsBar, 0);
@@ -100,13 +100,13 @@ namespace StrategyGame
         private void StartServer(int ClientIdx)
         {
 
-            List<TurnSpeciffication> turns = new List<TurnSpeciffication>();
-            turns.Add(new TurnSpeciffication(WeatherType.Rain, 0));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 1));
-            turns.Add(new TurnSpeciffication(WeatherType.Rain, 2));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 3));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 4));
-            turns.Add(new TurnSpeciffication(WeatherType.Normal, 5));
+            List<TurnsSpeciffication> turns = new List<TurnsSpeciffication>();
+            turns.Add(new TurnsSpeciffication(WeatherType.Rain, 0));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 1));
+            turns.Add(new TurnsSpeciffication(WeatherType.Rain, 2));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 3));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 4));
+            turns.Add(new TurnsSpeciffication(WeatherType.Normal, 5));
             TurnsBar turnsBar = new TurnsBar(turns);
             Grid.SetColumn(turnsBar, 1);
             Grid.SetRow(turnsBar, 0);

@@ -19,7 +19,7 @@ namespace StrategyGame
     /// </summary>
     public partial class TurnsBar : UserControl
     {
-        public TurnsBar(List<TurnSpeciffication> turns)
+        public TurnsBar(List<TurnsSpeciffication> turns)
         {
             InitializeComponent();
             foreach (var turn in turns)

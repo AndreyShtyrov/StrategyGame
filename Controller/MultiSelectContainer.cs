@@ -99,6 +99,7 @@ namespace Controller
         }
 
 
+
         public void AbortSelection()
         {
             var tableControll = GameTableController.Get();

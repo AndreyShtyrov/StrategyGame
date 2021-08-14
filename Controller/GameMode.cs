@@ -56,7 +56,7 @@ namespace Controller
             }
         }
 
-        public List<TurnSpeciffication> Turns
+        public List<TurnsSpeciffication> Turns
         { get; }
 
         public event PropertyChangedEventHandler PropertyChanged;
