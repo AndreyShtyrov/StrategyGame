@@ -8,10 +8,12 @@ using Controller.Actions;
 using System.Threading.Tasks;
 using Controller.Requests;
 using Controller.Building;
+using Controller.Network;
+using Controller.GameLogic;
 
 namespace Controller
 {
-    public interface IGameMode: INotifyPropertyChanged
+    public interface IGameMode : INotifyPropertyChanged
     {
 
         public int ActionIdx
@@ -20,10 +22,19 @@ namespace Controller
         public GameModeState State
         { get; set; }
 
+        public IGameLogic GameModeLogic
+        { get; }
+
+        public INetworkMode NetworkMode
+        { get; }
+
         public RequestSender RequestSender
         { get; }
 
         public int CurrentTurnNumber
+        { get; set; }
+
+        public RequestManager RequestManager
         { get; set; }
 
         public Player CurrentPlayer
@@ -44,8 +55,6 @@ namespace Controller
 
         public void ChangePlayers(Player previousPlayer, Player nextPlayer);
 
-        public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None");
-
         public (int X, int Y, int Z) TransformToCube((int X, int Y) fpos, (int X, int Y) center);
 
         public (int X, int Y) TransformToAxial((int X, int Y, int Z) fpos, (int X, int Y) center);
@@ -56,17 +65,11 @@ namespace Controller
 
         public List<UnitPresset> getUnitsInBattle();
 
-        public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx);
-
         public List<PathToken> GetWalkArea(UnitPresset unit);
-
-        public void Move(UnitPresset unit, PathToken pathToken);
 
         public void CreateBuilding(BuildingPresset build);
 
         public bool IsUnitSelected(UnitPresset unit);
-
-        public object ProcessRequset(object sender);
 
         public void ProcessActions(List<IActions> actions);
 
@@ -84,22 +87,14 @@ namespace Controller
 
         public Task GetNewGameStates();
 
-        public void SwitchTurn();
-
         public event OnBuildingListChange BuildingListChanged;
 
         public event OnUnitsListChange UnitsListChanged;
 
-        public void UpDownStand(UnitPresset unit, int StandIdx);
-
         public List<UnitPresset> GetUnits();
 
-        public void AddRequestManager(RequestManager Timer);
+        public BuildingPresset GetBuilding((int X, int Y) position);
 
-        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability);
-
-        public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition);
-
-        public BuildingPresset GetBuilding((int X, int Y) position); 
+        public void AcivateDeactivateGameTable(bool IsActive);
     }
 }

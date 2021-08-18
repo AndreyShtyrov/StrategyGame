@@ -44,7 +44,7 @@ namespace Controller
                 }
 
 
-                var response = GameModeContainer.Get().ProcessRequset(content);
+                var response = GameModeContainer.Get().NetworkMode.ProcessRequset(content);
                 var responseString = JsonConvert.SerializeObject(response, new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Auto
@@ -113,7 +113,7 @@ namespace Controller
                     TypeNameHandling = TypeNameHandling.Auto
                 });
 
-            GameModeContainer.Get().ProcessRequset(responseRequset);
+            GameModeContainer.Get().NetworkMode.ProcessRequset(responseRequset);
         }
     }
 }

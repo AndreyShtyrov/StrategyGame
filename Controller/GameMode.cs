@@ -11,6 +11,8 @@ using Controller.Units;
 using Controller.Requests;
 using System.Threading.Tasks;
 using Controller.Building;
+using Controller.Network;
+using Controller.GameLogic;
 
 namespace Controller
 {
@@ -22,10 +24,15 @@ namespace Controller
         private List<BuildingPresset> buildings = new List<BuildingPresset>();
         private PathField pathField;
         private GameModeState _State;
+
         private List<UnitPresset> UnitsInBattle = new List<UnitPresset>();
         public Player CurrentPlayer => _CurrentPlayer;
         private ActionManager actionManager;
-        private RequestManager requestManager;
+        public RequestManager RequestManager
+        { get; set; }
+        public INetworkMode NetworkMode
+        { get; }
+
         private Player _CurrentPlayer = Player.Get(0);
         public RequestSender RequestSender
         { get; }
@@ -59,6 +66,9 @@ namespace Controller
         public List<TurnsSpeciffication> Turns
         { get; }
 
+        public IGameLogic GameModeLogic
+        { get; }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public GameMode(Field field)
@@ -73,6 +83,8 @@ namespace Controller
             CurrentTurnNumber = 0;
             Player.Get(0).CurrentTurnNumber = 0;
             Player.Get(1).CurrentTurnNumber = 0;
+            NetworkMode = new NetworkModeClient(this);
+            GameModeLogic = new GameLogicClient(this);
         }
 
         public UnitPresset[,] GetGridOfUnits()
@@ -181,31 +193,6 @@ namespace Controller
             return UnitsInBattle;
         }
 
-        public void AttackUnit(UnitPresset unit, UnitPresset target, int AbilityIdx)
-        {
-            if (State == GameModeState.Standart)
-            {
-                State = GameModeState.AwaitResponse;
-                RequestContainer requestContainer = new RequestContainer(RequestType.UseAbility);
-                requestContainer.Selected = unit.fieldPosition;
-                requestContainer.Target = target.fieldPosition;
-                requestContainer.AbilityIdx = AbilityIdx;
-                Client.sendRequest(requestContainer);
-            }
-        }
-
-        public void Move(UnitPresset unit, PathToken pathToken)
-        {
-            if (State == GameModeState.Standart)
-            {
-                State = GameModeState.AwaitResponse;
-                RequestContainer requestContainer = new RequestContainer(RequestType.MoveUnit);
-                requestContainer.Selected = unit.fieldPosition;
-                requestContainer.Target = pathToken.fieldPosition;
-                Client.sendRequest(requestContainer);
-            }
-        }
-
         public void CreateBuilding(BuildingPresset build)
         {
             throw new NotImplementedException();
@@ -231,16 +218,6 @@ namespace Controller
                 return false;
         }
 
-        public void SelectedUnitRaiseStand(StandPresset stand)
-        {
-            stand.UpStand();
-        }
-
-        public void SelectedUnitActivateAbility(AbilityPresset ability)
-        {
-            ability.IsReadyToUse();
-        }
-
         public ITokenData getToken((int X, int Y) fpos)
         {
             throw new NotImplementedException();
@@ -252,50 +229,6 @@ namespace Controller
             {
                 if (unit.fieldPosition == fpos)
                     return unit;
-            }
-            return null;
-        }
-
-        public object ProcessRequset(object sender)
-        {
-            if (sender is RequestContainer tsender)
-            {
-                if (tsender.Type == RequestType.ApplyChanges)
-                    ProcessActions(tsender.Actions);
-                else if (tsender.Type == RequestType.ApplyChangesAndTakeControl)
-                {
-                    ProcessActions(tsender.Actions);
-                    AcivateDeactivateGameTable(true);
-                }
-                else if (tsender.Type == RequestType.NeedResponse)
-                {
-                    AcivateDeactivateGameTable(true);
-                    ProcessActions(tsender.Actions);
-                    RequestUserInput(tsender);
-                }
-                else if (tsender.Type == RequestType.ResponseApplied)
-                {
-                    if (CurrentPlayer.idx == RequestSender.Player)
-                    {
-                        ProcessActions(tsender.Actions);
-                        State = GameModeState.Standart;
-                        AcivateDeactivateGameTable(true);
-                    }
-                    else
-                    {
-                        ProcessActions(tsender.Actions);
-                        State = GameModeState.AwaitResponse;
-                        AcivateDeactivateGameTable(false);
-                    }
-                }
-                else if (tsender.Type == RequestType.ApplyAndWait)
-                {
-                    ProcessActions(tsender.Actions);
-                    AcivateDeactivateGameTable(false);
-                    State = GameModeState.AwaitResponse;
-                }
-                if (State == GameModeState.InteruptAndAwaitUserResponse)
-                    GameTableController.Get().State = GameTableState.AwaitSelect;
             }
             return null;
         }
@@ -329,11 +262,6 @@ namespace Controller
             }
         }
 
-        public void AddRequestManager(RequestManager Timer)
-        {
-            this.requestManager = Timer;
-        }
-
         public void AddUnit(UnitPresset unitPresset)
         {
             units.Add(unitPresset);
@@ -346,75 +274,9 @@ namespace Controller
             UnitsListChanged?.Invoke(unitPresset, false);
         }
 
-        public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
-        {
-            RequestContainer requestContainer = new RequestContainer(RequestType.CreateUnit);
-            requestContainer.Name = name;
-            requestContainer.Player = owner.idx;
-            requestContainer.Selected = fpos;
-            Client.sendRequest(requestContainer);
-        }
-
-        public void UpDownStand(UnitPresset unit, int StandIdx)
-        {
-            RequestContainer request = new RequestContainer(RequestType.UpDownStand);
-            request.Player = GameTableController.Get().owner.idx;
-            request.Selected = unit.fieldPosition;
-            request.AbilityIdx = StandIdx;
-            Client.sendRequest(request);
-        }
-
         public List<UnitPresset> GetUnits() => units;
 
-        public void ApplyAbilityWithoutSelection(UnitPresset unit, AbilityPresset Ability)
-        {
-            RequestContainer request = new RequestContainer(RequestType.UpDownStand);
-            request.Player = GameTableController.Get().owner.idx;
-            request.Selected = unit.fieldPosition;
-            request.AbilityIdx = Ability.idx;
-            Client.sendRequest(request);
-        }
-
-        public void SwitchTurn()
-        {
-            AcivateDeactivateGameTable(false);
-            RequestContainer request = new RequestContainer(RequestType.SwitchTurn);
-            request.Player = GameTableController.Get().owner.idx;
-            Client.sendRequest(request);
-        }
-
-        public void RequestUserInput(RequestContainer container)
-        {
-            var gameTable = GameTableController.Get();
-            var unit = GetUnit(container.Selected);
-            gameTable.State = GameTableState.InteruptAndAnswerOnRequest;
-            gameTable.Selected = unit;
-            if (gameTable != null)
-            {
-                if (container.TargetsTypeName == "UnitPresset")
-                {
-                    foreach (var posUnit in container.Targets)
-                    {
-                        GetUnit(posUnit).isTarget = true;
-                    }
-                }
-                else if (container.TargetsTypeName == "PathToken")
-                {
-                    var area = GetWalkArea(unit);
-                    gameTable.DrawWalkArea(area);
-                }
-            }
-        }
-
-        public void SendUserResponse(UnitPresset unit, (int X, int Y) targetPosition)
-        {
-            RequestContainer requestContainer = new RequestContainer(RequestType.UserResponse);
-            requestContainer.Selected = unit.fieldPosition;
-            requestContainer.Target = targetPosition;            
-            Client.sendRequest(requestContainer);
-        }
-
-        private void AcivateDeactivateGameTable(bool IsActive)
+        public void AcivateDeactivateGameTable(bool IsActive)
         {
             var gameTable = GameTableController.Get();
             if (gameTable == null)

@@ -45,13 +45,13 @@ namespace StrategyGame
             var player1 = Player.Get(0);
             Player.Create(1, 5, 5);
             var player2 = Player.Get(1);
-            gameMode.CreateUnit("Helbard", (4, 4), player1);
-            gameMode.CreateUnit("Helbard", (6, 6), player2);
-            gameMode.CreateUnit("Helbard", (7, 7), player2);
-            gameMode.CreateUnit("LongBow", (5, 6), player1);
-            gameMode.CreateUnit("LongBow", (7, 6), player2);
+            gameMode.GameModeLogic.CreateUnit("Helbard", (4, 4), player1);
+            gameMode.GameModeLogic.CreateUnit("Helbard", (6, 6), player2);
+            gameMode.GameModeLogic.CreateUnit("Helbard", (7, 7), player2);
+            gameMode.GameModeLogic.CreateUnit("LongBow", (5, 6), player1);
+            gameMode.GameModeLogic.CreateUnit("LongBow", (7, 6), player2);
             RequestManager timer = new RequestManager();
-            gameMode.AddRequestManager(timer);
+            gameMode.RequestManager = timer;
         }
 
         protected override void OnClosed(EventArgs e)

@@ -87,7 +87,7 @@ namespace StrategyGame
             Turn.Click += (object sender, RoutedEventArgs e) => gameTable.SwitchTurn();
             fieldgui.drawGrid(field);
             RequestManager timer = new RequestManager();
-            gameMode.AddRequestManager(timer);
+            gameMode.RequestManager = timer;
 
             gameTable.PropertyChanged += UnitPanel.OnSelectedHandler;
             PlayerWindow playerWindow1 = new PlayerWindow(0);
@@ -139,7 +139,7 @@ namespace StrategyGame
             
             var gameMode = GameModeContainer.Get();
             
-            gameMode.SwitchTurn();
+            gameMode.GameModeLogic.SwitchTurn();
             gameMode.UnitsListChanged += OnUnitsListChange;
             gameMode.BuildingListChanged += OnBuildingListChange;
             fieldgui.gameModeHandler = gameTable.ActionOnMouseButton;
@@ -155,15 +155,15 @@ namespace StrategyGame
             TopPannel.Children.Add(playerWindow2);
             Turn.Click += (object sender, RoutedEventArgs e) => gameTable.SwitchTurn();
             RequestManager timer = new RequestManager();
-            gameMode.AddRequestManager(timer);
-            gameMode.CreateUnit("Helbard", (4, 4), player1);
-            gameMode.CreateUnit("Helbard", (6, 6), player2);
-            gameMode.CreateUnit("Fork", (7, 7), player2);
-            gameMode.CreateUnit("Veteran", (5, 6), player1);
-            gameMode.CreateUnit("LongBow", (7, 6), player2);
-            gameMode.CreateUnit("Buckler", (7, 8), player1);
-            gameMode.CreateUnit("Veteran", (6, 8), player1);
-            gameMode.CreateUnit("Fork", (5, 8), player2);
+            gameMode.RequestManager = timer;
+            gameMode.GameModeLogic.CreateUnit("Helbard", (4, 4), player1);
+            gameMode.GameModeLogic.CreateUnit("Helbard", (6, 6), player2);
+            gameMode.GameModeLogic.CreateUnit("Fork", (7, 7), player2);
+            gameMode.GameModeLogic.CreateUnit("Veteran", (5, 6), player1);
+            gameMode.GameModeLogic.CreateUnit("LongBow", (7, 6), player2);
+            gameMode.GameModeLogic.CreateUnit("Buckler", (7, 8), player1);
+            gameMode.GameModeLogic.CreateUnit("Veteran", (6, 8), player1);
+            gameMode.GameModeLogic.CreateUnit("Fork", (5, 8), player2);
             gameMode.AddBuilding(BuildingPresset.Build("Camp", (0, 0), null));
 
             //gameMode.GetNewGameStates();

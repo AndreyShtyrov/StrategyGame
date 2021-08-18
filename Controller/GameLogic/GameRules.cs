@@ -8,9 +8,10 @@ using Controller.Requests;
 
 namespace Controller
 {
-    internal class GameModeLogic
+    public class GameRules
     {
         private bool isDelay = false;
+
         private GameModeServer GameMode;
 
         private AbilityType InteraptionAction;
@@ -24,7 +25,7 @@ namespace Controller
         public Player CurrentPlayer
         { get; set; }
 
-        public GameModeLogic(GameModeServer GameMode, Player FirstPlyaer)
+        public GameRules(GameModeServer GameMode, Player FirstPlyaer)
         {
             this.GameMode = GameMode;
             CurrentPlayer = FirstPlyaer;
@@ -304,8 +305,6 @@ namespace Controller
             GameMode.ProcessActions(result);
             return result;
         }
-
-
 
         public List<IActions> ProcessIteraptedAndNextActions(UnitPresset unit, (int X, int Y) fpos)
         {

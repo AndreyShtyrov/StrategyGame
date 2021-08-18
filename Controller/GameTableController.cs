@@ -139,7 +139,7 @@ namespace Controller
                         {
                             if (target.isTarget)
                             {
-                                GameModeContainer.Get().AttackUnit(Selected, target, selectedAbility.idx);
+                                GameModeContainer.Get().GameModeLogic.AttackUnit(Selected, target, selectedAbility.idx);
                                 if (State != GameTableState.InteruptAndAnswerOnRequest)
                                     State = GameTableState.AwaitSelect;
                             }
@@ -157,7 +157,7 @@ namespace Controller
                         {
                             State = GameTableState.AwaitApplyAbility;
                             FieldGUI.clearWalkedArea();
-                            GameModeContainer.Get().Move(Selected, pathToken);
+                            GameModeContainer.Get().GameModeLogic.Move(Selected, pathToken);
                             return;
                         }
                         else
@@ -174,13 +174,13 @@ namespace Controller
                     {
                         if (sender is PathToken pathToken)
                         {
-                            GameModeContainer.Get().SendUserResponse(Selected, pathToken.fieldPosition);
+                            GameModeContainer.Get().NetworkMode.SendUserResponse(Selected, pathToken.fieldPosition);
                         }
                         else if (sender is UnitPresset unitPresset)
                         {
                             if (unitPresset.isTarget)
                             {
-                                GameModeContainer.Get().SendUserResponse(Selected, unitPresset.fieldPosition);
+                                GameModeContainer.Get().NetworkMode.SendUserResponse(Selected, unitPresset.fieldPosition);
                             }
                         }
                         break;
@@ -221,7 +221,7 @@ namespace Controller
 
         public void SelectedUnitRaiseStand(StandPresset stand)
         {
-            GameModeContainer.Get().UpDownStand(Selected, stand.idx);
+            GameModeContainer.Get().GameModeLogic.UpDownStand(Selected, stand.idx);
         }
 
         public void SelectedUnitActivateAbility(AbilityPresset ability)
@@ -229,7 +229,7 @@ namespace Controller
             if (ability.IsReadyToUse())
             {
                 if (ability.AbilityType == AbilityType.ActionWitoutTargetSelect)
-                { GameModeContainer.Get().ApplyAbilityWithoutSelection(Selected, ability); return; }
+                { GameModeContainer.Get().GameModeLogic.ApplyAbilityWithoutSelection(Selected, ability); return; }
                 selectedAbility = ability;
                 State = GameTableState.AwaitSelectTarget;
             }
@@ -239,7 +239,7 @@ namespace Controller
 
         public void SwitchTurn()
         {
-            GameModeContainer.Get().SwitchTurn();
+            GameModeContainer.Get().GameModeLogic.SwitchTurn();
         }
 
         public void DrawWalkArea(List<PathToken> paths)
@@ -289,7 +289,7 @@ namespace Controller
 
         public void CreateUnit(string name, (int X, int Y) fpos, Player owner, string typeUnit = "None")
         {
-            GameModeContainer.Get().CreateUnit(name, fpos, owner, typeUnit);
+            GameModeContainer.Get().GameModeLogic.CreateUnit(name, fpos, owner, typeUnit);
         }
     }
 
